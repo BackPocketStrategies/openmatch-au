@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenMatch AU — Open Home Readiness & Property Match</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    input[type="range"] { accent-color: #0f172a; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+  <!-- TOP ADMIN BAR (Hidden automatically when opened via Buyer QR or Agent Link) -->
+  <header id="admin-nav" class="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded text-sm">OM</span>
+        <span class="font-bold tracking-tight">OpenMatch AU</span>
+        <span id="db-status" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Checking DB...</span>
+      </div>
+      <nav class="flex flex-wrap gap-1.5 text-xs sm:text-sm">
+        <button onclick="switchTab('admin')" id="tab-admin" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-emerald-500 text-slate-950">1. Property & QR</button>
+        <button onclick="switchTab('scan')" id="tab-scan" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700">2. Buyer Quiz</button>
+        <button onclick="switchTab('agent')" id="tab-agent" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700">3. Agent Dashboard</button>
+        <button onclick="switchTab('leads')" id="tab-leads" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700">4. Broker Leads</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6">
+
+    <!-- ==================== VIEW 1: BROKER PROPERTY & QR SETUP ==================== -->
+    <section id="view-admin" class="space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div>
+            <h1 class="text-xl font-bold">Load Open Home Listing</h1>
+            <p class="text-sm text-slate-500">Paste listing copy to auto-extract price guide & lifestyle tags, or load a sample property.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="loadSample(0)" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium">Sample 1 (Norwood)</button>
+            <button onclick="loadSample(1)" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium">Sample 2 (Glenelg)</button>
+          </div>
+        </div>
+
+        <!-- Smart Copy Parser -->
+        <div class="mb-5 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Quick-Parse Listing Text (Optional)</label>
+          <textarea id="raw-listing-text" rows="2" placeholder="Paste description from agent's website (e.g., 'Price Guide $850,000 - $900,000. 3 bed family home with dedicated study, secure fenced yard for pets, freshly renovated...')" class="w-full text-sm p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-slate-900"></textarea>
+          <button onclick="parseListingText()" class="mt-2 text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-slate-800">Auto-Fill Details From Text</button>
+        </div>
+
+        <!-- Structured Property Form -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Street Address *</label>
+            <input id="prop-address" type="text" value="42 Kensington Road" class="w-full p-2.5 text-sm border rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Suburb & State</label>
+            <input id="prop-suburb" type="text" value="Norwood SA 5067" class="w-full p-2.5 text-sm border rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Price Guide Min ($ AUD) *</label>
+            <input id="prop-min" type="number" value="850000" class="w-full p-2.5 text-sm border rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Price Guide Max ($ AUD) *</label>
+            <input id="prop-max" type="number" value="910000" class="w-full p-2.5 text-sm border rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Selling Agent Name</label>
+            <input id="prop-agent" type="text" value="Sarah Jenkins" class="w-full p-2.5 text-sm border rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Bedrooms</label>
+            <input id="prop-beds" type="number" value="3" class="w-full p-2.5 text-sm border rounded-lg" />
+          </div>
+        </div>
+
+        <!-- Lifestyle Feature Tags -->
+        <div class="mt-4">
+          <label class="block text-xs font-semibold text-slate-600 mb-2">Property Lifestyle Features (Used for Buyer Match %)</label>
+          <div class="flex flex-wrap gap-3">
+            <label class="flex items-center gap-2 text-sm bg-slate-50 px-3 py-2 rounded-lg border cursor-pointer">
+              <input id="tag-wfh" type="checkbox" checked class="rounded" /> Dedicated WFH / Study
+            </label>
+            <label class="flex items-center gap-2 text-sm bg-slate-50 px-3 py-2 rounded-lg border cursor-pointer">
+              <input id="tag-yard" type="checkbox" checked class="rounded" /> Secure / Pet-Friendly Yard
+            </label>
+            <label class="flex items-center gap-2 text-sm bg-slate-50 px-3 py-2 rounded-lg border cursor-pointer">
+              <input id="tag-renovated" type="checkbox" class="rounded" /> Move-In Ready (Renovated)
+            </label>
+          </div>
+        </div>
+
+        <button onclick="saveProperty()" class="mt-6 w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow-sm">
+          Save Listing & Generate QR Strut Card
+        </button>
+      </div>
+
+      <!-- Printable Bench QR Card & Share Links -->
+      <div id="qr-output-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center bg-slate-50">
+          <p class="text-xs font-bold uppercase tracking-widest text-emerald-700 mb-1">Open Home Buyer Check</p>
+          <h2 id="card-address" class="text-lg font-extrabold text-slate-900">42 Kensington Road, Norwood</h2>
+          <p class="text-xs text-slate-600 mt-1 mb-4">Love this home? Scan to see your borrowing power & property match in 30 seconds.</p>
+          <div id="qrcode" class="flex justify-center my-3 bg-white p-3 rounded-xl inline-block shadow-sm"></div>
+          <p class="text-[11px] text-slate-400 mt-2">Private estimate • Exact income is never shared with the agent</p>
+        </div>
+
+        <div class="space-y-4">
+          <h3 class="font-bold text-lg">Live Share Links</h3>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">1. Buyer QR Scan URL (Opens mobile quiz only)</label>
+            <div class="flex gap-2">
+              <input id="share-buyer-url" type="text" readonly class="w-full text-xs p-2.5 bg-slate-100 rounded-lg border" />
+              <button onclick="copyInput('share-buyer-url')" class="px-3 py-2 bg-slate-900 text-white text-xs rounded-lg font-medium">Copy</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">2. Agent Live Leaderboard Link (Privacy-safe, no login needed)</label>
+            <div class="flex gap-2">
+              <input id="share-agent-url" type="text" readonly class="w-full text-xs p-2.5 bg-slate-100 rounded-lg border" />
+              <button onclick="copyInput('share-agent-url')" class="px-3 py-2 bg-slate-900 text-white text-xs rounded-lg font-medium">Copy</button>
+            </div>
+          </div>
+          <button onclick="window.print()" class="text-xs text-slate-600 underline font-medium">Print Kitchen Bench QR Card</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: MOBILE BUYER QR QUIZ ==================== -->
+    <section id="view-scan" class="hidden max-w-md mx-auto">
+      <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+        <!-- Property Header Banner -->
+        <div class="bg-slate-900 text-white p-5">
+          <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold mb-1">
+            <span>30-SEC BUYER FIT CHECK</span>
+            <span id="quiz-step-label">Step 1 of 5</span>
+          </div>
+          <h2 id="quiz-prop-title" class="font-bold text-lg leading-snug">42 Kensington Road, Norwood</h2>
+          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-0.5">Guide: $850,000 – $910,000 • 3 Bed</p>
+          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+            <div id="quiz-progress" class="bg-emerald-400 h-full transition-all duration-300" style="width: 20%"></div>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <!-- STEP 1: HOUSEHOLD & PETS -->
+          <div id="q-step-1" class="quiz-step space-y-5">
+            <div>
+              <h3 class="font-bold text-base mb-2">Who would be living here?</h3>
+              <div class="grid grid-cols-3 gap-2" id="chips-household">
+                <button type="button" onclick="selectSingle('household', 'Solo', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">Solo</button>
+                <button type="button" onclick="selectSingle('household', 'Couple', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Couple</button>
+                <button type="button" onclick="selectSingle('household', 'Family', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Family</button>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-base mb-2">Any furry family members?</h3>
+              <div class="grid grid-cols-3 gap-2" id="chips-pets">
+                <button type="button" onclick="selectSingle('pets', 'No Pets', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">No Pets</button>
+                <button type="button" onclick="selectSingle('pets', 'Indoor Pet', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Indoor Pet</button>
+                <button type="button" onclick="selectSingle('pets', 'Dog (Yard)', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Dog (Yard)</button>
+              </div>
+            </div>
+            <button onclick="goQuizStep(2)" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl mt-2">Next →</button>
+          </div>
+
+          <!-- STEP 2: NON-NEGOTIABLES -->
+          <div id="q-step-2" class="quiz-step hidden space-y-5">
+            <div>
+              <h3 class="font-bold text-base mb-1">Your non-negotiables?</h3>
+              <p class="text-xs text-slate-500 mb-3">Tap all that matter to you (used to score this home).</p>
+              <div class="space-y-2.5">
+                <button type="button" onclick="toggleMulti('wfh', this)" class="w-full text-left p-3.5 rounded-xl border text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
+                  <span>💻 Dedicated Home Office / Study</span><span class="check-ind text-slate-300">✓</span>
+                </button>
+                <button type="button" onclick="toggleMulti('yard', this)" class="w-full text-left p-3.5 rounded-xl border text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
+                  <span>🌳 Secure / Pet-Friendly Yard</span><span class="check-ind text-slate-300">✓</span>
+                </button>
+                <button type="button" onclick="toggleMulti('renovated', this)" class="w-full text-left p-3.5 rounded-xl border text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
+                  <span>✨ Move-In Ready (Nothing to Spend)</span><span class="check-ind text-slate-300">✓</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="goQuizStep(1)" class="w-1/3 bg-slate-100 font-semibold py-3.5 rounded-xl text-sm">← Back</button>
+              <button onclick="goQuizStep(3)" class="w-2/3 bg-emerald-600 text-white font-bold py-3.5 rounded-xl">Next →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: BUYING STAGE & TIMELINE -->
+          <div id="q-step-3" class="quiz-step hidden space-y-5">
+            <div>
+              <h3 class="font-bold text-base mb-2">Where are you at in your buying journey?</h3>
+              <div class="grid grid-cols-2 gap-2" id="chips-stage">
+                <button type="button" onclick="selectSingle('stage', 'Pre-Approved', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">Pre-Approved</button>
+                <button type="button" onclick="selectSingle('stage', 'Cash Buyer', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Cash Buyer</button>
+                <button type="button" onclick="selectSingle('stage', 'Need to Sell', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Need to Sell First</button>
+                <button type="button" onclick="selectSingle('stage', 'Just Starting', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Just Starting</button>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-base mb-2">Ideal timeframe to buy?</h3>
+              <div class="grid grid-cols-3 gap-2" id="chips-timeline">
+                <button type="button" onclick="selectSingle('timeline', 'ASAP', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">ASAP</button>
+                <button type="button" onclick="selectSingle('timeline', '1-3 Months', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">1–3 Months</button>
+                <button type="button" onclick="selectSingle('timeline', '3+ Months', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">3+ Months</button>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="goQuizStep(2)" class="w-1/3 bg-slate-100 font-semibold py-3.5 rounded-xl text-sm">← Back</button>
+              <button onclick="goQuizStep(4)" class="w-2/3 bg-emerald-600 text-white font-bold py-3.5 rounded-xl">Next →</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: 15-SECOND AFFORDABILITY SLIDERS -->
+          <div id="q-step-4" class="quiz-step hidden space-y-5">
+            <div>
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-xs font-bold text-slate-600 uppercase">Combined Gross Income</label>
+                <span id="val-income" class="text-base font-extrabold text-slate-900">$180,000 / yr</span>
+              </div>
+              <input id="slider-income" type="range" min="60000" max="500000" step="10000" value="180000" oninput="updateSliders()" class="w-full" />
+            </div>
+
+            <div>
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-xs font-bold text-slate-600 uppercase">Deposit / Available Equity</label>
+                <span id="val-deposit" class="text-base font-extrabold text-slate-900">$150,000</span>
+              </div>
+              <input id="slider-deposit" type="range" min="20000" max="800000" step="10000" value="150000" oninput="updateSliders()" class="w-full" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Dependants</label>
+                <select id="input-dependants" class="w-full p-2.5 text-sm border rounded-xl bg-white">
+                  <option value="0">0 Dependants</option>
+                  <option value="1">1 Dependant</option>
+                  <option value="2">2 Dependants</option>
+                  <option value="3">3+ Dependants</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Card / Loan Limits</label>
+                <select id="input-debts" class="w-full p-2.5 text-sm border rounded-xl bg-white">
+                  <option value="0">None ($0)</option>
+                  <option value="5000" selected>~$5k Card Limit</option>
+                  <option value="15000">~$15k Limit / Car</option>
+                  <option value="35000">$35k+ Commitments</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="goQuizStep(3)" class="w-1/3 bg-slate-100 font-semibold py-3.5 rounded-xl text-sm">← Back</button>
+              <button onclick="calculateAndShowResults()" class="w-2/3 bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow">See My Results →</button>
+            </div>
+          </div>
+
+          <!-- STEP 5: INSTANT RESULTS + LEAD CAPTURE -->
+          <div id="q-step-5" class="quiz-step hidden space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-slate-900 text-white p-4 rounded-2xl">
+                <p class="text-[11px] uppercase tracking-wider text-slate-400">Est. Buying Power</p>
+                <p id="res-total-power" class="text-xl font-black text-emerald-400 mt-0.5">$994,000</p>
+                <p id="res-max-loan" class="text-[11px] text-slate-300 mt-1">Loan: $844k + Deposit</p>
+              </div>
+              <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
+                <p class="text-[11px] uppercase tracking-wider text-emerald-800">Property Match</p>
+                <p id="res-fit-score" class="text-2xl font-black text-emerald-700 mt-0.5">100%</p>
+                <p id="res-budget-label" class="text-[11px] font-semibold text-emerald-800 mt-1">Budget Ready</p>
+              </div>
+            </div>
+
+            <p class="text-[11px] leading-relaxed text-slate-500 bg-slate-50 p-2.5 rounded-lg border">
+              <strong>Indicative Estimate Only:</strong> Calculated using a 3.0% APRA serviceability buffer and standard living expense benchmarks. Not a formal credit assessment or loan approval.
+            </p>
+
+            <div class="border-t pt-3 space-y-3">
+              <p class="text-xs font-bold text-slate-800">Save your property match & check-in with the agent:</p>
+              <input id="buyer-name" type="text" placeholder="Your Full Name *" class="w-full p-3 text-sm border rounded-xl" />
+              <input id="buyer-mobile" type="tel" placeholder="Mobile Number *" class="w-full p-3 text-sm border rounded-xl" />
+
+              <label class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer">
+                <input id="buyer-opt-in" type="checkbox" class="mt-0.5 rounded" />
+                <span class="text-xs text-slate-800">
+                  <strong>Optional:</strong> Have an accredited mortgage broker double-check my exact borrowing capacity across 30+ lenders before offers close.
+                </span>
+              </label>
+
+              <p class="text-[10px] text-slate-400">
+                Privacy Guarantee: Your income, deposit, and borrowing ceiling are never shown to the selling agent. Credit Representative [Your Name / CRN] under [ACL Holder].
+              </p>
+
+              <button onclick="submitBuyerScan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl">
+                Complete Check-In
+              </button>
+            </div>
+          </div>
+
+          <!-- THANK YOU SCREEN -->
+          <div id="q-step-done" class="quiz-step hidden text-center py-6 space-y-3">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
+            <h3 class="text-lg font-extrabold">You're All Set!</h3>
+            <p class="text-sm text-slate-600">Enjoy inspecting the home. Your financial figures remain strictly private.</p>
+            <button onclick="resetQuiz()" class="text-xs text-emerald-700 font-semibold underline pt-2">Run another test scan</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: PRIVACY-SAFE AGENT DASHBOARD ==================== -->
+    <section id="view-agent" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-wrap justify-between items-start gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Live Agent Leaderboard</span>
+            <h1 id="agent-prop-title" class="text-xl font-extrabold mt-0.5">42 Kensington Road, Norwood</h1>
+            <p class="text-xs text-slate-500 mt-1">Sorted by buyer readiness & property fit • Raw buyer financial figures are hidden for buyer privacy.</p>
+          </div>
+          <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">
+            Copy Post-Open SMS Summary
+          </button>
+        </div>
+      </div>
+
+      <div id="agent-leaderboard-list" class="space-y-3">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: BROKER OPT-IN LEAD QUEUE ==================== -->
+    <section id="view-leads" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Broker Pipeline (Opt-Ins Only)</span>
+        <h1 class="text-xl font-extrabold mt-0.5">Finance-Ready Buyer Leads</h1>
+        <p class="text-xs text-slate-500 mt-1">Only buyers who explicitly ticked the broker callback box appear here with full borrowing diagnostics.</p>
+      </div>
+
+      <div id="broker-leads-list" class="space-y-4">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ==================== 1. CONFIGURATION ====================
+    const SUPABASE_URL = 'https://wgpezdkeehghnsnkicfo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_qdGTlIZgGmtKDYmEFIjLiA_JRPi-5qq';
+
+    const hasSupabase = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
+    const sb = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    // ==================== 2. STATE & SAMPLE DATA ====================
+    const SAMPLE_PROPERTIES = [
+      {
+        id: '11111111-1111-1111-1111-111111111111',
+        address: '42 Kensington Road',
+        suburb: 'Norwood SA 5067',
+        price_min: 850000,
+        price_max: 910000,
+        bedrooms: 3,
+        has_wfh: true,
+        has_yard: true,
+        move_in_ready: false,
+        agent_name: 'Sarah Jenkins'
+      },
+      {
+        id: '22222222-2222-2222-2222-222222222222',
+        address: '18 Jetty Street',
+        suburb: 'Glenelg SA 5045',
+        price_min: 1150000,
+        price_max: 1250000,
+        bedrooms: 4,
+        has_wfh: true,
+        has_yard: false,
+        move_in_ready: true,
+        agent_name: 'Marcus Vance'
+      }
+    ];
+
+    let activeProperty = SAMPLE_PROPERTIES[0];
+    let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
+
+    if (localScans.length === 0) {
+      localScans = [
+        {
+          id: 's1', property_id: activeProperty.id, buyer_name: 'Liam & Chloe Turner', buyer_mobile: '0412 889 321',
+          household: 'Family', pets: 'Dog (Yard)', must_haves: ['wfh', 'yard'], buying_stage: 'Pre-Approved',
+          timeline: 'ASAP', income: 215000, deposit: 190000, dependants: 1, existing_debts: 5000,
+          est_max_loan: 965000, fit_percentage: 100, budget_badge: 'Budget Ready', leaderboard_score: 100, broker_opt_in: true
+        },
+        {
+          id: 's2', property_id: activeProperty.id, buyer_name: 'Daniel Nguyen', buyer_mobile: '0433 104 772',
+          household: 'Couple', pets: 'No Pets', must_haves: ['wfh', 'renovated'], buying_stage: 'Pre-Approved',
+          timeline: '1-3 Months', income: 175000, deposit: 140000, dependants: 0, existing_debts: 0,
+          est_max_loan: 835000, fit_percentage: 50, budget_badge: 'Budget Ready', leaderboard_score: 75, broker_opt_in: false
+        }
+      ];
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+    }
+
+    let quizState = {
+      household: 'Solo',
+      pets: 'No Pets',
+      must_haves: [],
+      stage: 'Pre-Approved',
+      timeline: 'ASAP',
+      income: 180000,
+      deposit: 150000,
+      dependants: 0,
+      existing_debts: 5000,
+      est_max_loan: 0,
+      fit_percentage: 0,
+      budget_badge: 'Within Reach',
+      leaderboard_score: 0
+    };
+
+    // ==================== 3. INITIALISATION & URL ROUTING ====================
+    window.addEventListener('DOMContentLoaded', async () => {
+      const statusEl = document.getElementById('db-status');
+      statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Local Demo Mode';
+      statusEl.className = hasSupabase
+        ? 'text-xs px-2 py-0.5 rounded-full bg-emerald-900 text-emerald-300'
+        : 'text-xs px-2 py-0.5 rounded-full bg-amber-900 text-amber-200';
+
+      const params = new URLSearchParams(window.location.search);
+      const viewParam = params.get('view');
+      const propParam = params.get('prop');
+
+      if (propParam) {
+        await loadPropertyById(propParam);
+      } else {
+        syncUIWithProperty();
+      }
+
+      if (viewParam === 'scan') {
+        document.getElementById('admin-nav').classList.add('hidden');
+        switchTab('scan');
+      } else if (viewParam === 'agent') {
+        document.getElementById('admin-nav').classList.add('hidden');
+        switchTab('agent');
+      } else {
+        switchTab('admin');
+      }
+    });
+
+    function switchTab(tab) {
+      ['admin', 'scan', 'agent', 'leads'].forEach(t => {
+        document.getElementById('view-' + t).classList.add('hidden');
+        const btn = document.getElementById('tab-' + t);
+        if (btn) btn.className = 'nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700';
+      });
+      document.getElementById('view-' + tab).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tab);
+      if (activeBtn) activeBtn.className = 'nav-btn px-3 py-1.5 rounded-lg font-medium bg-emerald-500 text-slate-950';
+
+      if (tab === 'agent') renderAgentDashboard();
+      if (tab === 'leads') renderBrokerLeads();
+    }
+
+    // ==================== 4. PROPERTY PARSING, SAVING & QR ====================
+    function loadSample(idx) {
+      activeProperty = { ...SAMPLE_PROPERTIES[idx] };
+      document.getElementById('prop-address').value = activeProperty.address;
+      document.getElementById('prop-suburb').value = activeProperty.suburb;
+      document.getElementById('prop-min').value = activeProperty.price_min;
+      document.getElementById('prop-max').value = activeProperty.price_max;
+      document.getElementById('prop-beds').value = activeProperty.bedrooms;
+      document.getElementById('prop-agent').value = activeProperty.agent_name;
+      document.getElementById('tag-wfh').checked = activeProperty.has_wfh;
+      document.getElementById('tag-yard').checked = activeProperty.has_yard;
+      document.getElementById('tag-renovated').checked = activeProperty.move_in_ready;
+      syncUIWithProperty();
+    }
+
+    function parseListingText() {
+      const txt = document.getElementById('raw-listing-text').value;
+      if (!txt.trim()) return;
+
+      const prices = [...txt.matchAll(/\$?\s?(\d{3})[,\s]?(\d{3})/g)].map(m => parseInt(m[1] + m[2], 10));
+      if (prices.length >= 1) {
+        document.getElementById('prop-min').value = Math.min(...prices);
+        document.getElementById('prop-max').value = Math.max(...prices);
+      }
+      const bedMatch = txt.match(/(\d)\s*(?:bed|bedroom)/i);
+      if (bedMatch) document.getElementById('prop-beds').value = bedMatch[1];
+
+      document.getElementById('tag-wfh').checked = /study|office|wfh|work from home/i.test(txt);
+      document.getElementById('tag-yard').checked = /yard|garden|pet|fenced|lawn/i.test(txt);
+      document.getElementById('tag-renovated').checked = /renovated|updated|modern|nothing to spend|move-in/i.test(txt);
+    }
+
+    async function saveProperty() {
+      const payload = {
+        address: document.getElementById('prop-address').value.trim() || '42 Kensington Road',
+        suburb: document.getElementById('prop-suburb').value.trim(),
+        price_min: Number(document.getElementById('prop-min').value) || 850000,
+        price_max: Number(document.getElementById('prop-max').value) || 910000,
+        bedrooms: Number(document.getElementById('prop-beds').value) || 3,
+        agent_name: document.getElementById('prop-agent').value.trim(),
+        has_wfh: document.getElementById('tag-wfh').checked,
+        has_yard: document.getElementById('tag-yard').checked,
+        move_in_ready: document.getElementById('tag-renovated').checked
+      };
+
+      if (hasSupabase) {
+        const { data, error } = await sb.from('properties').insert([payload]).select().single();
+        if (!error && data) {
+          activeProperty = data;
+        } else {
+          alert('Supabase insert error: ' + (error?.message || 'Check API keys'));
+        }
+      } else {
+        activeProperty = { id: 'local-' + Date.now(), ...payload };
+      }
+
+      syncUIWithProperty();
+      alert('Listing saved & QR code updated!');
+    }
+
+    async function loadPropertyById(id) {
+      if (hasSupabase) {
+        const { data } = await sb.from('properties').select('*').eq('id', id).single();
+        if (data) activeProperty = data;
+      } else {
+        const found = SAMPLE_PROPERTIES.find(p => p.id === id);
+        if (found) activeProperty = found;
+      }
+      syncUIWithProperty();
+    }
+
+    function syncUIWithProperty() {
+      const title = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
+      document.getElementById('card-address').textContent = title;
+      document.getElementById('quiz-prop-title').textContent = title;
+      document.getElementById('agent-prop-title').textContent = title;
+      document.getElementById('quiz-prop-guide').textContent =
+        `Guide: $${Number(activeProperty.price_min).toLocaleString()} – $${Number(activeProperty.price_max).toLocaleString()} • ${activeProperty.bedrooms} Bed`;
+
+      const baseUrl = window.location.origin + window.location.pathname;
+      const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}`;
+      const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}`;
+
+      document.getElementById('share-buyer-url').value = buyerUrl;
+      document.getElementById('share-agent-url').value = agentUrl;
+
+      const qrEl = document.getElementById('qrcode');
+      qrEl.innerHTML = '';
+      new QRCode(qrEl, { text: buyerUrl, width: 168, height: 168 });
+    }
+
+    // ==================== 5. BUYER QUIZ & AUSTRALIAN BORROWING MATHS ====================
+    function selectSingle(key, val, btn) {
+      quizState[key] = val;
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(b => {
+        b.className = 'chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50';
+      });
+      btn.className = 'chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900';
+    }
+
+    function toggleMulti(tag, btn) {
+      const idx = quizState.must_haves.indexOf(tag);
+      const ind = btn.querySelector('.check-ind');
+      if (idx === -1) {
+        quizState.must_haves.push(tag);
+        btn.classList.add('border-slate-900', 'bg-slate-50');
+        ind.className = 'check-ind text-emerald-600 font-bold';
+      } else {
+        quizState.must_haves.splice(idx, 1);
+        btn.classList.remove('border-slate-900', 'bg-slate-50');
+        ind.className = 'check-ind text-slate-300';
+      }
+    }
+
+    function updateSliders() {
+      quizState.income = Number(document.getElementById('slider-income').value);
+      quizState.deposit = Number(document.getElementById('slider-deposit').value);
+      document.getElementById('val-income').textContent = `$${quizState.income.toLocaleString()} / yr`;
+      document.getElementById('val-deposit').textContent = `$${quizState.deposit.toLocaleString()}`;
+    }
+
+    function goQuizStep(step) {
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+      document.getElementById('q-step-' + step).classList.remove('hidden');
+      document.getElementById('quiz-step-label').textContent = `Step ${step} of 5`;
+      document.getElementById('quiz-progress').style.width = `${step * 20}%`;
+    }
+
+    function calculateAndShowResults() {
+      quizState.dependants = Number(document.getElementById('input-dependants').value);
+      quizState.existing_debts = Number(document.getElementById('input-debts').value);
+
+      const netMonthly = (quizState.income * 0.73) / 12;
+      const livingExpenses = 2400 + (quizState.dependants * 550);
+      const debtCommitments = quizState.existing_debts * 0.038;
+      const surplus = Math.max(0, (netMonthly - livingExpenses - debtCommitments) * 0.85);
+
+      const servicingMaxLoan = Math.round((surplus / 0.0084085) / 1000) * 1000;
+      const dtiMaxLoan = quizState.income * 6;
+      const estMaxLoan = Math.max(0, Math.min(servicingMaxLoan, dtiMaxLoan));
+      const totalBuyingPower = estMaxLoan + quizState.deposit;
+
+      const targetWithCosts = activeProperty.price_max * 1.05;
+      let budgetBadge = 'Stretch';
+      let finPts = 5;
+      if (totalBuyingPower >= targetWithCosts) {
+        budgetBadge = 'Budget Ready';
+        finPts = 40;
+      } else if (totalBuyingPower >= activeProperty.price_min) {
+        budgetBadge = 'Within Reach';
+        finPts = 25;
+      } else if (quizState.stage === 'Need to Sell') {
+        budgetBadge = 'Subject to Sale';
+        finPts = 15;
+      }
+
+      let fitPct = 100;
+      if (quizState.must_haves.length > 0) {
+        let matched = 0;
+        quizState.must_haves.forEach(tag => {
+          if (tag === 'wfh' && activeProperty.has_wfh) matched++;
+          if (tag === 'yard' && activeProperty.has_yard) matched++;
+          if (tag === 'renovated' && activeProperty.move_in_ready) matched++;
+        });
+        fitPct = Math.round((matched / quizState.must_haves.length) * 100);
+      }
+
+      let readyPts = 10;
+      if ((quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') && quizState.timeline === 'ASAP') readyPts = 30;
+      else if (quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') readyPts = 22;
+      else if (quizState.timeline === 'ASAP') readyPts = 18;
+
+      const fitPts = Math.round((fitPct / 100) * 30);
+
+      quizState.est_max_loan = estMaxLoan;
+      quizState.fit_percentage = fitPct;
+      quizState.budget_badge = budgetBadge;
+      quizState.leaderboard_score = finPts + readyPts + fitPts;
+
+      document.getElementById('res-total-power').textContent = `$${totalBuyingPower.toLocaleString()}`;
+      document.getElementById('res-max-loan').textContent = `Loan: $${Math.round(estMaxLoan / 1000)}k + $${Math.round(quizState.deposit / 1000)}k Deposit`;
+      document.getElementById('res-fit-score').textContent = `${fitPct}%`;
+      document.getElementById('res-budget-label').textContent = budgetBadge;
+
+      goQuizStep(5);
+    }
+
+    async function submitBuyerScan() {
+      const name = document.getElementById('buyer-name').value.trim();
+      const mobile = document.getElementById('buyer-mobile').value.trim();
+      if (!name || !mobile) {
+        alert('Please enter your name and mobile number to complete check-in.');
+        return;
+      }
+
+      const record = {
+        property_id: activeProperty.id,
+        buyer_name: name,
+        buyer_mobile: mobile,
+        household: quizState.household,
+        pets: quizState.pets,
+        must_haves: quizState.must_haves,
+        buying_stage: quizState.stage,
+        timeline: quizState.timeline,
+        income: quizState.income,
+        deposit: quizState.deposit,
+        dependants: quizState.dependants,
+        existing_debts: quizState.existing_debts,
+        est_max_loan: quizState.est_max_loan,
+        fit_percentage: quizState.fit_percentage,
+        budget_badge: quizState.budget_badge,
+        leaderboard_score: quizState.leaderboard_score,
+        broker_opt_in: document.getElementById('buyer-opt-in').checked
+      };
+
+      if (hasSupabase) {
+        const { error } = await sb.from('buyer_scans').insert([record]);
+        if (error) alert('Error saving scan: ' + error.message);
+      } else {
+        localScans.unshift({ id: 's-' + Date.now(), ...record });
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      }
+
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+      document.getElementById('q-step-done').classList.remove('hidden');
+    }
+
+    function resetQuiz() {
+      document.getElementById('buyer-name').value = '';
+      document.getElementById('buyer-mobile').value = '';
+      document.getElementById('buyer-opt-in').checked = false;
+      goQuizStep(1);
+    }
+
+    // ==================== 6. PRIVACY-SAFE AGENT LEADERBOARD ====================
+    async function renderAgentDashboard() {
+      let rows = [];
+      if (hasSupabase) {
+        const { data } = await sb
+          .from('agent_leaderboard_view')
+          .select('*')
+          .eq('property_id', activeProperty.id)
+          .order('leaderboard_score', { ascending: false });
+        rows = data || [];
+      } else {
+        rows = localScans
+          .filter(s => s.property_id === activeProperty.id)
+          .sort((a, b) => b.leaderboard_score - a.leaderboard_score);
+      }
+
+      const container = document.getElementById('agent-leaderboard-list');
+      if (rows.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-sm text-slate-500">No buyer scans recorded for this listing yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = rows.map((r, idx) => {
+        const badgeColor = r.budget_badge === 'Budget Ready'
+          ? 'bg-emerald-100 text-emerald-800'
+          : r.budget_badge === 'Within Reach' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700';
+
+        const missing = [];
+        if ((r.must_haves || []).includes('wfh') && !activeProperty.has_wfh) missing.push('WFH Study');
+        if ((r.must_haves || []).includes('yard') && !activeProperty.has_yard) missing.push('Pet Yard');
+        if ((r.must_haves || []).includes('renovated') && !activeProperty.move_in_ready) missing.push('Renovated');
+
+        const crossSellHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
+          ? `<div class="mt-2.5 text-xs bg-indigo-50 text-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-100 font-medium">
+               Cross-Sell Alert: Budget-ready buyer missing ${escapeHtml(missing.join(' & '))} — pitch another listing!
+             </div>`
+          : '';
+
+        return `
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+            <div class="flex flex-wrap justify-between items-start gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-black bg-slate-900 text-white px-2 py-0.5 rounded">#${idx + 1}</span>
+                  <h3 class="font-bold text-base">${escapeHtml(r.buyer_name)}</h3>
+                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${badgeColor}">${escapeHtml(r.budget_badge)}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">
+                  ${escapeHtml(r.buyer_mobile)} • ${escapeHtml(r.buying_stage)} (${escapeHtml(r.timeline)}) • ${escapeHtml(r.household)} / ${escapeHtml(r.pets)}
+                </p>
+              </div>
+              <div class="text-right">
+                <span class="text-lg font-black text-slate-900">${r.fit_percentage}%</span>
+                <p class="text-[11px] text-slate-400">House Fit</p>
+              </div>
+            </div>
+            ${crossSellHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function copyAgentWrapUp() {
+      const text = `Open Home Buyer Wrap-Up — ${activeProperty.address}\nCheck the live ranked call list (sorted by readiness & property fit, financial privacy protected):\n${document.getElementById('share-agent-url').value}`;
+      navigator.clipboard.writeText(text);
+      alert('Post-open SMS summary copied to clipboard!');
+    }
+
+    // ==================== 7. BROKER OPT-IN LEAD QUEUE ====================
+    async function renderBrokerLeads() {
+      let rows = [];
+      if (hasSupabase) {
+        const { data } = await sb
+          .from('buyer_scans')
+          .select('*')
+          .eq('broker_opt_in', true)
+          .order('created_at', { ascending: false });
+        rows = data || [];
+      } else {
+        rows = localScans.filter(s => s.broker_opt_in);
+      }
+
+      const container = document.getElementById('broker-leads-list');
+      if (rows.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-sm text-slate-500">No buyers have opted in for a broker callback yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = rows.map(r => {
+        const totalPower = Number(r.est_max_loan) + Number(r.deposit);
+        const gap = totalPower - (activeProperty.price_max * 1.05);
+        const gapLabel = gap >= 0
+          ? `+$${Math.round(gap / 1000)}k Surplus above guide + costs`
+          : `-$${Math.round(Math.abs(gap) / 1000)}k Gap vs guide + costs`;
+
+        return `
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+            <div class="flex flex-wrap justify-between items-start gap-2">
+              <div>
+                <h3 class="font-bold text-base">${escapeHtml(r.buyer_name)} — <span class="text-emerald-700">${escapeHtml(r.buyer_mobile)}</span></h3>
+                <p class="text-xs text-slate-500">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
+              </div>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full ${gap >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${gapLabel}
+              </span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl text-xs">
+              <div><span class="text-slate-400 block">Gross Income</span><strong>$${Number(r.income).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 block">Deposit / Equity</span><strong>$${Number(r.deposit).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 block">Est. Max Loan</span><strong>$${Number(r.est_max_loan).toLocaleString()}</strong></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== 8. HELPERS ====================
+    function copyInput(id) {
+      const el = document.getElementById(id);
+      el.select();
+      navigator.clipboard.writeText(el.value);
+      alert('Link copied!');
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+  </script>
+</body>
+</html>
