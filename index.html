@@ -267,11 +267,12 @@
 
           <!-- STEP 5: INSTANT RESULTS + LEAD CAPTURE -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
+            <!-- Primary Borrowing Capacity + Property Match -->
             <div class="grid grid-cols-2 gap-3">
               <div class="bg-slate-900 text-white p-4 rounded-2xl">
-                <p class="text-[11px] uppercase tracking-wider text-slate-400">Est. Buying Power</p>
-                <p id="res-total-power" class="text-xl font-black text-emerald-400 mt-0.5">$994,000</p>
-                <p id="res-max-loan" class="text-[11px] text-slate-300 mt-1">Loan: $844k + Deposit</p>
+                <p class="text-[11px] uppercase tracking-wider text-slate-400">Est. Max Borrowing</p>
+                <p id="res-max-loan" class="text-xl font-black text-emerald-400 mt-0.5">$844,000</p>
+                <p id="res-total-power" class="text-[11px] text-slate-300 mt-1">Total Budget: $994k</p>
               </div>
               <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
                 <p class="text-[11px] uppercase tracking-wider text-emerald-800">Property Match</p>
@@ -289,10 +290,10 @@
               <input id="buyer-name" type="text" placeholder="Your Full Name *" class="w-full p-3 text-sm border rounded-xl" />
               <input id="buyer-mobile" type="tel" placeholder="Mobile Number *" class="w-full p-3 text-sm border rounded-xl" />
 
-              <label class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer">
-                <input id="buyer-opt-in" type="checkbox" class="mt-0.5 rounded" />
-                <span class="text-xs text-slate-800">
-                  <strong>Optional:</strong> Have an accredited mortgage broker double-check my exact borrowing capacity across 30+ lenders before offers close.
+              <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50 border-2 border-amber-300 cursor-pointer">
+                <input id="buyer-opt-in" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
+                <span class="text-xs text-slate-900">
+                  <strong>Send to Mortgage Broker (Optional):</strong> Tick here to have an accredited broker double-check your exact borrowing power across 30+ lenders before offers close.
                 </span>
               </label>
 
@@ -300,7 +301,7 @@
                 Privacy Guarantee: Your income, deposit, and borrowing ceiling are never shown to the selling agent. Credit Representative [Your Name / CRN] under [ACL Holder].
               </p>
 
-              <button onclick="submitBuyerScan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl">
+              <button id="btn-submit-scan" onclick="submitBuyerScan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl">
                 Complete Check-In
               </button>
             </div>
@@ -326,9 +327,14 @@
             <h1 id="agent-prop-title" class="text-xl font-extrabold mt-0.5">42 Kensington Road, Norwood</h1>
             <p class="text-xs text-slate-500 mt-1">Sorted by buyer readiness & property fit • Raw buyer financial figures are hidden for buyer privacy.</p>
           </div>
-          <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">
-            Copy Post-Open SMS Summary
-          </button>
+          <div class="flex gap-2">
+            <button onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold px-3.5 py-2.5 rounded-xl">
+              Refresh
+            </button>
+            <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">
+              Copy Post-Open SMS Summary
+            </button>
+          </div>
         </div>
       </div>
 
@@ -339,10 +345,17 @@
 
     <!-- ==================== VIEW 4: BROKER OPT-IN LEAD QUEUE ==================== -->
     <section id="view-leads" class="hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Broker Pipeline (Opt-Ins Only)</span>
-        <h1 class="text-xl font-extrabold mt-0.5">Finance-Ready Buyer Leads</h1>
-        <p class="text-xs text-slate-500 mt-1">Only buyers who explicitly ticked the broker callback box appear here with full borrowing diagnostics.</p>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-wrap justify-between items-start gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Broker Pipeline</span>
+          <h1 class="text-xl font-extrabold mt-0.5">Buyer Finance Leads</h1>
+          <p class="text-xs text-slate-500 mt-1">Displays buyers who ticked the broker callback box (or toggle to inspect all open-home scans).</p>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <button id="btn-filter-optin" onclick="setLeadFilter(true)" class="text-xs font-semibold px-3 py-2 rounded-lg bg-slate-900 text-white">Opt-Ins Only</button>
+          <button id="btn-filter-all" onclick="setLeadFilter(false)" class="text-xs font-semibold px-3 py-2 rounded-lg bg-slate-100 text-slate-700">All Scans</button>
+          <button onclick="renderBrokerLeads()" class="text-xs font-semibold px-3 py-2 rounded-lg bg-emerald-600 text-white">Refresh</button>
+        </div>
       </div>
 
       <div id="broker-leads-list" class="space-y-4">
@@ -390,24 +403,7 @@
 
     let activeProperty = SAMPLE_PROPERTIES[0];
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
-
-    if (localScans.length === 0) {
-      localScans = [
-        {
-          id: 's1', property_id: activeProperty.id, buyer_name: 'Liam & Chloe Turner', buyer_mobile: '0412 889 321',
-          household: 'Family', pets: 'Dog (Yard)', must_haves: ['wfh', 'yard'], buying_stage: 'Pre-Approved',
-          timeline: 'ASAP', income: 215000, deposit: 190000, dependants: 1, existing_debts: 5000,
-          est_max_loan: 965000, fit_percentage: 100, budget_badge: 'Budget Ready', leaderboard_score: 100, broker_opt_in: true
-        },
-        {
-          id: 's2', property_id: activeProperty.id, buyer_name: 'Daniel Nguyen', buyer_mobile: '0433 104 772',
-          household: 'Couple', pets: 'No Pets', must_haves: ['wfh', 'renovated'], buying_stage: 'Pre-Approved',
-          timeline: '1-3 Months', income: 175000, deposit: 140000, dependants: 0, existing_debts: 0,
-          est_max_loan: 835000, fit_percentage: 50, budget_badge: 'Budget Ready', leaderboard_score: 75, broker_opt_in: false
-        }
-      ];
-      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
-    }
+    let brokerOptInOnly = true;
 
     let quizState = {
       household: 'Solo',
@@ -518,7 +514,8 @@
         if (!error && data) {
           activeProperty = data;
         } else {
-          alert('Supabase insert error: ' + (error?.message || 'Check API keys'));
+          alert('Supabase insert error: ' + (error?.message || 'Run the SQL GRANT script first'));
+          return;
         }
       } else {
         activeProperty = { id: 'local-' + Date.now(), ...payload };
@@ -597,6 +594,8 @@
     }
 
     function calculateAndShowResults() {
+      quizState.income = Number(document.getElementById('slider-income').value);
+      quizState.deposit = Number(document.getElementById('slider-deposit').value);
       quizState.dependants = Number(document.getElementById('input-dependants').value);
       quizState.existing_debts = Number(document.getElementById('input-debts').value);
 
@@ -647,8 +646,8 @@
       quizState.budget_badge = budgetBadge;
       quizState.leaderboard_score = finPts + readyPts + fitPts;
 
-      document.getElementById('res-total-power').textContent = `$${totalBuyingPower.toLocaleString()}`;
-      document.getElementById('res-max-loan').textContent = `Loan: $${Math.round(estMaxLoan / 1000)}k + $${Math.round(quizState.deposit / 1000)}k Deposit`;
+      document.getElementById('res-max-loan').textContent = `$${estMaxLoan.toLocaleString()}`;
+      document.getElementById('res-total-power').textContent = `Total Budget: $${totalBuyingPower.toLocaleString()}`;
       document.getElementById('res-fit-score').textContent = `${fitPct}%`;
       document.getElementById('res-budget-label').textContent = budgetBadge;
 
@@ -662,6 +661,10 @@
         alert('Please enter your name and mobile number to complete check-in.');
         return;
       }
+
+      const btn = document.getElementById('btn-submit-scan');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
 
       const record = {
         property_id: activeProperty.id,
@@ -685,12 +688,19 @@
 
       if (hasSupabase) {
         const { error } = await sb.from('buyer_scans').insert([record]);
-        if (error) alert('Error saving scan: ' + error.message);
+        if (error) {
+          btn.disabled = false;
+          btn.textContent = 'Complete Check-In';
+          alert('Could not save scan to Supabase: ' + error.message);
+          return;
+        }
       } else {
         localScans.unshift({ id: 's-' + Date.now(), ...record });
         localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
       }
 
+      btn.disabled = false;
+      btn.textContent = 'Complete Check-In';
       document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
       document.getElementById('q-step-done').classList.remove('hidden');
     }
@@ -706,11 +716,16 @@
     async function renderAgentDashboard() {
       let rows = [];
       if (hasSupabase) {
-        const { data } = await sb
+        const { data, error } = await sb
           .from('agent_leaderboard_view')
           .select('*')
           .eq('property_id', activeProperty.id)
           .order('leaderboard_score', { ascending: false });
+        if (error) {
+          document.getElementById('agent-leaderboard-list').innerHTML =
+            `<div class="bg-red-50 text-red-700 p-4 rounded-xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+          return;
+        }
         rows = data || [];
       } else {
         rows = localScans
@@ -771,22 +786,36 @@
     }
 
     // ==================== 7. BROKER OPT-IN LEAD QUEUE ====================
+    function setLeadFilter(optInOnly) {
+      brokerOptInOnly = optInOnly;
+      document.getElementById('btn-filter-optin').className = optInOnly
+        ? 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-900 text-white'
+        : 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-100 text-slate-700';
+      document.getElementById('btn-filter-all').className = !optInOnly
+        ? 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-900 text-white'
+        : 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-100 text-slate-700';
+      renderBrokerLeads();
+    }
+
     async function renderBrokerLeads() {
       let rows = [];
       if (hasSupabase) {
-        const { data } = await sb
-          .from('buyer_scans')
-          .select('*')
-          .eq('broker_opt_in', true)
-          .order('created_at', { ascending: false });
+        let query = sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
+        if (brokerOptInOnly) query = query.eq('broker_opt_in', true);
+        const { data, error } = await query;
+        if (error) {
+          document.getElementById('broker-leads-list').innerHTML =
+            `<div class="bg-red-50 text-red-700 p-4 rounded-xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+          return;
+        }
         rows = data || [];
       } else {
-        rows = localScans.filter(s => s.broker_opt_in);
+        rows = brokerOptInOnly ? localScans.filter(s => s.broker_opt_in) : localScans;
       }
 
       const container = document.getElementById('broker-leads-list');
       if (rows.length === 0) {
-        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-sm text-slate-500">No buyers have opted in for a broker callback yet.</div>`;
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-sm text-slate-500">No leads found for this filter. Make sure the "Send to Mortgage Broker" box is ticked on the buyer quiz, or click "All Scans".</div>`;
         return;
       }
 
@@ -801,8 +830,13 @@
           <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
             <div class="flex flex-wrap justify-between items-start gap-2">
               <div>
-                <h3 class="font-bold text-base">${escapeHtml(r.buyer_name)} — <span class="text-emerald-700">${escapeHtml(r.buyer_mobile)}</span></h3>
-                <p class="text-xs text-slate-500">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-base">${escapeHtml(r.buyer_name)} — <span class="text-emerald-700">${escapeHtml(r.buyer_mobile)}</span></h3>
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">
+                    ${r.broker_opt_in ? 'Opted In' : 'Agent Only'}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
               </div>
               <span class="text-xs font-bold px-2.5 py-1 rounded-full ${gap >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                 ${gapLabel}
