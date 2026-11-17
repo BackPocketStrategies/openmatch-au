@@ -15,7 +15,9 @@
     .font-fun { font-family: 'Playpen Sans', cursive; }
     .font-clean-display { font-family: 'Outfit', sans-serif; }
     input[type="range"] { accent-color: #006875; }
-    #qrcode img, #qrcode canvas { width: 100% !important; height: auto !important; display: block; }
+    /* Guarantee crisp visible QR canvas across all browsers and PDF print */
+    #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
+    #qrcode img { display: none !important; }
     @media print {
       @page { size: auto; margin: 12mm; }
       body { background: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -26,7 +28,7 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 430px;
+        width: 420px;
         box-shadow: none !important;
         border: 2px solid #006875 !important;
       }
@@ -162,22 +164,22 @@
           </button>
         </div>
 
-        <!-- Right Column: Mortgage Choice QR Card & PDF Export -->
+        <!-- Right Column: Centered Property Match QR Card & PDF Export -->
         <div class="lg:col-span-5 space-y-4">
 
           <!-- Printable / PDF QR Card -->
-          <div id="printable-strut-card" class="bg-white rounded-[2rem] shadow-lg border-2 border-[#006875]/30 overflow-hidden relative">
+          <div id="printable-strut-card" class="bg-white rounded-[2rem] shadow-lg border-2 border-[#006875]/30 overflow-hidden text-center">
 
-            <!-- Top Header: Fun Font Banner -->
-            <div class="bg-[#006875] px-6 py-4 text-white text-left">
-              <p class="font-fun text-[20px] sm:text-[22px] font-extrabold leading-snug text-white tracking-tight">
-                <span class="text-teal-200">Property Match</span> – Which Property is Your Perfect Match
-                <span class="relative inline-flex items-center justify-center w-7 h-7 ml-0.5 align-middle shrink-0">
-                  <svg viewBox="0 0 24 24" class="w-7 h-7 drop-shadow-sm">
-                    <path fill="#ec4899" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-                  <span class="absolute text-white font-extrabold text-xs leading-none pb-0.5">?</span>
-                </span>
+            <!-- Centered Top Header: Big Cool "Property Match" + Larger "Find Your Perfect Match" + Large Pink Heart (No Question Mark) -->
+            <div class="bg-[#006875] px-6 py-5 text-white text-center">
+              <h1 class="font-fun text-3xl sm:text-[36px] font-extrabold leading-none text-white tracking-tight">
+                Property Match
+              </h1>
+              <p class="font-clean-display text-lg sm:text-xl font-extrabold text-teal-100 mt-2 inline-flex items-center justify-center gap-1.5 leading-tight">
+                <span>Find Your Perfect Match</span>
+                <svg viewBox="0 0 24 24" class="w-7 h-7 sm:w-8 sm:h-8 shrink-0 drop-shadow-sm" aria-hidden="true">
+                  <path fill="#ec4899" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
               </p>
             </div>
 
@@ -200,105 +202,38 @@
               </span>
             </div>
 
-            <!-- Card Body -->
-            <div class="p-5 pb-4 bg-gradient-to-br from-white via-[#F5FAFB] to-[#E6F4F6]">
-              <!-- Smaller, Cleaner Sub-Heading -->
-              <div class="text-left mb-3.5">
-                <h2 class="font-clean-display text-lg sm:text-xl font-extrabold tracking-tight text-[#006875] leading-tight">
-                  30-SEC Property Match
-                </h2>
-                <p class="text-xs text-slate-600 font-medium mt-1 leading-relaxed">
-                  Scan to check your borrowing power & see how well this home fits your wish list.
-                </p>
-              </div>
+            <!-- Card Body: Centered Larger QR Code -->
+            <div class="p-6 pb-5 bg-gradient-to-br from-white via-[#F5FAFB] to-[#E6F4F6] text-center">
+              <p class="text-xs text-slate-600 font-semibold max-w-[300px] mx-auto mb-4 leading-relaxed">
+                Scan in 30 seconds to check your borrowing power & see how well this home fits your wish list.
+              </p>
 
-              <!-- Bottom Row: Dominant QR Code on Left + Compact Mini Corner Stamp on Right -->
-              <div class="flex items-end justify-between gap-2.5">
-                <!-- Large QR Code Box -->
-                <div class="bg-white p-2.5 rounded-2xl border-2 border-[#006875] shadow-sm shrink-0">
-                  <div id="qrcode" class="bg-white w-[195px] sm:w-[225px]"></div>
-                  <div class="mt-2 pt-1.5 border-t border-slate-100 text-center max-w-[195px] sm:max-w-[225px]">
-                    <p id="qr-caption-address" class="text-[10.5px] font-extrabold text-slate-900 leading-tight truncate">42 Kensington Road</p>
-                    <p id="qr-caption-suburb" class="text-[9px] font-bold uppercase tracking-wider text-[#006875] truncate">Norwood SA 5067</p>
-                  </div>
-                </div>
-
-                <!-- Mini Corner Broker Stamp (Compact Width & Height) -->
-                <div class="w-[122px] sm:w-[128px] shrink-0 text-left bg-white/95 p-1.5 rounded-xl border border-[#006875]/20 shadow-sm space-y-1">
-                  <!-- Mini Mortgage Choice Logo -->
-                  <div id="mc-logo-container" class="flex items-center">
-                    <img id="card-mc-logo" src="" alt="Mortgage Choice" class="hidden max-h-3.5 max-w-[76px] object-contain" />
-                    <svg id="mc-logo-svg" viewBox="0 0 250 74" class="h-3.5 w-auto" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M40 31 C33 17, 24 8, 17 11 C11 14, 15 26, 29 44 C36 33, 52 24, 67 23 C73 22, 74 12, 66 10 C56 8, 46 18, 40 31 Z" fill="#46D6DC"/>
-                      <path d="M35 45 C25 29, 14 20, 8 24 C3 28, 9 41, 27 57 C37 45, 53 38, 67 38 C73 38, 74 28, 65 26 C54 24, 43 33, 35 45 Z" fill="#E11D2E"/>
-                      <path d="M31 58 C19 44, 8 36, 3 41 C-1 46, 6 58, 26 70 C36 60, 51 55, 64 56 C70 56, 71 46, 62 44 C51 42, 39 48, 31 58 Z" fill="#006875"/>
-                      <text x="82" y="34" fill="#006875" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="27" letter-spacing="-0.6">Mortgage</text>
-                      <text x="82" y="64" fill="#006875" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="27" letter-spacing="-0.6">Choice</text>
-                    </svg>
-                  </div>
-
-                  <!-- Name & Role on Left + Small Right-Aligned Photo -->
-                  <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-100">
-                    <div class="min-w-0">
-                      <p id="card-broker-name" class="text-[9.5px] font-extrabold text-slate-900 leading-tight truncate">Alex Fyfe</p>
-                      <p id="card-broker-role" class="text-[8px] font-bold text-[#006875] leading-tight truncate">Owner Manager</p>
-                    </div>
-                    <div id="broker-photo-wrapper" class="w-7 h-7 rounded-lg overflow-hidden border border-[#006875]/30 shrink-0 bg-slate-100 ml-auto">
-                      <img id="card-broker-photo" alt="Alex Fyfe" class="w-full h-full object-cover object-top"
-                           src="data:image/jpeg;base64,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" />
-                    </div>
-                  </div>
-
-                  <!-- Compact Phone & Email -->
-                  <div class="pt-0.5 border-t border-slate-100 space-y-0.5">
-                    <p id="card-broker-phone" class="text-[8.5px] font-semibold text-slate-700 leading-tight">0475 461 904</p>
-                    <p id="card-broker-email" class="text-[7px] font-medium text-slate-500 leading-tight truncate">alex.fyfe@mortgagechoice.com.au</p>
-                  </div>
+              <!-- Centered Large QR Code Box -->
+              <div class="inline-block mx-auto bg-white p-3.5 rounded-3xl border-2 border-[#006875] shadow-md">
+                <div id="qrcode" class="bg-white w-[235px] sm:w-[250px] h-[235px] sm:h-[250px] mx-auto"></div>
+                <div class="mt-2.5 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px]">
+                  <p id="qr-caption-address" class="text-xs font-extrabold text-slate-900 leading-tight truncate">42 Kensington Road</p>
+                  <p id="qr-caption-suburb" class="text-[10px] font-bold uppercase tracking-wider text-[#006875] truncate mt-0.5">Norwood SA 5067</p>
                 </div>
               </div>
 
-              <!-- Option 1 Privacy Strip -->
-              <div class="mt-3.5 pt-2.5 border-t border-[#006875]/15 flex items-start gap-2 text-left">
-                <span class="shrink-0 w-4 h-4 mt-0.5 rounded-full bg-[#006875]/10 text-[#006875] flex items-center justify-center">
-                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <!-- Privacy Strip -->
+              <div class="mt-5 pt-3 border-t border-[#006875]/15 flex items-center justify-center gap-2 text-left">
+                <span class="shrink-0 w-5 h-5 rounded-full bg-[#006875]/10 text-[#006875] flex items-center justify-center">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                   </svg>
                 </span>
-                <p class="text-[10px] font-semibold text-[#006875] leading-snug">
+                <p class="text-[10.5px] font-semibold text-[#006875] leading-snug">
                   Independent Mortgage Choice tool — your financial figures stay private and are never shown to the selling agent.
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- Broker Details & PDF Export Controls -->
+          <!-- PDF Export & Share Links -->
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Broker Details & PDF Export</p>
-              <div class="flex items-center gap-3">
-                <label class="cursor-pointer text-[11px] font-bold text-[#006875] hover:underline">
-                  Replace Logo
-                  <input type="file" accept="image/*" onchange="handleLogoUpload(event)" class="hidden" />
-                </label>
-                <label class="cursor-pointer text-[11px] font-bold text-[#006875] hover:underline">
-                  Replace Photo
-                  <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden" />
-                </label>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <input id="input-broker-name" type="text" value="Alex Fyfe" placeholder="Name" oninput="updateBrokerBranding()"
-                class="text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-[#006875]" />
-              <input id="input-broker-role" type="text" value="Owner Manager" placeholder="Role / Title" oninput="updateBrokerBranding()"
-                class="text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-[#006875]" />
-              <input id="input-broker-phone" type="text" value="0475 461 904" placeholder="Phone" oninput="updateBrokerBranding()"
-                class="text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-[#006875]" />
-              <input id="input-broker-email" type="email" value="alex.fyfe@mortgagechoice.com.au" placeholder="Email" oninput="updateBrokerBranding()"
-                class="text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-[#006875]" />
-            </div>
-
-            <button onclick="window.print()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3 px-4 rounded-xl shadow-sm transition">
+            <button onclick="window.print()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
               Save as PDF / Print QR Card
             </button>
 
@@ -657,8 +592,6 @@
         ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30'
         : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
 
-      loadSavedBranding();
-
       const params = new URLSearchParams(window.location.search);
       const viewParam = params.get('view');
       const propParam = params.get('prop');
@@ -697,70 +630,6 @@
 
       if (tab === 'agent') renderAgentDashboard();
       if (tab === 'leads') renderBrokerLeads();
-    }
-
-    // ==================== BRANDING & PERSISTENCE ====================
-    function handleLogoUpload(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
-        localStorage.setItem('openmatch_mc_logo_custom', dataUrl);
-        const img = document.getElementById('card-mc-logo');
-        img.src = dataUrl;
-        img.classList.remove('hidden');
-        document.getElementById('mc-logo-svg').classList.add('hidden');
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function handlePhotoUpload(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
-        localStorage.setItem('openmatch_alex_photo_custom', dataUrl);
-        document.getElementById('card-broker-photo').src = dataUrl;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function updateBrokerBranding() {
-      const name = document.getElementById('input-broker-name').value.trim() || 'Alex Fyfe';
-      const role = document.getElementById('input-broker-role').value.trim() || 'Owner Manager';
-      const phone = document.getElementById('input-broker-phone').value.trim() || '0475 461 904';
-      const email = document.getElementById('input-broker-email').value.trim() || 'alex.fyfe@mortgagechoice.com.au';
-
-      document.getElementById('card-broker-name').textContent = name;
-      document.getElementById('card-broker-role').textContent = role;
-      document.getElementById('card-broker-phone').textContent = phone;
-      document.getElementById('card-broker-email').textContent = email;
-
-      localStorage.setItem('openmatch_alex_details', JSON.stringify({ name, role, phone, email }));
-    }
-
-    function loadSavedBranding() {
-      const savedLogo = localStorage.getItem('openmatch_mc_logo_custom');
-      if (savedLogo) {
-        const img = document.getElementById('card-mc-logo');
-        img.src = savedLogo;
-        img.classList.remove('hidden');
-        document.getElementById('mc-logo-svg').classList.add('hidden');
-      }
-      const savedPhoto = localStorage.getItem('openmatch_alex_photo_custom');
-      if (savedPhoto) {
-        document.getElementById('card-broker-photo').src = savedPhoto;
-      }
-      const saved = JSON.parse(localStorage.getItem('openmatch_alex_details') || 'null');
-      if (saved) {
-        document.getElementById('input-broker-name').value = saved.name;
-        document.getElementById('input-broker-role').value = saved.role;
-        document.getElementById('input-broker-phone').value = saved.phone;
-        document.getElementById('input-broker-email').value = saved.email;
-        updateBrokerBranding();
-      }
     }
 
     // ==================== URL & TEXT SCRAPER ====================
@@ -942,4 +811,476 @@
 
       if (hasSupabase) {
         let { data, error } = await sb.from('properties').insert([dbPayload]).select().single();
-        if (error && /bathrooms
+        if (error && /bathrooms/i.test(error.message)) {
+          const { bathrooms, ...fallbackPayload } = dbPayload;
+          const retry = await sb.from('properties').insert([fallbackPayload]).select().single();
+          data = retry.data; error = retry.error;
+        }
+        if (!error && data) {
+          activeProperty = { ...data, bathrooms: data.bathrooms ?? baths, is_modern: data.move_in_ready ?? isModern, has_garage: data.has_wfh ?? hasGarage, has_outdoor: data.has_yard ?? hasOutdoor };
+        } else {
+          btn.textContent = 'Save Listing to Cloud & Lock QR Code';
+          if (!silent) alert('Supabase error: ' + (error?.message || 'Check permissions'));
+          return;
+        }
+      } else {
+        activeProperty = { id: 'local-' + Date.now(), ...dbPayload, is_modern: isModern, has_garage: hasGarage, has_outdoor: hasOutdoor };
+      }
+
+      btn.textContent = 'Save Listing to Cloud & Lock QR Code';
+      syncUIWithProperty();
+      if (!silent) alert('Listing saved & QR card updated!');
+    }
+
+    async function loadPropertyById(id, fallbackAddr = '') {
+      if (hasSupabase) {
+        const { data } = await sb.from('properties').select('*').eq('id', id).single();
+        if (data) {
+          activeProperty = { ...data, bathrooms: data.bathrooms ?? 2, is_modern: Boolean(data.move_in_ready), has_garage: Boolean(data.has_wfh), has_outdoor: Boolean(data.has_yard) };
+        } else if (fallbackAddr) activeProperty.address = fallbackAddr;
+      } else {
+        const found = SAMPLE_PROPERTIES.find(p => p.id === id);
+        if (found) activeProperty = { ...found };
+        else if (fallbackAddr) activeProperty.address = fallbackAddr;
+      }
+      syncUIWithProperty();
+    }
+
+    function syncUIWithProperty() {
+      const street = document.getElementById('prop-address')?.value.trim() || activeProperty.address;
+      const suburb = document.getElementById('prop-suburb')?.value.trim() || activeProperty.suburb;
+      const minP = Number(document.getElementById('prop-min')?.value) || activeProperty.price_min;
+      const maxP = Number(document.getElementById('prop-max')?.value) || activeProperty.price_max;
+      const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms;
+      const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
+
+      activeProperty.address = street;
+      activeProperty.suburb = suburb;
+      activeProperty.price_min = minP;
+      activeProperty.price_max = maxP;
+      activeProperty.bedrooms = beds;
+      activeProperty.bathrooms = baths;
+
+      if (document.getElementById('tag-modern')) {
+        activeProperty.is_modern = document.getElementById('tag-modern').checked;
+        activeProperty.has_garage = document.getElementById('tag-garage').checked;
+        activeProperty.has_outdoor = document.getElementById('tag-outdoor').checked;
+      }
+
+      const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
+      document.getElementById('card-address').textContent = street;
+      document.getElementById('card-suburb').textContent = suburb || 'Open Home Inspection';
+      document.getElementById('card-specs-pill').textContent = `${beds} Bed • ${baths} Bath`;
+      document.getElementById('qr-caption-address').textContent = street;
+      document.getElementById('qr-caption-suburb').textContent = suburb || '';
+      document.getElementById('quiz-prop-title').textContent = fullTitle;
+      document.getElementById('agent-prop-title').textContent = fullTitle;
+      document.getElementById('quiz-prop-guide').textContent = `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed • ${baths} Bath`;
+
+      // Configure buyer's Estimated Purchase Price slider to start at the guide midpoint in $20k increments
+      const midPrice = Math.round(((minP + maxP) / 2) / 20000) * 20000;
+      const sliderMin = Math.max(200000, Math.floor((minP * 0.75) / 20000) * 20000);
+      const sliderMax = Math.max(midPrice + 200000, Math.ceil((maxP * 1.35) / 20000) * 20000);
+      const priceSlider = document.getElementById('slider-est-price');
+      if (priceSlider) {
+        priceSlider.min = sliderMin;
+        priceSlider.max = sliderMax;
+        priceSlider.step = 20000;
+        priceSlider.value = midPrice;
+        updateSliders();
+      }
+
+      const baseUrl = window.location.origin + window.location.pathname;
+      const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
+      const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}`;
+
+      document.getElementById('share-buyer-url').value = buyerUrl;
+      document.getElementById('share-agent-url').value = agentUrl;
+
+      const qrEl = document.getElementById('qrcode');
+      qrEl.innerHTML = '';
+      new QRCode(qrEl, {
+        text: buyerUrl,
+        width: 250,
+        height: 250,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    // ==================== BUYER QUIZ & BROKER LENDING MATHS ====================
+    function selectSingle(key, val, btn) {
+      quizState[key] = val;
+      const isCompact = btn.parentElement.id.startsWith('chips-min-');
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(b => {
+        b.className = isCompact
+          ? 'chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700'
+          : 'chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50';
+      });
+      btn.className = isCompact
+        ? 'chip-btn py-2 rounded-lg border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]'
+        : 'chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]';
+    }
+
+    function toggleMulti(tag, btn) {
+      const idx = quizState.must_haves.indexOf(tag);
+      const ind = btn.querySelector('.check-ind');
+      if (idx === -1) {
+        quizState.must_haves.push(tag);
+        btn.classList.add('border-[#006875]', 'bg-[#F2F9FA]');
+        ind.className = 'check-ind text-[#006875] font-extrabold text-base';
+      } else {
+        quizState.must_haves.splice(idx, 1);
+        btn.classList.remove('border-[#006875]', 'bg-[#F2F9FA]');
+        ind.className = 'check-ind text-slate-300 text-base';
+      }
+    }
+
+    function updateSliders() {
+      const estPrice = Number(document.getElementById('slider-est-price').value);
+      const cashDeposit = Number(document.getElementById('slider-cash-deposit').value);
+      const usableEquity = Number(document.getElementById('slider-usable-equity').value);
+      const income = Number(document.getElementById('slider-income').value);
+      const monthlyLoans = Number(document.getElementById('slider-monthly-loans').value);
+      const ccLimits = Number(document.getElementById('slider-cc-limits').value);
+
+      quizState.est_purchase_price = estPrice;
+      quizState.cash_deposit = cashDeposit;
+      quizState.usable_equity = usableEquity;
+      quizState.income = income;
+      quizState.monthly_loans = monthlyLoans;
+      quizState.cc_limits = ccLimits;
+
+      const costs = Math.round(estPrice * 0.04);
+      const totalWithCosts = estPrice + costs;
+
+      document.getElementById('val-est-price').textContent = `$${estPrice.toLocaleString()}`;
+      document.getElementById('val-total-with-costs').innerHTML =
+        `+ ~4% purchase costs ($${costs.toLocaleString()} stamp duty, transfer & legal) = <strong>$${totalWithCosts.toLocaleString()} total</strong>`;
+      document.getElementById('val-cash-deposit').textContent = `$${cashDeposit.toLocaleString()}`;
+      document.getElementById('val-usable-equity').textContent = `$${usableEquity.toLocaleString()}`;
+      document.getElementById('val-income').textContent = `$${income.toLocaleString()} / yr`;
+      document.getElementById('val-monthly-loans').textContent = `$${monthlyLoans.toLocaleString()} / mo`;
+      document.getElementById('val-cc-limits').textContent = `$${ccLimits.toLocaleString()}`;
+    }
+
+    function goQuizStep(step) {
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+      document.getElementById('q-step-' + step).classList.remove('hidden');
+      document.getElementById('quiz-step-label').textContent = `Step ${step} of 4`;
+      document.getElementById('quiz-progress').style.width = `${step * 25}%`;
+    }
+
+    function calculateAndShowResults() {
+      updateSliders();
+      quizState.dependants = Number(document.getElementById('input-dependants').value);
+
+      // 1. Purchase Price + 4% Purchase Costs (stamp duty, transfer, registration, conveyancer)
+      const estPrice = quizState.est_purchase_price;
+      const totalRequired = Math.round(estPrice * 1.04);
+
+      // Cash deposit reduces loan size & LVR; usable equity reduces effective LVR while income services full loan
+      const loanNeededForPurchase = Math.max(0, totalRequired - quizState.cash_deposit);
+
+      // 2. Serviceability Max Loan (Income vs Living Expenses & Open Commitments)
+      const netMonthly = (quizState.income * 0.73) / 12;
+      const livingExpenses = 2400 + (quizState.dependants * 550);
+      const ccMonthlyCommitment = quizState.cc_limits * 0.038;
+      const totalMonthlyCommitments = quizState.monthly_loans + ccMonthlyCommitment;
+      const surplus = Math.max(0, (netMonthly - livingExpenses - totalMonthlyCommitments) * 0.85);
+
+      const rawServicingLoan = Math.round((surplus / 0.0084085) / 1000) * 1000;
+      const dtiCapLoan = quizState.income * 6;
+      const servicingMaxLoan = Math.max(0, Math.min(rawServicingLoan, dtiCapLoan));
+
+      // 3. LVR Max Loan Cap (94% base LVR cap excluding LMI, taking usable equity into account)
+      const lvrMaxLoan = Math.round((estPrice * 0.94 + quizState.usable_equity) / 1000) * 1000;
+
+      // Most limiting factor between Serviceability and LVR sets Est. Max Borrow
+      const estMaxLoan = Math.max(0, Math.min(servicingMaxLoan, lvrMaxLoan));
+
+      // Effective Base LVR at buyer's estimated purchase price (excluding LMI)
+      const baseLvrPct = estPrice > 0
+        ? Math.max(0, ((loanNeededForPurchase - quizState.usable_equity) / estPrice) * 100)
+        : 0;
+      const roundedBaseLvr = Math.round(baseLvrPct * 10) / 10;
+
+      // 4. Color-Coded LVR Tier Styling (Green <=80%, Orange 80-90%, Red 90-94% base / 90-98% incl. LMI)
+      const borrowCard = document.getElementById('res-borrow-card');
+      const maxLoanEl = document.getElementById('res-max-loan');
+      const lvrLabelEl = document.getElementById('res-lvr-tier-label');
+
+      if (baseLvrPct <= 80) {
+        quizState.lvr_tier = 'green';
+        borrowCard.className = 'bg-emerald-950 text-white p-4 rounded-2xl border-2 border-emerald-500';
+        maxLoanEl.className = 'text-xl font-extrabold text-emerald-300 mt-1';
+        lvrLabelEl.className = 'text-[10.5px] font-bold text-emerald-200 mt-1 leading-snug';
+        lvrLabelEl.textContent = `~${roundedBaseLvr}% Base LVR (≤80%) • Best Rates & Fees`;
+      } else if (baseLvrPct <= 90) {
+        quizState.lvr_tier = 'orange';
+        borrowCard.className = 'bg-amber-950 text-white p-4 rounded-2xl border-2 border-amber-500';
+        maxLoanEl.className = 'text-xl font-extrabold text-amber-300 mt-1';
+        lvrLabelEl.className = 'text-[10.5px] font-bold text-amber-200 mt-1 leading-snug';
+        lvrLabelEl.textContent = `~${roundedBaseLvr}% LVR (80–90%) • Slightly Higher Rates & LMI`;
+      } else {
+        quizState.lvr_tier = 'red';
+        borrowCard.className = 'bg-rose-950 text-white p-4 rounded-2xl border-2 border-rose-500';
+        maxLoanEl.className = 'text-xl font-extrabold text-rose-300 mt-1';
+        lvrLabelEl.className = 'text-[10.5px] font-bold text-rose-200 mt-1 leading-snug';
+        lvrLabelEl.textContent = `90–94% Base LVR (90–98% incl. LMI) • Higher Rates & Fees`;
+      }
+
+      // 5. Budget Readiness Badge & Limiting Factor Diagnosis
+      const canCoverLoan = estMaxLoan >= loanNeededForPurchase;
+      const within94Lvr = baseLvrPct <= 94;
+      let budgetBadge = 'Stretch', finPts = 5;
+
+      if (canCoverLoan && within94Lvr) {
+        budgetBadge = 'Budget Ready';
+        finPts = 40;
+      } else if (estMaxLoan >= loanNeededForPurchase * 0.92 && baseLvrPct <= 96) {
+        budgetBadge = 'Within Reach';
+        finPts = 25;
+      } else if (quizState.stage === 'Need to Sell') {
+        budgetBadge = 'Subject to Sale';
+        finPts = 15;
+      }
+
+      const limitingTitleEl = document.getElementById('res-limiting-title');
+      const limitingDescEl = document.getElementById('res-limiting-desc');
+
+      if (!within94Lvr && servicingMaxLoan >= loanNeededForPurchase) {
+        quizState.limiting_factor = 'Deposit / LVR';
+        limitingTitleEl.textContent = 'Limiting Factor: Deposit / LVR (~' + roundedBaseLvr + '% Base LVR)';
+        limitingDescEl.textContent = `Your income supports up to $${servicingMaxLoan.toLocaleString()}, so your current deposit/equity is what's capping this purchase (above the 94% base LVR limit). Using a family guarantor or adding extra savings could unlock this property and sharper rates.`;
+      } else if (servicingMaxLoan < loanNeededForPurchase && within94Lvr) {
+        quizState.limiting_factor = 'Income / Commitments';
+        limitingTitleEl.textContent = 'Limiting Factor: Income & Open Commitments';
+        limitingDescEl.textContent = `Your deposit/equity position sits in a healthy LVR range, so income vs. expenses and open commitments is the limiting factor (capping borrowing at $${servicingMaxLoan.toLocaleString()} vs. $${loanNeededForPurchase.toLocaleString()} needed). Lowering credit card limits or closing an open loan before applying could lift your max borrow.`;
+      } else if (!within94Lvr && servicingMaxLoan < loanNeededForPurchase) {
+        quizState.limiting_factor = 'Both Serviceability & LVR';
+        limitingTitleEl.textContent = 'Limiting Factor: Both Serviceability & Deposit/LVR';
+        limitingDescEl.textContent = `At $${estPrice.toLocaleString()} (+4% costs), both borrowing capacity ($${servicingMaxLoan.toLocaleString()}) and deposit/LVR (~${roundedBaseLvr}%) are stretched. Chat with Alex to explore family guarantor options, debt restructuring, or properties in a sharper price bracket.`;
+      } else {
+        quizState.limiting_factor = 'Strong Position';
+        limitingTitleEl.textContent = 'Purchasing Power: Strong Position';
+        limitingDescEl.textContent = `Both your income ($${servicingMaxLoan.toLocaleString()} servicing capacity) and deposit/equity (~${roundedBaseLvr}% base LVR) comfortably cover your $${estPrice.toLocaleString()} estimate plus 4% purchase costs.`;
+      }
+
+      // 6. Score Property Match across the 5 criteria
+      let totalCriteria = 0, matchedCriteria = 0;
+      if (quizState.min_beds > 0) { totalCriteria++; if (Number(activeProperty.bedrooms) >= quizState.min_beds) matchedCriteria++; }
+      if (quizState.min_baths > 0) { totalCriteria++; if (Number(activeProperty.bathrooms) >= quizState.min_baths) matchedCriteria++; }
+      quizState.must_haves.forEach(tag => {
+        totalCriteria++;
+        if (tag === 'modern' && activeProperty.is_modern) matchedCriteria++;
+        if (tag === 'garage' && activeProperty.has_garage) matchedCriteria++;
+        if (tag === 'outdoor' && activeProperty.has_outdoor) matchedCriteria++;
+      });
+
+      const fitPct = totalCriteria > 0 ? Math.round((matchedCriteria / totalCriteria) * 100) : 100;
+      let readyPts = 10;
+      if ((quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') && quizState.timeline === 'ASAP') readyPts = 30;
+      else if (quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') readyPts = 22;
+      else if (quizState.timeline === 'ASAP') readyPts = 18;
+
+      quizState.est_max_loan = estMaxLoan;
+      quizState.base_lvr_pct = roundedBaseLvr;
+      quizState.fit_percentage = fitPct;
+      quizState.budget_badge = budgetBadge;
+      quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
+
+      maxLoanEl.textContent = `$${estMaxLoan.toLocaleString()}`;
+      document.getElementById('res-fit-score').textContent = `${fitPct}%`;
+      document.getElementById('res-budget-label').textContent = budgetBadge;
+
+      goQuizStep(5);
+      document.getElementById('quiz-step-label').textContent = 'Your Results';
+      document.getElementById('quiz-progress').style.width = '100%';
+    }
+
+    async function submitBuyerScan() {
+      const name = document.getElementById('buyer-name').value.trim();
+      const mobile = document.getElementById('buyer-mobile').value.trim();
+      if (!name || !mobile) return alert('Please enter your name and mobile number.');
+
+      const btn = document.getElementById('btn-submit-scan');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      const combinedMustHaves = [...quizState.must_haves];
+      if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
+      if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
+
+      const dbRecord = {
+        property_id: activeProperty.id,
+        buyer_name: name,
+        buyer_mobile: mobile,
+        household: quizState.household,
+        pets: `${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`,
+        must_haves: combinedMustHaves,
+        buying_stage: quizState.stage,
+        timeline: quizState.timeline,
+        income: quizState.income,
+        deposit: quizState.cash_deposit + quizState.usable_equity,
+        dependants: quizState.dependants,
+        existing_debts: quizState.cc_limits + (quizState.monthly_loans * 12),
+        est_max_loan: quizState.est_max_loan,
+        fit_percentage: quizState.fit_percentage,
+        budget_badge: quizState.budget_badge,
+        leaderboard_score: quizState.leaderboard_score,
+        broker_opt_in: document.getElementById('buyer-opt-in').checked
+      };
+
+      const fullLocalRecord = {
+        id: 's-' + Date.now(),
+        ...dbRecord,
+        est_purchase_price: quizState.est_purchase_price,
+        cash_deposit: quizState.cash_deposit,
+        usable_equity: quizState.usable_equity,
+        monthly_loans: quizState.monthly_loans,
+        cc_limits: quizState.cc_limits,
+        base_lvr_pct: quizState.base_lvr_pct,
+        lvr_tier: quizState.lvr_tier,
+        limiting_factor: quizState.limiting_factor
+      };
+
+      if (hasSupabase) {
+        const { error } = await sb.from('buyer_scans').insert([dbRecord]);
+        if (error) { btn.disabled = false; btn.textContent = 'Save My Property Match'; return alert('Supabase error: ' + error.message); }
+      }
+      localScans.unshift(fullLocalRecord);
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      btn.disabled = false; btn.textContent = 'Save My Property Match';
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+      document.getElementById('q-step-done').classList.remove('hidden');
+    }
+
+    function resetQuiz() {
+      document.getElementById('buyer-name').value = '';
+      document.getElementById('buyer-mobile').value = '';
+      document.getElementById('buyer-opt-in').checked = false;
+      goQuizStep(1);
+    }
+
+    // ==================== AGENT DASHBOARD ====================
+    async function renderAgentDashboard() {
+      let rows = [];
+      if (hasSupabase) {
+        const { data, error } = await sb.from('agent_leaderboard_view').select('*').eq('property_id', activeProperty.id).order('leaderboard_score', { ascending: false });
+        if (error) return document.getElementById('agent-leaderboard-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+        rows = data || [];
+      } else {
+        rows = localScans.filter(s => s.property_id === activeProperty.id).sort((a, b) => b.leaderboard_score - a.leaderboard_score);
+      }
+
+      const container = document.getElementById('agent-leaderboard-list');
+      if (rows.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-3xl border text-center text-sm text-slate-500">No buyer scans recorded for this listing yet.</div>`;
+
+      container.innerHTML = rows.map((r, idx) => {
+        const badgeColor = r.budget_badge === 'Budget Ready' ? 'bg-emerald-100 text-emerald-800' : r.budget_badge === 'Within Reach' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700';
+        const tags = r.must_haves || [];
+        const missing = [];
+        if (tags.includes('modern') && !activeProperty.is_modern) missing.push('Modern Interiors');
+        if (tags.includes('garage') && !activeProperty.has_garage) missing.push('Secure Garage/Parking');
+        if (tags.includes('outdoor') && !activeProperty.has_outdoor) missing.push('Outdoor Entertaining/Yard');
+        const bedTag = tags.find(t => t.startsWith('beds:'));
+        if (bedTag && Number(bedTag.split(':')[1]) > Number(activeProperty.bedrooms)) missing.push(`${bedTag.split(':')[1]}+ Beds`);
+        const bathTag = tags.find(t => t.startsWith('baths:'));
+        if (bathTag && Number(bathTag.split(':')[1]) > Number(activeProperty.bathrooms)) missing.push(`${bathTag.split(':')[1]}+ Baths`);
+
+        const crossSellHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
+          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-800 px-3.5 py-2 rounded-xl border border-indigo-100 font-semibold">Cross-Sell Alert: Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing!</div>`
+          : '';
+
+        return `
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90">
+            <div class="flex flex-wrap justify-between items-start gap-3">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs font-extrabold bg-[#0B1120] text-white px-2.5 py-0.5 rounded-lg">#${idx + 1}</span>
+                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)}</h3>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${badgeColor}">${escapeHtml(r.budget_badge)}</span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mt-1.5">${escapeHtml(r.buyer_mobile)} • ${escapeHtml(r.buying_stage)} (${escapeHtml(r.timeline)}) • ${escapeHtml(r.household)}</p>
+              </div>
+              <div class="text-right bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-100">
+                <span class="text-lg font-extrabold text-slate-900">${r.fit_percentage}%</span>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">House Fit</p>
+              </div>
+            </div>
+            ${crossSellHtml}
+          </div>`;
+      }).join('');
+    }
+
+    function copyAgentWrapUp() {
+      navigator.clipboard.writeText(`Property Match Buyer Wrap-Up — ${activeProperty.address}\nCheck the live ranked call list:\n${document.getElementById('share-agent-url').value}`);
+      alert('Post-open SMS summary copied!');
+    }
+
+    // ==================== BROKER LEADS ====================
+    function setLeadFilter(optInOnly) {
+      brokerOptInOnly = optInOnly;
+      document.getElementById('btn-filter-optin').className = optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
+      document.getElementById('btn-filter-all').className = !optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
+      renderBrokerLeads();
+    }
+
+    async function renderBrokerLeads() {
+      let rows = [];
+      if (hasSupabase) {
+        let query = sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
+        if (brokerOptInOnly) query = query.eq('broker_opt_in', true);
+        const { data, error } = await query;
+        if (error) return document.getElementById('broker-leads-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+        rows = data || [];
+      } else {
+        rows = brokerOptInOnly ? localScans.filter(s => s.broker_opt_in) : localScans;
+      }
+
+      const container = document.getElementById('broker-leads-list');
+      if (rows.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-3xl border text-center text-sm text-slate-500">No leads found for this filter.</div>`;
+
+      container.innerHTML = rows.map(r => {
+        const lvrTag = r.pets && r.pets.includes('LVR') ? r.pets : r.budget_badge;
+        const isRed = lvrTag.startsWith('RED');
+        const isOrange = lvrTag.startsWith('ORANGE');
+        const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+
+        return `
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-3.5">
+            <div class="flex flex-wrap justify-between items-start gap-2">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <span class="text-[#006875]">${escapeHtml(r.buyer_mobile)}</span></h3>
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${r.broker_opt_in ? 'Opted In' : 'Agent Only'}</span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mt-1">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
+              </div>
+              <span class="text-xs font-bold px-3 py-1 rounded-full ${lvrPillClass}">
+                ${escapeHtml(lvrTag)}
+              </span>
+            </div>
+            <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
+              <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function copyInput(id) {
+      const el = document.getElementById(id);
+      el.select();
+      navigator.clipboard.writeText(el.value);
+      alert('Link copied!');
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+  </script>
+</body>
