@@ -7,146 +7,243 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    input[type="range"] { accent-color: #0f172a; }
+    body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+    input[type="range"] { accent-color: #059669; }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-strut-card, #printable-strut-card * { visibility: visible; }
+      #printable-strut-card {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 380px;
+        box-shadow: none !important;
+        border: 2px solid #0f172a !important;
+      }
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="bg-slate-100/80 text-slate-900 min-h-screen antialiased">
 
   <!-- TOP ADMIN BAR (Hidden automatically when opened via Buyer QR or Agent Link) -->
-  <header id="admin-nav" class="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
-        <span class="bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded text-sm">OM</span>
-        <span class="font-bold tracking-tight">OpenMatch AU</span>
-        <span id="db-status" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Checking DB...</span>
+  <header id="admin-nav" class="bg-[#0B1120] text-white sticky top-0 z-40 border-b border-slate-800/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-slate-950 font-extrabold text-sm shadow-sm">
+          OM
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold tracking-tight text-base">OpenMatch</span>
+            <span id="db-status" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Connecting...</span>
+          </div>
+        </div>
       </div>
-      <nav class="flex flex-wrap gap-1.5 text-xs sm:text-sm">
-        <button onclick="switchTab('admin')" id="tab-admin" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-emerald-500 text-slate-950">1. Property & QR</button>
-        <button onclick="switchTab('scan')" id="tab-scan" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700">2. Buyer Quiz</button>
-        <button onclick="switchTab('agent')" id="tab-agent" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700">3. Agent Dashboard</button>
-        <button onclick="switchTab('leads')" id="tab-leads" class="nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700">4. Broker Leads</button>
+
+      <nav class="flex flex-wrap gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs sm:text-sm">
+        <button onclick="switchTab('admin')" id="tab-admin" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold bg-emerald-500 text-slate-950 shadow-sm transition">1. Property & QR</button>
+        <button onclick="switchTab('scan')" id="tab-scan" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white transition">2. Buyer Quiz</button>
+        <button onclick="switchTab('agent')" id="tab-agent" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white transition">3. Agent Leaderboard</button>
+        <button onclick="switchTab('leads')" id="tab-leads" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white transition">4. Broker Leads</button>
       </nav>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-6">
+  <main class="max-w-6xl mx-auto px-4 py-7">
 
-    <!-- ==================== VIEW 1: BROKER PROPERTY & QR SETUP ==================== -->
+    <!-- ==================== VIEW 1: PROPERTY IMPORTER & QR STUDIO ==================== -->
     <section id="view-admin" class="space-y-6">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+
+      <!-- Smart Listing URL & Text Scraper Banner -->
+      <div class="bg-gradient-to-br from-[#0B1120] via-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-7 shadow-lg border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
-            <h1 class="text-xl font-bold">Load Open Home Listing</h1>
-            <p class="text-sm text-slate-500">Paste listing copy to auto-extract price guide & lifestyle tags, or load a sample property.</p>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Instant Listing Importer</span>
+            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">Import Property & Generate QR Card</h1>
           </div>
           <div class="flex gap-2">
-            <button onclick="loadSample(0)" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium">Sample 1 (Norwood)</button>
-            <button onclick="loadSample(1)" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium">Sample 2 (Glenelg)</button>
+            <button onclick="loadSample(0)" class="text-xs bg-white/10 hover:bg-white/20 text-slate-200 px-3 py-1.5 rounded-lg font-medium transition">Demo: Norwood</button>
+            <button onclick="loadSample(1)" class="text-xs bg-white/10 hover:bg-white/20 text-slate-200 px-3 py-1.5 rounded-lg font-medium transition">Demo: Glenelg</button>
           </div>
         </div>
 
-        <!-- Smart Copy Parser -->
-        <div class="mb-5 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Quick-Parse Listing Text (Optional)</label>
-          <textarea id="raw-listing-text" rows="2" placeholder="Paste description from agent's website (e.g., 'Price Guide $850,000 - $900,000. 3 bed family home with dedicated study, secure fenced yard for pets, freshly renovated...')" class="w-full text-sm p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-slate-900"></textarea>
-          <button onclick="parseListingText()" class="mt-2 text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-slate-800">Auto-Fill Details From Text</button>
+        <!-- URL Input Bar -->
+        <div class="flex flex-col sm:flex-row gap-2.5">
+          <div class="relative flex-1">
+            <input id="scrape-url-input" type="url" placeholder="Paste listing URL (e.g. agency website, Domain, or realestate.com.au)..."
+              class="w-full bg-white/10 border border-white/15 text-white placeholder-slate-400 text-sm px-4 py-3.5 rounded-xl focus:outline-none focus:border-emerald-400 focus:bg-white/15 transition" />
+          </div>
+          <button id="btn-scrape-url" onclick="scrapeFromUrl()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm px-6 py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 shrink-0">
+            <span>Auto-Fill From URL</span>
+          </button>
         </div>
 
-        <!-- Structured Property Form -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Street Address *</label>
-            <input id="prop-address" type="text" value="42 Kensington Road" class="w-full p-2.5 text-sm border rounded-lg" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Suburb & State</label>
-            <input id="prop-suburb" type="text" value="Norwood SA 5067" class="w-full p-2.5 text-sm border rounded-lg" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Price Guide Min ($ AUD) *</label>
-            <input id="prop-min" type="number" value="850000" class="w-full p-2.5 text-sm border rounded-lg" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Price Guide Max ($ AUD) *</label>
-            <input id="prop-max" type="number" value="910000" class="w-full p-2.5 text-sm border rounded-lg" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Selling Agent Name</label>
-            <input id="prop-agent" type="text" value="Sarah Jenkins" class="w-full p-2.5 text-sm border rounded-lg" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Bedrooms</label>
-            <input id="prop-beds" type="number" value="3" class="w-full p-2.5 text-sm border rounded-lg" />
+        <!-- Live Scraper Feedback Banner -->
+        <div id="scrape-feedback" class="hidden mt-3 text-xs px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/10 text-emerald-300"></div>
+
+        <!-- Secondary Paste-Page Fallback -->
+        <div class="mt-3 pt-3 border-t border-white/10">
+          <button type="button" onclick="togglePasteBox()" class="text-xs text-slate-400 hover:text-white underline font-medium">
+            Portal blocked direct URL fetch? Click here to paste copied listing page text instead
+          </button>
+          <div id="paste-fallback-box" class="hidden mt-2.5 space-y-2">
+            <textarea id="raw-listing-text" rows="3" placeholder="Open the listing in another tab, press Ctrl+A then Ctrl+C, and paste the whole page here..."
+              class="w-full bg-slate-950/60 border border-slate-700 text-slate-200 placeholder-slate-500 text-xs p-3 rounded-xl focus:outline-none focus:border-emerald-400"></textarea>
+            <button onclick="parseListingText(true)" class="text-xs bg-white text-slate-900 font-bold px-4 py-2 rounded-lg hover:bg-slate-200 transition">
+              Extract Address & Details From Text
+            </button>
           </div>
         </div>
-
-        <!-- Lifestyle Feature Tags -->
-        <div class="mt-4">
-          <label class="block text-xs font-semibold text-slate-600 mb-2">Property Lifestyle Features (Used for Buyer Match %)</label>
-          <div class="flex flex-wrap gap-3">
-            <label class="flex items-center gap-2 text-sm bg-slate-50 px-3 py-2 rounded-lg border cursor-pointer">
-              <input id="tag-wfh" type="checkbox" checked class="rounded" /> Dedicated WFH / Study
-            </label>
-            <label class="flex items-center gap-2 text-sm bg-slate-50 px-3 py-2 rounded-lg border cursor-pointer">
-              <input id="tag-yard" type="checkbox" checked class="rounded" /> Secure / Pet-Friendly Yard
-            </label>
-            <label class="flex items-center gap-2 text-sm bg-slate-50 px-3 py-2 rounded-lg border cursor-pointer">
-              <input id="tag-renovated" type="checkbox" class="rounded" /> Move-In Ready (Renovated)
-            </label>
-          </div>
-        </div>
-
-        <button onclick="saveProperty()" class="mt-6 w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow-sm">
-          Save Listing & Generate QR Strut Card
-        </button>
       </div>
 
-      <!-- Printable Bench QR Card & Share Links -->
-      <div id="qr-output-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-        <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center bg-slate-50">
-          <p class="text-xs font-bold uppercase tracking-widest text-emerald-700 mb-1">Open Home Buyer Check</p>
-          <h2 id="card-address" class="text-lg font-extrabold text-slate-900">42 Kensington Road, Norwood</h2>
-          <p class="text-xs text-slate-600 mt-1 mb-4">Love this home? Scan to see your borrowing power & property match in 30 seconds.</p>
-          <div id="qrcode" class="flex justify-center my-3 bg-white p-3 rounded-xl inline-block shadow-sm"></div>
-          <p class="text-[11px] text-slate-400 mt-2">Private estimate • Exact income is never shared with the agent</p>
+      <!-- Two-Column Workspace: Left = Property Details | Right = Address QR Strut Card -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Left Column: Structured Property Editor -->
+        <div class="lg:col-span-7 bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h2 class="font-extrabold text-base text-slate-900">Property & QR Details</h2>
+            <span class="text-xs text-slate-400">Edits update the QR card automatically</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Street Address (Printed on QR Card) *</label>
+              <input id="prop-address" type="text" value="42 Kensington Road" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Suburb, State & Postcode</label>
+              <input id="prop-suburb" type="text" value="Norwood SA 5067" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Selling Agent</label>
+              <input id="prop-agent" type="text" value="Sarah Jenkins"
+                class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price Guide Min ($ AUD) *</label>
+              <input id="prop-min" type="number" value="850000" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price Guide Max ($ AUD) *</label>
+              <input id="prop-max" type="number" value="910000" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Bedrooms</label>
+              <input id="prop-beds" type="number" value="3" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+            </div>
+          </div>
+
+          <!-- Lifestyle Feature Tags -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Property Features (Matched Against Buyer Quiz)</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer transition">
+                <input id="tag-wfh" type="checkbox" checked class="w-4 h-4 rounded accent-emerald-600" /> WFH / Study
+              </label>
+              <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer transition">
+                <input id="tag-yard" type="checkbox" checked class="w-4 h-4 rounded accent-emerald-600" /> Pet-Friendly Yard
+              </label>
+              <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer transition">
+                <input id="tag-renovated" type="checkbox" class="w-4 h-4 rounded accent-emerald-600" /> Move-In Ready
+              </label>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button id="btn-save-prop" onclick="saveProperty(false)" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-sm transition">
+              Save Listing to Cloud & Lock QR Code
+            </button>
+          </div>
         </div>
 
-        <div class="space-y-4">
-          <h3 class="font-bold text-lg">Live Share Links</h3>
-          <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">1. Buyer QR Scan URL (Opens mobile quiz only)</label>
-            <div class="flex gap-2">
-              <input id="share-buyer-url" type="text" readonly class="w-full text-xs p-2.5 bg-slate-100 rounded-lg border" />
-              <button onclick="copyInput('share-buyer-url')" class="px-3 py-2 bg-slate-900 text-white text-xs rounded-lg font-medium">Copy</button>
+        <!-- Right Column: Printable Bench QR Strut Card + Share Links -->
+        <div class="lg:col-span-5 space-y-4">
+          <!-- Physical Strut Card Preview -->
+          <div id="printable-strut-card" class="bg-white rounded-3xl shadow-md border border-slate-200 overflow-hidden text-center">
+            <div class="bg-[#0B1120] text-white px-5 py-4">
+              <span class="inline-block text-[10px] font-extrabold uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full mb-1.5">
+                30-Sec Buyer Fit Check
+              </span>
+              <h3 id="card-address" class="text-lg font-extrabold leading-snug tracking-tight">42 Kensington Road</h3>
+              <p id="card-suburb" class="text-xs text-slate-300 font-medium mt-0.5">Norwood SA 5067</p>
+            </div>
+
+            <div class="p-6 bg-gradient-to-b from-white to-slate-50">
+              <p class="text-xs text-slate-600 font-medium max-w-xs mx-auto mb-4">
+                Scan with your phone camera to check your borrowing power & match score for this home.
+              </p>
+
+              <!-- Framed QR Code with Address Caption -->
+              <div class="inline-block bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-900">
+                <div id="qrcode" class="flex justify-center"></div>
+                <p id="qr-caption-address" class="text-[11px] font-extrabold text-slate-900 mt-2.5 pt-2 border-t border-slate-200 max-w-[180px] truncate">
+                  42 Kensington Road
+                </p>
+              </div>
+
+              <p class="text-[11px] text-slate-400 mt-4">
+                Private check • Your income is never shown to the agent
+              </p>
             </div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">2. Agent Live Leaderboard Link (Privacy-safe, no login needed)</label>
-            <div class="flex gap-2">
-              <input id="share-agent-url" type="text" readonly class="w-full text-xs p-2.5 bg-slate-100 rounded-lg border" />
-              <button onclick="copyInput('share-agent-url')" class="px-3 py-2 bg-slate-900 text-white text-xs rounded-lg font-medium">Copy</button>
+
+          <!-- Card Export & Share Actions -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="downloadQrCard()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition">
+                Download QR PNG
+              </button>
+              <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2.5 px-3 rounded-xl transition">
+                Print Bench Card
+              </button>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 space-y-2.5">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 mb-1">Buyer QR Link (Opens Mobile Quiz)</label>
+                <div class="flex gap-1.5">
+                  <input id="share-buyer-url" type="text" readonly class="w-full text-[11px] px-2.5 py-2 bg-slate-50 rounded-lg border border-slate-200 text-slate-600" />
+                  <button onclick="copyInput('share-buyer-url')" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 mb-1">Agent Live Leaderboard Link (Privacy-Safe)</label>
+                <div class="flex gap-1.5">
+                  <input id="share-agent-url" type="text" readonly class="w-full text-[11px] px-2.5 py-2 bg-slate-50 rounded-lg border border-slate-200 text-slate-600" />
+                  <button onclick="copyInput('share-agent-url')" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
+                </div>
+              </div>
             </div>
           </div>
-          <button onclick="window.print()" class="text-xs text-slate-600 underline font-medium">Print Kitchen Bench QR Card</button>
         </div>
+
       </div>
     </section>
 
     <!-- ==================== VIEW 2: MOBILE BUYER QR QUIZ ==================== -->
     <section id="view-scan" class="hidden max-w-md mx-auto">
-      <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+      <div class="bg-white rounded-[2rem] shadow-xl border border-slate-200/90 overflow-hidden">
         <!-- Property Header Banner -->
-        <div class="bg-slate-900 text-white p-5">
-          <div class="flex justify-between items-center text-xs text-emerald-400 font-semibold mb-1">
-            <span>30-SEC BUYER FIT CHECK</span>
-            <span id="quiz-step-label">Step 1 of 5</span>
+        <div class="bg-gradient-to-br from-[#0B1120] to-slate-800 text-white p-6">
+          <div class="flex justify-between items-center text-[11px] text-emerald-400 font-bold tracking-wider uppercase mb-1.5">
+            <span>30-Sec Home Fit Check</span>
+            <span id="quiz-step-label" class="bg-white/10 text-white px-2.5 py-0.5 rounded-full">Step 1 of 5</span>
           </div>
-          <h2 id="quiz-prop-title" class="font-bold text-lg leading-snug">42 Kensington Road, Norwood</h2>
-          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-0.5">Guide: $850,000 – $910,000 • 3 Bed</p>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-            <div id="quiz-progress" class="bg-emerald-400 h-full transition-all duration-300" style="width: 20%"></div>
+          <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">42 Kensington Road, Norwood SA 5067</h2>
+          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Guide: $850,000 – $910,000 • 3 Bed</p>
+          <div class="w-full bg-slate-700/70 h-1.5 rounded-full mt-4 overflow-hidden">
+            <div id="quiz-progress" class="bg-emerald-400 h-full transition-all duration-300 rounded-full" style="width: 20%"></div>
           </div>
         </div>
 
@@ -154,94 +251,94 @@
           <!-- STEP 1: HOUSEHOLD & PETS -->
           <div id="q-step-1" class="quiz-step space-y-5">
             <div>
-              <h3 class="font-bold text-base mb-2">Who would be living here?</h3>
-              <div class="grid grid-cols-3 gap-2" id="chips-household">
-                <button type="button" onclick="selectSingle('household', 'Solo', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">Solo</button>
-                <button type="button" onclick="selectSingle('household', 'Couple', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Couple</button>
-                <button type="button" onclick="selectSingle('household', 'Family', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Family</button>
+              <h3 class="font-bold text-base text-slate-900 mb-2.5">Who would be living here?</h3>
+              <div class="grid grid-cols-3 gap-2.5" id="chips-household">
+                <button type="button" onclick="selectSingle('household', 'Solo', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-slate-900 text-white border-slate-900 transition">Solo</button>
+                <button type="button" onclick="selectSingle('household', 'Couple', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Couple</button>
+                <button type="button" onclick="selectSingle('household', 'Family', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Family</button>
               </div>
             </div>
             <div>
-              <h3 class="font-bold text-base mb-2">Any furry family members?</h3>
-              <div class="grid grid-cols-3 gap-2" id="chips-pets">
-                <button type="button" onclick="selectSingle('pets', 'No Pets', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">No Pets</button>
-                <button type="button" onclick="selectSingle('pets', 'Indoor Pet', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Indoor Pet</button>
-                <button type="button" onclick="selectSingle('pets', 'Dog (Yard)', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Dog (Yard)</button>
+              <h3 class="font-bold text-base text-slate-900 mb-2.5">Any furry family members?</h3>
+              <div class="grid grid-cols-3 gap-2.5" id="chips-pets">
+                <button type="button" onclick="selectSingle('pets', 'No Pets', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-slate-900 text-white border-slate-900 transition">No Pets</button>
+                <button type="button" onclick="selectSingle('pets', 'Indoor Pet', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Indoor Pet</button>
+                <button type="button" onclick="selectSingle('pets', 'Dog (Yard)', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Dog (Yard)</button>
               </div>
             </div>
-            <button onclick="goQuizStep(2)" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl mt-2">Next →</button>
+            <button onclick="goQuizStep(2)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition mt-2">Continue →</button>
           </div>
 
           <!-- STEP 2: NON-NEGOTIABLES -->
           <div id="q-step-2" class="quiz-step hidden space-y-5">
             <div>
-              <h3 class="font-bold text-base mb-1">Your non-negotiables?</h3>
-              <p class="text-xs text-slate-500 mb-3">Tap all that matter to you (used to score this home).</p>
+              <h3 class="font-bold text-base text-slate-900 mb-1">Your non-negotiables?</h3>
+              <p class="text-xs text-slate-500 mb-3">Tap all that matter to you to score this property.</p>
               <div class="space-y-2.5">
-                <button type="button" onclick="toggleMulti('wfh', this)" class="w-full text-left p-3.5 rounded-xl border text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
-                  <span>💻 Dedicated Home Office / Study</span><span class="check-ind text-slate-300">✓</span>
+                <button type="button" onclick="toggleMulti('wfh', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
+                  <span>💻 Dedicated Home Office / Study</span><span class="check-ind text-slate-300 text-base">✓</span>
                 </button>
-                <button type="button" onclick="toggleMulti('yard', this)" class="w-full text-left p-3.5 rounded-xl border text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
-                  <span>🌳 Secure / Pet-Friendly Yard</span><span class="check-ind text-slate-300">✓</span>
+                <button type="button" onclick="toggleMulti('yard', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
+                  <span>🌳 Secure / Pet-Friendly Yard</span><span class="check-ind text-slate-300 text-base">✓</span>
                 </button>
-                <button type="button" onclick="toggleMulti('renovated', this)" class="w-full text-left p-3.5 rounded-xl border text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
-                  <span>✨ Move-In Ready (Nothing to Spend)</span><span class="check-ind text-slate-300">✓</span>
+                <button type="button" onclick="toggleMulti('renovated', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
+                  <span>✨ Move-In Ready (Nothing to Spend)</span><span class="check-ind text-slate-300 text-base">✓</span>
                 </button>
               </div>
             </div>
-            <div class="flex gap-2">
-              <button onclick="goQuizStep(1)" class="w-1/3 bg-slate-100 font-semibold py-3.5 rounded-xl text-sm">← Back</button>
-              <button onclick="goQuizStep(3)" class="w-2/3 bg-emerald-600 text-white font-bold py-3.5 rounded-xl">Next →</button>
+            <div class="flex gap-2.5">
+              <button onclick="goQuizStep(1)" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl text-sm transition">← Back</button>
+              <button onclick="goQuizStep(3)" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition">Continue →</button>
             </div>
           </div>
 
           <!-- STEP 3: BUYING STAGE & TIMELINE -->
           <div id="q-step-3" class="quiz-step hidden space-y-5">
             <div>
-              <h3 class="font-bold text-base mb-2">Where are you at in your buying journey?</h3>
-              <div class="grid grid-cols-2 gap-2" id="chips-stage">
-                <button type="button" onclick="selectSingle('stage', 'Pre-Approved', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">Pre-Approved</button>
-                <button type="button" onclick="selectSingle('stage', 'Cash Buyer', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Cash Buyer</button>
-                <button type="button" onclick="selectSingle('stage', 'Need to Sell', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Need to Sell First</button>
-                <button type="button" onclick="selectSingle('stage', 'Just Starting', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">Just Starting</button>
+              <h3 class="font-bold text-base text-slate-900 mb-2.5">Where are you at in your buying journey?</h3>
+              <div class="grid grid-cols-2 gap-2.5" id="chips-stage">
+                <button type="button" onclick="selectSingle('stage', 'Pre-Approved', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-slate-900 text-white border-slate-900 transition">Pre-Approved</button>
+                <button type="button" onclick="selectSingle('stage', 'Cash Buyer', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Cash Buyer</button>
+                <button type="button" onclick="selectSingle('stage', 'Need to Sell', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Need to Sell First</button>
+                <button type="button" onclick="selectSingle('stage', 'Just Starting', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Just Starting</button>
               </div>
             </div>
             <div>
-              <h3 class="font-bold text-base mb-2">Ideal timeframe to buy?</h3>
-              <div class="grid grid-cols-3 gap-2" id="chips-timeline">
-                <button type="button" onclick="selectSingle('timeline', 'ASAP', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900">ASAP</button>
-                <button type="button" onclick="selectSingle('timeline', '1-3 Months', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">1–3 Months</button>
-                <button type="button" onclick="selectSingle('timeline', '3+ Months', this)" class="chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50">3+ Months</button>
+              <h3 class="font-bold text-base text-slate-900 mb-2.5">Ideal timeframe to buy?</h3>
+              <div class="grid grid-cols-3 gap-2.5" id="chips-timeline">
+                <button type="button" onclick="selectSingle('timeline', 'ASAP', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-slate-900 text-white border-slate-900 transition">ASAP</button>
+                <button type="button" onclick="selectSingle('timeline', '1-3 Months', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">1–3 Months</button>
+                <button type="button" onclick="selectSingle('timeline', '3+ Months', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">3+ Months</button>
               </div>
             </div>
-            <div class="flex gap-2">
-              <button onclick="goQuizStep(2)" class="w-1/3 bg-slate-100 font-semibold py-3.5 rounded-xl text-sm">← Back</button>
-              <button onclick="goQuizStep(4)" class="w-2/3 bg-emerald-600 text-white font-bold py-3.5 rounded-xl">Next →</button>
+            <div class="flex gap-2.5">
+              <button onclick="goQuizStep(2)" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl text-sm transition">← Back</button>
+              <button onclick="goQuizStep(4)" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition">Continue →</button>
             </div>
           </div>
 
           <!-- STEP 4: 15-SECOND AFFORDABILITY SLIDERS -->
           <div id="q-step-4" class="quiz-step hidden space-y-5">
-            <div>
-              <div class="flex justify-between items-baseline mb-1">
-                <label class="text-xs font-bold text-slate-600 uppercase">Combined Gross Income</label>
-                <span id="val-income" class="text-base font-extrabold text-slate-900">$180,000 / yr</span>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+              <div class="flex justify-between items-baseline mb-2">
+                <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Combined Gross Income</label>
+                <span id="val-income" class="text-base font-extrabold text-emerald-700">$180,000 / yr</span>
               </div>
               <input id="slider-income" type="range" min="60000" max="500000" step="10000" value="180000" oninput="updateSliders()" class="w-full" />
             </div>
 
-            <div>
-              <div class="flex justify-between items-baseline mb-1">
-                <label class="text-xs font-bold text-slate-600 uppercase">Deposit / Available Equity</label>
-                <span id="val-deposit" class="text-base font-extrabold text-slate-900">$150,000</span>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+              <div class="flex justify-between items-baseline mb-2">
+                <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Deposit / Available Equity</label>
+                <span id="val-deposit" class="text-base font-extrabold text-emerald-700">$150,000</span>
               </div>
               <input id="slider-deposit" type="range" min="20000" max="800000" step="10000" value="150000" oninput="updateSliders()" class="w-full" />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Dependants</label>
-                <select id="input-dependants" class="w-full p-2.5 text-sm border rounded-xl bg-white">
+                <label class="block text-xs font-bold text-slate-600 mb-1">Dependants</label>
+                <select id="input-dependants" class="w-full p-2.5 text-sm font-medium border border-slate-300 rounded-xl bg-white">
                   <option value="0">0 Dependants</option>
                   <option value="1">1 Dependant</option>
                   <option value="2">2 Dependants</option>
@@ -249,8 +346,8 @@
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Card / Loan Limits</label>
-                <select id="input-debts" class="w-full p-2.5 text-sm border rounded-xl bg-white">
+                <label class="block text-xs font-bold text-slate-600 mb-1">Card / Loan Limits</label>
+                <select id="input-debts" class="w-full p-2.5 text-sm font-medium border border-slate-300 rounded-xl bg-white">
                   <option value="0">None ($0)</option>
                   <option value="5000" selected>~$5k Card Limit</option>
                   <option value="15000">~$15k Limit / Car</option>
@@ -259,60 +356,59 @@
               </div>
             </div>
 
-            <div class="flex gap-2">
-              <button onclick="goQuizStep(3)" class="w-1/3 bg-slate-100 font-semibold py-3.5 rounded-xl text-sm">← Back</button>
-              <button onclick="calculateAndShowResults()" class="w-2/3 bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow">See My Results →</button>
+            <div class="flex gap-2.5">
+              <button onclick="goQuizStep(3)" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl text-sm transition">← Back</button>
+              <button onclick="calculateAndShowResults()" class="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition">See My Results →</button>
             </div>
           </div>
 
           <!-- STEP 5: INSTANT RESULTS + LEAD CAPTURE -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
-            <!-- Primary Borrowing Capacity + Property Match -->
             <div class="grid grid-cols-2 gap-3">
-              <div class="bg-slate-900 text-white p-4 rounded-2xl">
-                <p class="text-[11px] uppercase tracking-wider text-slate-400">Est. Max Borrowing</p>
-                <p id="res-max-loan" class="text-xl font-black text-emerald-400 mt-0.5">$844,000</p>
+              <div class="bg-[#0B1120] text-white p-4 rounded-2xl shadow-sm">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Est. Max Borrowing</p>
+                <p id="res-max-loan" class="text-xl font-extrabold text-emerald-400 mt-1">$844,000</p>
                 <p id="res-total-power" class="text-[11px] text-slate-300 mt-1">Total Budget: $994k</p>
               </div>
               <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
-                <p class="text-[11px] uppercase tracking-wider text-emerald-800">Property Match</p>
-                <p id="res-fit-score" class="text-2xl font-black text-emerald-700 mt-0.5">100%</p>
-                <p id="res-budget-label" class="text-[11px] font-semibold text-emerald-800 mt-1">Budget Ready</p>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Property Match</p>
+                <p id="res-fit-score" class="text-2xl font-extrabold text-emerald-700 mt-0.5">100%</p>
+                <p id="res-budget-label" class="text-[11px] font-bold text-emerald-800 mt-1">Budget Ready</p>
               </div>
             </div>
 
-            <p class="text-[11px] leading-relaxed text-slate-500 bg-slate-50 p-2.5 rounded-lg border">
+            <p class="text-[11px] leading-relaxed text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
               <strong>Indicative Estimate Only:</strong> Calculated using a 3.0% APRA serviceability buffer and standard living expense benchmarks. Not a formal credit assessment or loan approval.
             </p>
 
-            <div class="border-t pt-3 space-y-3">
-              <p class="text-xs font-bold text-slate-800">Save your property match & check-in with the agent:</p>
-              <input id="buyer-name" type="text" placeholder="Your Full Name *" class="w-full p-3 text-sm border rounded-xl" />
-              <input id="buyer-mobile" type="tel" placeholder="Mobile Number *" class="w-full p-3 text-sm border rounded-xl" />
+            <div class="border-t border-slate-100 pt-3.5 space-y-3">
+              <p class="text-xs font-extrabold text-slate-800">Save your property match & check-in with the agent:</p>
+              <input id="buyer-name" type="text" placeholder="Your Full Name *" class="w-full p-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+              <input id="buyer-mobile" type="tel" placeholder="Mobile Number *" class="w-full p-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
 
-              <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50 border-2 border-amber-300 cursor-pointer">
+              <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer">
                 <input id="buyer-opt-in" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
-                <span class="text-xs text-slate-900">
+                <span class="text-xs text-slate-900 leading-snug">
                   <strong>Send to Mortgage Broker (Optional):</strong> Tick here to have an accredited broker double-check your exact borrowing power across 30+ lenders before offers close.
                 </span>
               </label>
 
-              <p class="text-[10px] text-slate-400">
+              <p class="text-[10px] text-slate-400 leading-normal">
                 Privacy Guarantee: Your income, deposit, and borrowing ceiling are never shown to the selling agent. Credit Representative [Your Name / CRN] under [ACL Holder].
               </p>
 
-              <button id="btn-submit-scan" onclick="submitBuyerScan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl">
+              <button id="btn-submit-scan" onclick="submitBuyerScan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-sm transition">
                 Complete Check-In
               </button>
             </div>
           </div>
 
           <!-- THANK YOU SCREEN -->
-          <div id="q-step-done" class="quiz-step hidden text-center py-6 space-y-3">
-            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
-            <h3 class="text-lg font-extrabold">You're All Set!</h3>
-            <p class="text-sm text-slate-600">Enjoy inspecting the home. Your financial figures remain strictly private.</p>
-            <button onclick="resetQuiz()" class="text-xs text-emerald-700 font-semibold underline pt-2">Run another test scan</button>
+          <div id="q-step-done" class="quiz-step hidden text-center py-8 space-y-3">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto text-2xl font-extrabold">✓</div>
+            <h3 class="text-xl font-extrabold text-slate-900">You're Checked In!</h3>
+            <p class="text-sm text-slate-600 max-w-xs mx-auto">Enjoy inspecting the home. Your financial figures remain strictly private.</p>
+            <button onclick="resetQuiz()" class="text-xs text-emerald-700 font-bold underline pt-3">Run another test scan</button>
           </div>
         </div>
       </div>
@@ -320,19 +416,19 @@
 
     <!-- ==================== VIEW 3: PRIVACY-SAFE AGENT DASHBOARD ==================== -->
     <section id="view-agent" class="hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7">
         <div class="flex flex-wrap justify-between items-start gap-4">
           <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Live Agent Leaderboard</span>
-            <h1 id="agent-prop-title" class="text-xl font-extrabold mt-0.5">42 Kensington Road, Norwood</h1>
-            <p class="text-xs text-slate-500 mt-1">Sorted by buyer readiness & property fit • Raw buyer financial figures are hidden for buyer privacy.</p>
+            <span class="text-[11px] font-extrabold uppercase tracking-widest text-emerald-700">Live Agent Call List</span>
+            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">42 Kensington Road, Norwood SA 5067</h1>
+            <p class="text-xs text-slate-500 mt-1">Ranked by buyer readiness & property fit • Exact buyer financial figures are hidden for buyer privacy.</p>
           </div>
           <div class="flex gap-2">
-            <button onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold px-3.5 py-2.5 rounded-xl">
+            <button onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2.5 rounded-xl transition">
               Refresh
             </button>
-            <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">
-              Copy Post-Open SMS Summary
+            <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition">
+              Copy Post-Open SMS
             </button>
           </div>
         </div>
@@ -345,16 +441,16 @@
 
     <!-- ==================== VIEW 4: BROKER OPT-IN LEAD QUEUE ==================== -->
     <section id="view-leads" class="hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-wrap justify-between items-start gap-4">
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 flex flex-wrap justify-between items-start gap-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Broker Pipeline</span>
-          <h1 class="text-xl font-extrabold mt-0.5">Buyer Finance Leads</h1>
-          <p class="text-xs text-slate-500 mt-1">Displays buyers who ticked the broker callback box (or toggle to inspect all open-home scans).</p>
+          <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-600">Broker Pipeline</span>
+          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">Buyer Finance Leads</h1>
+          <p class="text-xs text-slate-500 mt-1">Full borrowing diagnostics for buyers who ticked the broker callback box (or toggle to inspect all scans).</p>
         </div>
         <div class="flex flex-wrap gap-2 items-center">
-          <button id="btn-filter-optin" onclick="setLeadFilter(true)" class="text-xs font-semibold px-3 py-2 rounded-lg bg-slate-900 text-white">Opt-Ins Only</button>
-          <button id="btn-filter-all" onclick="setLeadFilter(false)" class="text-xs font-semibold px-3 py-2 rounded-lg bg-slate-100 text-slate-700">All Scans</button>
-          <button onclick="renderBrokerLeads()" class="text-xs font-semibold px-3 py-2 rounded-lg bg-emerald-600 text-white">Refresh</button>
+          <button id="btn-filter-optin" onclick="setLeadFilter(true)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white transition">Opt-Ins Only</button>
+          <button id="btn-filter-all" onclick="setLeadFilter(false)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition">All Scans</button>
+          <button onclick="renderBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition">Refresh</button>
         </div>
       </div>
 
@@ -426,16 +522,21 @@
       const statusEl = document.getElementById('db-status');
       statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Local Demo Mode';
       statusEl.className = hasSupabase
-        ? 'text-xs px-2 py-0.5 rounded-full bg-emerald-900 text-emerald-300'
-        : 'text-xs px-2 py-0.5 rounded-full bg-amber-900 text-amber-200';
+        ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+        : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
 
       const params = new URLSearchParams(window.location.search);
       const viewParam = params.get('view');
       const propParam = params.get('prop');
+      const addrParam = params.get('addr');
 
       if (propParam) {
-        await loadPropertyById(propParam);
+        await loadPropertyById(propParam, addrParam);
       } else {
+        if (addrParam) {
+          activeProperty.address = addrParam;
+          document.getElementById('prop-address').value = addrParam;
+        }
         syncUIWithProperty();
       }
 
@@ -454,17 +555,217 @@
       ['admin', 'scan', 'agent', 'leads'].forEach(t => {
         document.getElementById('view-' + t).classList.add('hidden');
         const btn = document.getElementById('tab-' + t);
-        if (btn) btn.className = 'nav-btn px-3 py-1.5 rounded-lg font-medium bg-slate-800 hover:bg-slate-700';
+        if (btn) btn.className = 'nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white transition';
       });
       document.getElementById('view-' + tab).classList.remove('hidden');
       const activeBtn = document.getElementById('tab-' + tab);
-      if (activeBtn) activeBtn.className = 'nav-btn px-3 py-1.5 rounded-lg font-medium bg-emerald-500 text-slate-950';
+      if (activeBtn) activeBtn.className = 'nav-btn px-3.5 py-1.5 rounded-lg font-semibold bg-emerald-500 text-slate-950 shadow-sm transition';
 
       if (tab === 'agent') renderAgentDashboard();
       if (tab === 'leads') renderBrokerLeads();
     }
 
-    // ==================== 4. PROPERTY PARSING, SAVING & QR ====================
+    // ==================== 4. LIVE URL SCRAPER, TEXT PARSER & QR ====================
+    function togglePasteBox() {
+      document.getElementById('paste-fallback-box').classList.toggle('hidden');
+    }
+
+    function showScrapeFeedback(msg, isWarning = false) {
+      const el = document.getElementById('scrape-feedback');
+      el.classList.remove('hidden');
+      el.className = isWarning
+        ? 'mt-3 text-xs px-3.5 py-2.5 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-200'
+        : 'mt-3 text-xs px-3.5 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-200';
+      el.textContent = msg;
+    }
+
+    function extractAddressFromUrlSlug(rawUrl) {
+      try {
+        const u = new URL(rawUrl);
+        const path = decodeURIComponent(u.pathname).toLowerCase();
+
+        // Match Australian URL slugs like /42-kensington-road-norwood-sa-5067-123456 or /2-18-jetty-st-glenelg-sa-5045
+        const slugMatch = path.match(/((?:\d+[a-z]?-)??\d+[a-z]?-[a-z0-9-]+?-(?:street|st|road|rd|avenue|ave|parade|pde|drive|dr|crescent|cres|court|ct|place|pl|terrace|tce|lane|ln|way|circuit|cct|boulevard|blvd|grove|gr|close|cl|esplanade|esp|highway|hwy))-([a-z-]+?)-(sa|nsw|vic|qld|wa|tas|act|nt)-(\d{4})/);
+        if (slugMatch) {
+          let street = slugMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          // Fix unit slash formatting e.g. "2 18 Jetty" -> "2/18 Jetty"
+          street = street.replace(/^(\d+[A-Z]?)\s+(\d+[A-Z]?\s+)/, '$1/$2');
+          const suburb = slugMatch[2].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const state = slugMatch[3].toUpperCase();
+          const postcode = slugMatch[4];
+          return { street, suburbLine: `${suburb} ${state} ${postcode}` };
+        }
+
+        // Match simpler slug without postcode e.g. /42-kensington-road-norwood
+        const simpleSlug = path.match(/((?:\d+[a-z]?-)??\d+[a-z]?-[a-z0-9-]+?-(?:street|st|road|rd|avenue|ave|parade|pde|drive|dr|crescent|cres|court|ct|place|pl|terrace|tce|lane|ln|way|circuit|cct|boulevard|blvd|grove|gr|close|cl|esplanade|esp))-([a-z-]{3,25})(?:\/|$)/);
+        if (simpleSlug) {
+          let street = simpleSlug[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          street = street.replace(/^(\d+[A-Z]?)\s+(\d+[A-Z]?\s+)/, '$1/$2');
+          const suburb = simpleSlug[2].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          return { street, suburbLine: suburb };
+        }
+
+        // Match REA style /property-house-sa-norwood-145234892 (suburb/state only)
+        const reaMatch = path.match(/property-[a-z]+-(sa|nsw|vic|qld|wa|tas|act|nt)-([a-z-]+?)-\d+/);
+        if (reaMatch) {
+          const state = reaMatch[1].toUpperCase();
+          const suburb = reaMatch[2].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          return { street: '', suburbLine: `${suburb} ${state}` };
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function extractAddressFromText(txt) {
+      // Look for Australian street address + Suburb State Postcode
+      const fullRegex = /\b((?:\d+[a-zA-Z]?\/)?\d+[a-zA-Z]?(?:-\d+[a-zA-Z]?)?\s+[A-Z][a-zA-Z0-9\s'-]{1,30}?\s+(?:Street|St|Road|Rd|Avenue|Ave|Parade|Pde|Drive|Dr|Crescent|Cres|Cr|Court|Ct|Place|Pl|Terrace|Tce|Lane|Ln|Way|Circuit|Cct|Boulevard|Blvd|Grove|Gr|Close|Cl|Esplanade|Esp|Highway|Hwy))[\s,]+([A-Z][a-zA-Z\s'-]{2,25})[\s,]+(SA|NSW|VIC|QLD|WA|TAS|ACT|NT)\s+(\d{4})\b/i;
+      const m = txt.match(fullRegex);
+      if (m) {
+        return {
+          street: m[1].trim(),
+          suburbLine: `${m[2].trim()} ${m[3].toUpperCase()} ${m[4]}`
+        };
+      }
+
+      // Fallback: Street address alone
+      const streetOnly = txt.match(/\b((?:\d+[a-zA-Z]?\/)?\d+[a-zA-Z]?\s+[A-Z][a-zA-Z0-9\s'-]{1,28}?\s+(?:Street|St|Road|Rd|Avenue|Ave|Parade|Pde|Drive|Dr|Crescent|Cres|Court|Ct|Place|Pl|Terrace|Tce|Lane|Ln|Way|Circuit|Cct|Boulevard|Blvd|Grove|Gr|Close|Cl|Esplanade|Esp))\b/);
+      const suburbOnly = txt.match(/\b([A-Z][a-zA-Z\s'-]{2,22}),?\s+(SA|NSW|VIC|QLD|WA|TAS|ACT|NT)\s+(\d{4})\b/);
+      if (streetOnly || suburbOnly) {
+        return {
+          street: streetOnly ? streetOnly[1].trim() : '',
+          suburbLine: suburbOnly ? `${suburbOnly[1].trim()} ${suburbOnly[2].toUpperCase()} ${suburbOnly[3]}` : ''
+        };
+      }
+      return null;
+    }
+
+    async function scrapeFromUrl() {
+      const urlInput = document.getElementById('scrape-url-input').value.trim();
+      if (!urlInput) {
+        alert('Paste a property listing URL first.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-scrape-url');
+      btn.disabled = true;
+      btn.textContent = 'Importing...';
+
+      // Step 1: Always extract any address embedded in the URL slug immediately
+      const slugData = extractAddressFromUrlSlug(urlInput);
+      if (slugData) {
+        if (slugData.street) document.getElementById('prop-address').value = slugData.street;
+        if (slugData.suburbLine) document.getElementById('prop-suburb').value = slugData.suburbLine;
+      }
+
+      // Step 2: Attempt live HTML fetch via CORS proxy to read Schema.org JSON-LD & OpenGraph meta tags
+      let fetchedSuccess = false;
+      try {
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(urlInput)}`;
+        const resp = await fetch(proxyUrl);
+        if (resp.ok) {
+          const json = await resp.json();
+          const html = json.contents || '';
+
+          if (html && html.length > 500 && !/Access Denied|Attention Required! \| Cloudflare|Pardon Our Interruption/i.test(html)) {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            // 2a. Parse Schema.org JSON-LD structured property data
+            doc.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
+              try {
+                const parsed = JSON.parse(script.textContent);
+                const items = Array.isArray(parsed) ? parsed : [parsed];
+                items.forEach(item => {
+                  const addr = item.address || item.mainEntity?.address;
+                  if (addr && typeof addr === 'object') {
+                    if (addr.streetAddress) document.getElementById('prop-address').value = addr.streetAddress;
+                    const loc = [addr.addressLocality, addr.addressRegion, addr.postalCode].filter(Boolean).join(' ');
+                    if (loc) document.getElementById('prop-suburb').value = loc;
+                    fetchedSuccess = true;
+                  }
+                  const beds = item.numberOfBedrooms || item.mainEntity?.numberOfBedrooms;
+                  if (beds) document.getElementById('prop-beds').value = beds;
+                });
+              } catch (e) {}
+            });
+
+            // 2b. Parse OpenGraph title & description
+            const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || doc.title || '';
+            const ogDesc = doc.querySelector('meta[property="og:description"]')?.content || '';
+            const bodyText = doc.body?.innerText || '';
+            const combinedText = `${ogTitle}\n${ogDesc}\n${bodyText.slice(0, 8000)}`;
+
+            if (!fetchedSuccess) {
+              const addrFromMeta = extractAddressFromText(ogTitle) || extractAddressFromText(combinedText);
+              if (addrFromMeta) {
+                if (addrFromMeta.street) document.getElementById('prop-address').value = addrFromMeta.street;
+                if (addrFromMeta.suburbLine) document.getElementById('prop-suburb').value = addrFromMeta.suburbLine;
+                fetchedSuccess = true;
+              }
+            }
+
+            applyTextParsingRules(combinedText);
+            if (ogTitle || ogDesc) fetchedSuccess = true;
+          }
+        }
+      } catch (err) {
+        console.warn('Direct fetch blocked or timed out:', err);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Auto-Fill From URL';
+      syncUIWithProperty();
+
+      if (fetchedSuccess) {
+        showScrapeFeedback('✓ Imported property address, details & updated QR code! Saving to cloud...');
+        await saveProperty(true);
+      } else if (slugData && (slugData.street || slugData.suburbLine)) {
+        document.getElementById('paste-fallback-box').classList.remove('hidden');
+        showScrapeFeedback('Extracted address from URL & placed it on the QR card. Because this portal blocks automated scrapers, paste the listing text below (or check the price guide) and click Save.', true);
+      } else {
+        document.getElementById('paste-fallback-box').classList.remove('hidden');
+        showScrapeFeedback('This portal blocks direct scraping. Open the listing tab, press Ctrl+A then Ctrl+C, and paste the page text below to auto-fill everything.', true);
+      }
+    }
+
+    function applyTextParsingRules(txt) {
+      if (!txt || !txt.trim()) return;
+
+      // Extract address if present in pasted text
+      const addrMatch = extractAddressFromText(txt);
+      if (addrMatch) {
+        if (addrMatch.street) document.getElementById('prop-address').value = addrMatch.street;
+        if (addrMatch.suburbLine) document.getElementById('prop-suburb').value = addrMatch.suburbLine;
+      }
+
+      // Extract prices ($850,000 or $850k)
+      const fullPrices = [...txt.matchAll(/\$\s?(\d{3})[,\s](\d{3})/g)].map(m => parseInt(m[1] + m[2], 10));
+      const kPrices = [...txt.matchAll(/\$\s?(\d{3,4})\s?k\b/gi)].map(m => parseInt(m[1], 10) * 1000);
+      const allPrices = [...fullPrices, ...kPrices].filter(p => p >= 250000 && p <= 15000000);
+
+      if (allPrices.length >= 1) {
+        document.getElementById('prop-min').value = Math.min(...allPrices);
+        document.getElementById('prop-max').value = Math.max(...allPrices);
+      }
+
+      // Extract bedrooms
+      const bedMatch = txt.match(/(\d)\s*(?:bed|bedroom|br\b)/i);
+      if (bedMatch) document.getElementById('prop-beds').value = bedMatch[1];
+
+      // Extract lifestyle tags
+      document.getElementById('tag-wfh').checked = /study|office|wfh|work from home/i.test(txt);
+      document.getElementById('tag-yard').checked = /yard|garden|pet|fenced|lawn/i.test(txt);
+      document.getElementById('tag-renovated').checked = /renovated|updated|modern|nothing to spend|move-in/i.test(txt);
+    }
+
+    async function parseListingText(autoSave = false) {
+      const txt = document.getElementById('raw-listing-text').value;
+      if (!txt.trim()) return;
+      applyTextParsingRules(txt);
+      syncUIWithProperty();
+      showScrapeFeedback('✓ Extracted address, price guide & lifestyle features onto the QR card!');
+      if (autoSave) await saveProperty(true);
+    }
+
     function loadSample(idx) {
       activeProperty = { ...SAMPLE_PROPERTIES[idx] };
       document.getElementById('prop-address').value = activeProperty.address;
@@ -479,24 +780,7 @@
       syncUIWithProperty();
     }
 
-    function parseListingText() {
-      const txt = document.getElementById('raw-listing-text').value;
-      if (!txt.trim()) return;
-
-      const prices = [...txt.matchAll(/\$?\s?(\d{3})[,\s]?(\d{3})/g)].map(m => parseInt(m[1] + m[2], 10));
-      if (prices.length >= 1) {
-        document.getElementById('prop-min').value = Math.min(...prices);
-        document.getElementById('prop-max').value = Math.max(...prices);
-      }
-      const bedMatch = txt.match(/(\d)\s*(?:bed|bedroom)/i);
-      if (bedMatch) document.getElementById('prop-beds').value = bedMatch[1];
-
-      document.getElementById('tag-wfh').checked = /study|office|wfh|work from home/i.test(txt);
-      document.getElementById('tag-yard').checked = /yard|garden|pet|fenced|lawn/i.test(txt);
-      document.getElementById('tag-renovated').checked = /renovated|updated|modern|nothing to spend|move-in/i.test(txt);
-    }
-
-    async function saveProperty() {
+    async function saveProperty(silent = false) {
       const payload = {
         address: document.getElementById('prop-address').value.trim() || '42 Kensington Road',
         suburb: document.getElementById('prop-suburb').value.trim(),
@@ -509,43 +793,65 @@
         move_in_ready: document.getElementById('tag-renovated').checked
       };
 
+      const btn = document.getElementById('btn-save-prop');
+      btn.textContent = 'Saving...';
+
       if (hasSupabase) {
         const { data, error } = await sb.from('properties').insert([payload]).select().single();
         if (!error && data) {
           activeProperty = data;
         } else {
-          alert('Supabase insert error: ' + (error?.message || 'Run the SQL GRANT script first'));
+          btn.textContent = 'Save Listing to Cloud & Lock QR Code';
+          if (!silent) alert('Supabase insert error: ' + (error?.message || 'Check database permissions'));
           return;
         }
       } else {
         activeProperty = { id: 'local-' + Date.now(), ...payload };
       }
 
+      btn.textContent = 'Save Listing to Cloud & Lock QR Code';
       syncUIWithProperty();
-      alert('Listing saved & QR code updated!');
+      if (!silent) alert('Listing saved & address-branded QR code updated!');
     }
 
-    async function loadPropertyById(id) {
+    async function loadPropertyById(id, fallbackAddr = '') {
       if (hasSupabase) {
         const { data } = await sb.from('properties').select('*').eq('id', id).single();
         if (data) activeProperty = data;
+        else if (fallbackAddr) activeProperty.address = fallbackAddr;
       } else {
         const found = SAMPLE_PROPERTIES.find(p => p.id === id);
         if (found) activeProperty = found;
+        else if (fallbackAddr) activeProperty.address = fallbackAddr;
       }
       syncUIWithProperty();
     }
 
     function syncUIWithProperty() {
-      const title = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
-      document.getElementById('card-address').textContent = title;
-      document.getElementById('quiz-prop-title').textContent = title;
-      document.getElementById('agent-prop-title').textContent = title;
+      const street = document.getElementById('prop-address')?.value.trim() || activeProperty.address;
+      const suburb = document.getElementById('prop-suburb')?.value.trim() || activeProperty.suburb;
+      const minP = Number(document.getElementById('prop-min')?.value) || activeProperty.price_min;
+      const maxP = Number(document.getElementById('prop-max')?.value) || activeProperty.price_max;
+      const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms;
+
+      activeProperty.address = street;
+      activeProperty.suburb = suburb;
+      activeProperty.price_min = minP;
+      activeProperty.price_max = maxP;
+      activeProperty.bedrooms = beds;
+
+      const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
+      document.getElementById('card-address').textContent = street;
+      document.getElementById('card-suburb').textContent = suburb || 'Open Home Inspection';
+      document.getElementById('qr-caption-address').textContent = street;
+      document.getElementById('quiz-prop-title').textContent = fullTitle;
+      document.getElementById('agent-prop-title').textContent = fullTitle;
       document.getElementById('quiz-prop-guide').textContent =
-        `Guide: $${Number(activeProperty.price_min).toLocaleString()} – $${Number(activeProperty.price_max).toLocaleString()} • ${activeProperty.bedrooms} Bed`;
+        `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed`;
 
       const baseUrl = window.location.origin + window.location.pathname;
-      const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}`;
+      const encodedAddr = encodeURIComponent(fullTitle);
+      const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodedAddr}`;
       const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}`;
 
       document.getElementById('share-buyer-url').value = buyerUrl;
@@ -553,16 +859,88 @@
 
       const qrEl = document.getElementById('qrcode');
       qrEl.innerHTML = '';
-      new QRCode(qrEl, { text: buyerUrl, width: 168, height: 168 });
+      new QRCode(qrEl, {
+        text: buyerUrl,
+        width: 176,
+        height: 176,
+        colorDark: '#0B1120',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function downloadQrCard() {
+      const qrCanvas = document.querySelector('#qrcode canvas');
+      if (!qrCanvas) {
+        alert('QR code is still generating—try again in a moment.');
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 820;
+      const ctx = canvas.getContext('2d');
+
+      // White card background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Dark header band
+      ctx.fillStyle = '#0B1120';
+      ctx.fillRect(0, 0, canvas.width, 210);
+
+      // Pill label
+      ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('30-SEC OPEN HOME FIT CHECK', 320, 62);
+
+      // Property Street Address
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 34px sans-serif';
+      ctx.fillText(activeProperty.address.slice(0, 32), 320, 122);
+
+      // Suburb
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '500 24px sans-serif';
+      ctx.fillText(activeProperty.suburb || '', 320, 165);
+
+      // Instructions
+      ctx.fillStyle = '#475569';
+      ctx.font = '500 22px sans-serif';
+      ctx.fillText('Scan to check your borrowing power', 320, 275);
+      ctx.fillText('& property match score in 30 seconds', 320, 308);
+
+      // QR Frame
+      ctx.strokeStyle = '#0B1120';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(165, 345, 310, 345);
+      ctx.drawImage(qrCanvas, 190, 365, 260, 260);
+
+      // Address inside QR frame footer
+      ctx.fillStyle = '#0B1120';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(activeProperty.address.slice(0, 28), 320, 665);
+
+      // Privacy footer
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '18px sans-serif';
+      ctx.fillText('Private estimate • Income never shared with agent', 320, 755);
+
+      const link = document.createElement('a');
+      const safeName = activeProperty.address.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      link.download = `qr-card-${safeName}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
     }
 
     // ==================== 5. BUYER QUIZ & AUSTRALIAN BORROWING MATHS ====================
     function selectSingle(key, val, btn) {
       quizState[key] = val;
       btn.parentElement.querySelectorAll('.chip-btn').forEach(b => {
-        b.className = 'chip-btn p-3 rounded-xl border text-xs font-semibold hover:bg-slate-50';
+        b.className = 'chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition';
       });
-      btn.className = 'chip-btn p-3 rounded-xl border text-xs font-semibold bg-slate-900 text-white border-slate-900';
+      btn.className = 'chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-slate-900 text-white border-slate-900 transition';
     }
 
     function toggleMulti(tag, btn) {
@@ -571,11 +949,11 @@
       if (idx === -1) {
         quizState.must_haves.push(tag);
         btn.classList.add('border-slate-900', 'bg-slate-50');
-        ind.className = 'check-ind text-emerald-600 font-bold';
+        ind.className = 'check-ind text-emerald-600 font-extrabold text-base';
       } else {
         quizState.must_haves.splice(idx, 1);
         btn.classList.remove('border-slate-900', 'bg-slate-50');
-        ind.className = 'check-ind text-slate-300';
+        ind.className = 'check-ind text-slate-300 text-base';
       }
     }
 
@@ -723,7 +1101,7 @@
           .order('leaderboard_score', { ascending: false });
         if (error) {
           document.getElementById('agent-leaderboard-list').innerHTML =
-            `<div class="bg-red-50 text-red-700 p-4 rounded-xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+            `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
           return;
         }
         rows = data || [];
@@ -735,14 +1113,16 @@
 
       const container = document.getElementById('agent-leaderboard-list');
       if (rows.length === 0) {
-        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-sm text-slate-500">No buyer scans recorded for this listing yet.</div>`;
+        container.innerHTML = `<div class="bg-white p-10 rounded-3xl border border-slate-200 text-center text-sm text-slate-500">No buyer scans recorded for this listing yet.</div>`;
         return;
       }
 
       container.innerHTML = rows.map((r, idx) => {
         const badgeColor = r.budget_badge === 'Budget Ready'
-          ? 'bg-emerald-100 text-emerald-800'
-          : r.budget_badge === 'Within Reach' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700';
+          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+          : r.budget_badge === 'Within Reach'
+            ? 'bg-amber-100 text-amber-800 border border-amber-200'
+            : 'bg-slate-100 text-slate-700 border border-slate-200';
 
         const missing = [];
         if ((r.must_haves || []).includes('wfh') && !activeProperty.has_wfh) missing.push('WFH Study');
@@ -750,27 +1130,27 @@
         if ((r.must_haves || []).includes('renovated') && !activeProperty.move_in_ready) missing.push('Renovated');
 
         const crossSellHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
-          ? `<div class="mt-2.5 text-xs bg-indigo-50 text-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-100 font-medium">
+          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-800 px-3.5 py-2 rounded-xl border border-indigo-100 font-semibold">
                Cross-Sell Alert: Budget-ready buyer missing ${escapeHtml(missing.join(' & '))} — pitch another listing!
              </div>`
           : '';
 
         return `
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90">
             <div class="flex flex-wrap justify-between items-start gap-3">
               <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-black bg-slate-900 text-white px-2 py-0.5 rounded">#${idx + 1}</span>
-                  <h3 class="font-bold text-base">${escapeHtml(r.buyer_name)}</h3>
-                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${badgeColor}">${escapeHtml(r.budget_badge)}</span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs font-extrabold bg-[#0B1120] text-white px-2.5 py-0.5 rounded-lg">#${idx + 1}</span>
+                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)}</h3>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${badgeColor}">${escapeHtml(r.budget_badge)}</span>
                 </div>
-                <p class="text-xs text-slate-500 mt-1">
+                <p class="text-xs text-slate-500 font-medium mt-1.5">
                   ${escapeHtml(r.buyer_mobile)} • ${escapeHtml(r.buying_stage)} (${escapeHtml(r.timeline)}) • ${escapeHtml(r.household)} / ${escapeHtml(r.pets)}
                 </p>
               </div>
-              <div class="text-right">
-                <span class="text-lg font-black text-slate-900">${r.fit_percentage}%</span>
-                <p class="text-[11px] text-slate-400">House Fit</p>
+              <div class="text-right bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-100">
+                <span class="text-lg font-extrabold text-slate-900">${r.fit_percentage}%</span>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">House Fit</p>
               </div>
             </div>
             ${crossSellHtml}
@@ -789,11 +1169,11 @@
     function setLeadFilter(optInOnly) {
       brokerOptInOnly = optInOnly;
       document.getElementById('btn-filter-optin').className = optInOnly
-        ? 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-900 text-white'
-        : 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-100 text-slate-700';
+        ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white transition'
+        : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
       document.getElementById('btn-filter-all').className = !optInOnly
-        ? 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-900 text-white'
-        : 'text-xs font-semibold px-3 py-2 rounded-lg bg-slate-100 text-slate-700';
+        ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white transition'
+        : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
       renderBrokerLeads();
     }
 
@@ -805,7 +1185,7 @@
         const { data, error } = await query;
         if (error) {
           document.getElementById('broker-leads-list').innerHTML =
-            `<div class="bg-red-50 text-red-700 p-4 rounded-xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+            `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
           return;
         }
         rows = data || [];
@@ -815,7 +1195,7 @@
 
       const container = document.getElementById('broker-leads-list');
       if (rows.length === 0) {
-        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-sm text-slate-500">No leads found for this filter. Make sure the "Send to Mortgage Broker" box is ticked on the buyer quiz, or click "All Scans".</div>`;
+        container.innerHTML = `<div class="bg-white p-10 rounded-3xl border border-slate-200 text-center text-sm text-slate-500">No leads found for this filter. Make sure the "Send to Mortgage Broker" box is ticked on the buyer quiz, or click "All Scans".</div>`;
         return;
       }
 
@@ -827,25 +1207,25 @@
           : `-$${Math.round(Math.abs(gap) / 1000)}k Gap vs guide + costs`;
 
         return `
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-3.5">
             <div class="flex flex-wrap justify-between items-start gap-2">
               <div>
-                <div class="flex items-center gap-2">
-                  <h3 class="font-bold text-base">${escapeHtml(r.buyer_name)} — <span class="text-emerald-700">${escapeHtml(r.buyer_mobile)}</span></h3>
-                  <span class="text-[11px] font-bold px-2 py-0.5 rounded ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <span class="text-emerald-700">${escapeHtml(r.buyer_mobile)}</span></h3>
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">
                     ${r.broker_opt_in ? 'Opted In' : 'Agent Only'}
                   </span>
                 </div>
-                <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
+                <p class="text-xs text-slate-500 font-medium mt-1">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
               </div>
-              <span class="text-xs font-bold px-2.5 py-1 rounded-full ${gap >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              <span class="text-xs font-bold px-3 py-1 rounded-full ${gap >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                 ${gapLabel}
               </span>
             </div>
-            <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl text-xs">
-              <div><span class="text-slate-400 block">Gross Income</span><strong>$${Number(r.income).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 block">Deposit / Equity</span><strong>$${Number(r.deposit).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 block">Est. Max Loan</span><strong>$${Number(r.est_max_loan).toLocaleString()}</strong></div>
+            <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
+              <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 font-medium block mb-0.5">Deposit / Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Loan</span><strong class="text-sm text-emerald-700">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
             </div>
           </div>
         `;
