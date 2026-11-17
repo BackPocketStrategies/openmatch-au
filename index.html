@@ -138,24 +138,29 @@
                 class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Bedrooms</label>
-              <input id="prop-beds" type="number" value="3" oninput="syncUIWithProperty()"
-                class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Number of Bedrooms</label>
+              <input id="prop-beds" type="number" min="1" max="10" value="3" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Number of Bathrooms</label>
+              <input id="prop-baths" type="number" min="1" max="10" value="2" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600" />
             </div>
           </div>
 
-          <!-- Lifestyle Feature Tags -->
+          <!-- Property Feature Tags -->
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Property Features (Matched Against Buyer Quiz)</label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer transition">
-                <input id="tag-wfh" type="checkbox" checked class="w-4 h-4 rounded accent-emerald-600" /> WFH / Study
+                <input id="tag-modern" type="checkbox" checked class="w-4 h-4 rounded accent-emerald-600" /> Modern / Updated Interiors
               </label>
               <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer transition">
-                <input id="tag-yard" type="checkbox" checked class="w-4 h-4 rounded accent-emerald-600" /> Pet-Friendly Yard
+                <input id="tag-garage" type="checkbox" checked class="w-4 h-4 rounded accent-emerald-600" /> Secure Garage / Parking
               </label>
               <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer transition">
-                <input id="tag-renovated" type="checkbox" class="w-4 h-4 rounded accent-emerald-600" /> Move-In Ready
+                <input id="tag-outdoor" type="checkbox" checked class="w-4 h-4 rounded accent-emerald-600" /> Outdoor Entertaining / Yard
               </label>
             </div>
           </div>
@@ -241,7 +246,7 @@
             <span id="quiz-step-label" class="bg-white/10 text-white px-2.5 py-0.5 rounded-full">Step 1 of 5</span>
           </div>
           <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">42 Kensington Road, Norwood SA 5067</h2>
-          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Guide: $850,000 – $910,000 • 3 Bed</p>
+          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
           <div class="w-full bg-slate-700/70 h-1.5 rounded-full mt-4 overflow-hidden">
             <div id="quiz-progress" class="bg-emerald-400 h-full transition-all duration-300 rounded-full" style="width: 20%"></div>
           </div>
@@ -269,20 +274,44 @@
             <button onclick="goQuizStep(2)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition mt-2">Continue →</button>
           </div>
 
-          <!-- STEP 2: NON-NEGOTIABLES -->
+          <!-- STEP 2: PROPERTY MUST-HAVES (5 CRITERIA) -->
           <div id="q-step-2" class="quiz-step hidden space-y-5">
             <div>
-              <h3 class="font-bold text-base text-slate-900 mb-1">Your non-negotiables?</h3>
-              <p class="text-xs text-slate-500 mb-3">Tap all that matter to you to score this property.</p>
+              <h3 class="font-bold text-base text-slate-900 mb-1">Your property must-haves?</h3>
+              <p class="text-xs text-slate-500 mb-3.5">We score this home against your essentials.</p>
+
+              <!-- Minimum Bedrooms & Bathrooms -->
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Min Bedrooms</label>
+                  <div class="grid grid-cols-4 gap-1" id="chips-min-beds">
+                    <button type="button" onclick="selectSingle('min_beds', 0, this)" class="chip-btn py-2 rounded-lg border-2 text-xs font-bold bg-slate-900 text-white border-slate-900">Any</button>
+                    <button type="button" onclick="selectSingle('min_beds', 2, this)" class="chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">2+</button>
+                    <button type="button" onclick="selectSingle('min_beds', 3, this)" class="chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">3+</button>
+                    <button type="button" onclick="selectSingle('min_beds', 4, this)" class="chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">4+</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Min Bathrooms</label>
+                  <div class="grid grid-cols-4 gap-1" id="chips-min-baths">
+                    <button type="button" onclick="selectSingle('min_baths', 0, this)" class="chip-btn py-2 rounded-lg border-2 text-xs font-bold bg-slate-900 text-white border-slate-900">Any</button>
+                    <button type="button" onclick="selectSingle('min_baths', 1, this)" class="chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">1+</button>
+                    <button type="button" onclick="selectSingle('min_baths', 2, this)" class="chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">2+</button>
+                    <button type="button" onclick="selectSingle('min_baths', 3, this)" class="chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">3+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3 Key Feature Toggles -->
               <div class="space-y-2.5">
-                <button type="button" onclick="toggleMulti('wfh', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
-                  <span>💻 Dedicated Home Office / Study</span><span class="check-ind text-slate-300 text-base">✓</span>
+                <button type="button" onclick="toggleMulti('modern', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
+                  <span>✨ Modern / Updated Interiors</span><span class="check-ind text-slate-300 text-base">✓</span>
                 </button>
-                <button type="button" onclick="toggleMulti('yard', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
-                  <span>🌳 Secure / Pet-Friendly Yard</span><span class="check-ind text-slate-300 text-base">✓</span>
+                <button type="button" onclick="toggleMulti('garage', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
+                  <span>🚗 Secure Garage / Parking</span><span class="check-ind text-slate-300 text-base">✓</span>
                 </button>
-                <button type="button" onclick="toggleMulti('renovated', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
-                  <span>✨ Move-In Ready (Nothing to Spend)</span><span class="check-ind text-slate-300 text-base">✓</span>
+                <button type="button" onclick="toggleMulti('outdoor', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50 transition">
+                  <span>🌿 Outdoor Entertaining / Yard</span><span class="check-ind text-slate-300 text-base">✓</span>
                 </button>
               </div>
             </div>
@@ -478,9 +507,10 @@
         price_min: 850000,
         price_max: 910000,
         bedrooms: 3,
-        has_wfh: true,
-        has_yard: true,
-        move_in_ready: false,
+        bathrooms: 2,
+        is_modern: true,
+        has_garage: true,
+        has_outdoor: true,
         agent_name: 'Sarah Jenkins'
       },
       {
@@ -490,20 +520,23 @@
         price_min: 1150000,
         price_max: 1250000,
         bedrooms: 4,
-        has_wfh: true,
-        has_yard: false,
-        move_in_ready: true,
+        bathrooms: 2,
+        is_modern: true,
+        has_garage: true,
+        has_outdoor: false,
         agent_name: 'Marcus Vance'
       }
     ];
 
-    let activeProperty = SAMPLE_PROPERTIES[0];
+    let activeProperty = { ...SAMPLE_PROPERTIES[0] };
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
     let brokerOptInOnly = true;
 
     let quizState = {
       household: 'Solo',
       pets: 'No Pets',
+      min_beds: 0,
+      min_baths: 0,
       must_haves: [],
       stage: 'Pre-Approved',
       timeline: 'ASAP',
@@ -584,11 +617,9 @@
         const u = new URL(rawUrl);
         const path = decodeURIComponent(u.pathname).toLowerCase();
 
-        // Match Australian URL slugs like /42-kensington-road-norwood-sa-5067-123456 or /2-18-jetty-st-glenelg-sa-5045
         const slugMatch = path.match(/((?:\d+[a-z]?-)??\d+[a-z]?-[a-z0-9-]+?-(?:street|st|road|rd|avenue|ave|parade|pde|drive|dr|crescent|cres|court|ct|place|pl|terrace|tce|lane|ln|way|circuit|cct|boulevard|blvd|grove|gr|close|cl|esplanade|esp|highway|hwy))-([a-z-]+?)-(sa|nsw|vic|qld|wa|tas|act|nt)-(\d{4})/);
         if (slugMatch) {
           let street = slugMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          // Fix unit slash formatting e.g. "2 18 Jetty" -> "2/18 Jetty"
           street = street.replace(/^(\d+[A-Z]?)\s+(\d+[A-Z]?\s+)/, '$1/$2');
           const suburb = slugMatch[2].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
           const state = slugMatch[3].toUpperCase();
@@ -596,7 +627,6 @@
           return { street, suburbLine: `${suburb} ${state} ${postcode}` };
         }
 
-        // Match simpler slug without postcode e.g. /42-kensington-road-norwood
         const simpleSlug = path.match(/((?:\d+[a-z]?-)??\d+[a-z]?-[a-z0-9-]+?-(?:street|st|road|rd|avenue|ave|parade|pde|drive|dr|crescent|cres|court|ct|place|pl|terrace|tce|lane|ln|way|circuit|cct|boulevard|blvd|grove|gr|close|cl|esplanade|esp))-([a-z-]{3,25})(?:\/|$)/);
         if (simpleSlug) {
           let street = simpleSlug[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -605,7 +635,6 @@
           return { street, suburbLine: suburb };
         }
 
-        // Match REA style /property-house-sa-norwood-145234892 (suburb/state only)
         const reaMatch = path.match(/property-[a-z]+-(sa|nsw|vic|qld|wa|tas|act|nt)-([a-z-]+?)-\d+/);
         if (reaMatch) {
           const state = reaMatch[1].toUpperCase();
@@ -617,7 +646,6 @@
     }
 
     function extractAddressFromText(txt) {
-      // Look for Australian street address + Suburb State Postcode
       const fullRegex = /\b((?:\d+[a-zA-Z]?\/)?\d+[a-zA-Z]?(?:-\d+[a-zA-Z]?)?\s+[A-Z][a-zA-Z0-9\s'-]{1,30}?\s+(?:Street|St|Road|Rd|Avenue|Ave|Parade|Pde|Drive|Dr|Crescent|Cres|Cr|Court|Ct|Place|Pl|Terrace|Tce|Lane|Ln|Way|Circuit|Cct|Boulevard|Blvd|Grove|Gr|Close|Cl|Esplanade|Esp|Highway|Hwy))[\s,]+([A-Z][a-zA-Z\s'-]{2,25})[\s,]+(SA|NSW|VIC|QLD|WA|TAS|ACT|NT)\s+(\d{4})\b/i;
       const m = txt.match(fullRegex);
       if (m) {
@@ -627,7 +655,6 @@
         };
       }
 
-      // Fallback: Street address alone
       const streetOnly = txt.match(/\b((?:\d+[a-zA-Z]?\/)?\d+[a-zA-Z]?\s+[A-Z][a-zA-Z0-9\s'-]{1,28}?\s+(?:Street|St|Road|Rd|Avenue|Ave|Parade|Pde|Drive|Dr|Crescent|Cres|Court|Ct|Place|Pl|Terrace|Tce|Lane|Ln|Way|Circuit|Cct|Boulevard|Blvd|Grove|Gr|Close|Cl|Esplanade|Esp))\b/);
       const suburbOnly = txt.match(/\b([A-Z][a-zA-Z\s'-]{2,22}),?\s+(SA|NSW|VIC|QLD|WA|TAS|ACT|NT)\s+(\d{4})\b/);
       if (streetOnly || suburbOnly) {
@@ -650,14 +677,12 @@
       btn.disabled = true;
       btn.textContent = 'Importing...';
 
-      // Step 1: Always extract any address embedded in the URL slug immediately
       const slugData = extractAddressFromUrlSlug(urlInput);
       if (slugData) {
         if (slugData.street) document.getElementById('prop-address').value = slugData.street;
         if (slugData.suburbLine) document.getElementById('prop-suburb').value = slugData.suburbLine;
       }
 
-      // Step 2: Attempt live HTML fetch via CORS proxy to read Schema.org JSON-LD & OpenGraph meta tags
       let fetchedSuccess = false;
       try {
         const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(urlInput)}`;
@@ -669,7 +694,6 @@
           if (html && html.length > 500 && !/Access Denied|Attention Required! \| Cloudflare|Pardon Our Interruption/i.test(html)) {
             const doc = new DOMParser().parseFromString(html, 'text/html');
 
-            // 2a. Parse Schema.org JSON-LD structured property data
             doc.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
               try {
                 const parsed = JSON.parse(script.textContent);
@@ -684,11 +708,12 @@
                   }
                   const beds = item.numberOfBedrooms || item.mainEntity?.numberOfBedrooms;
                   if (beds) document.getElementById('prop-beds').value = beds;
+                  const baths = item.numberOfBathroomsTotal || item.numberOfBathrooms || item.mainEntity?.numberOfBathroomsTotal;
+                  if (baths) document.getElementById('prop-baths').value = baths;
                 });
               } catch (e) {}
             });
 
-            // 2b. Parse OpenGraph title & description
             const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || doc.title || '';
             const ogDesc = doc.querySelector('meta[property="og:description"]')?.content || '';
             const bodyText = doc.body?.innerText || '';
@@ -720,7 +745,7 @@
         await saveProperty(true);
       } else if (slugData && (slugData.street || slugData.suburbLine)) {
         document.getElementById('paste-fallback-box').classList.remove('hidden');
-        showScrapeFeedback('Extracted address from URL & placed it on the QR card. Because this portal blocks automated scrapers, paste the listing text below (or check the price guide) and click Save.', true);
+        showScrapeFeedback('Extracted address from URL & placed it on the QR card. Because this portal blocks automated scrapers, paste the listing text below (or verify details) and click Save.', true);
       } else {
         document.getElementById('paste-fallback-box').classList.remove('hidden');
         showScrapeFeedback('This portal blocks direct scraping. Open the listing tab, press Ctrl+A then Ctrl+C, and paste the page text below to auto-fill everything.', true);
@@ -730,7 +755,6 @@
     function applyTextParsingRules(txt) {
       if (!txt || !txt.trim()) return;
 
-      // Extract address if present in pasted text
       const addrMatch = extractAddressFromText(txt);
       if (addrMatch) {
         if (addrMatch.street) document.getElementById('prop-address').value = addrMatch.street;
@@ -747,14 +771,17 @@
         document.getElementById('prop-max').value = Math.max(...allPrices);
       }
 
-      // Extract bedrooms
+      // Extract bedrooms & bathrooms
       const bedMatch = txt.match(/(\d)\s*(?:bed|bedroom|br\b)/i);
       if (bedMatch) document.getElementById('prop-beds').value = bedMatch[1];
 
-      // Extract lifestyle tags
-      document.getElementById('tag-wfh').checked = /study|office|wfh|work from home/i.test(txt);
-      document.getElementById('tag-yard').checked = /yard|garden|pet|fenced|lawn/i.test(txt);
-      document.getElementById('tag-renovated').checked = /renovated|updated|modern|nothing to spend|move-in/i.test(txt);
+      const bathMatch = txt.match(/(\d)\s*(?:bath|bathroom|ba\b)/i);
+      if (bathMatch) document.getElementById('prop-baths').value = bathMatch[1];
+
+      // Extract 3 feature tags
+      document.getElementById('tag-modern').checked = /modern|updated|renovated|contemporary|new kitchen|stylish|immaculate|nothing to spend/i.test(txt);
+      document.getElementById('tag-garage').checked = /garage|carport|lock-up|parking|car space|off-street/i.test(txt);
+      document.getElementById('tag-outdoor').checked = /yard|garden|alfresco|entertaining|pergola|deck|courtyard|patio|outdoor/i.test(txt);
     }
 
     async function parseListingText(autoSave = false) {
@@ -762,7 +789,7 @@
       if (!txt.trim()) return;
       applyTextParsingRules(txt);
       syncUIWithProperty();
-      showScrapeFeedback('✓ Extracted address, price guide & lifestyle features onto the QR card!');
+      showScrapeFeedback('✓ Extracted address, beds/baths, price guide & features onto the QR card!');
       if (autoSave) await saveProperty(true);
     }
 
@@ -773,40 +800,69 @@
       document.getElementById('prop-min').value = activeProperty.price_min;
       document.getElementById('prop-max').value = activeProperty.price_max;
       document.getElementById('prop-beds').value = activeProperty.bedrooms;
+      document.getElementById('prop-baths').value = activeProperty.bathrooms;
       document.getElementById('prop-agent').value = activeProperty.agent_name;
-      document.getElementById('tag-wfh').checked = activeProperty.has_wfh;
-      document.getElementById('tag-yard').checked = activeProperty.has_yard;
-      document.getElementById('tag-renovated').checked = activeProperty.move_in_ready;
+      document.getElementById('tag-modern').checked = activeProperty.is_modern;
+      document.getElementById('tag-garage').checked = activeProperty.has_garage;
+      document.getElementById('tag-outdoor').checked = activeProperty.has_outdoor;
       syncUIWithProperty();
     }
 
     async function saveProperty(silent = false) {
-      const payload = {
+      const isModern = document.getElementById('tag-modern').checked;
+      const hasGarage = document.getElementById('tag-garage').checked;
+      const hasOutdoor = document.getElementById('tag-outdoor').checked;
+      const beds = Number(document.getElementById('prop-beds').value) || 3;
+      const baths = Number(document.getElementById('prop-baths').value) || 2;
+
+      const dbPayload = {
         address: document.getElementById('prop-address').value.trim() || '42 Kensington Road',
         suburb: document.getElementById('prop-suburb').value.trim(),
         price_min: Number(document.getElementById('prop-min').value) || 850000,
         price_max: Number(document.getElementById('prop-max').value) || 910000,
-        bedrooms: Number(document.getElementById('prop-beds').value) || 3,
+        bedrooms: beds,
+        bathrooms: baths,
         agent_name: document.getElementById('prop-agent').value.trim(),
-        has_wfh: document.getElementById('tag-wfh').checked,
-        has_yard: document.getElementById('tag-yard').checked,
-        move_in_ready: document.getElementById('tag-renovated').checked
+        move_in_ready: isModern,
+        has_wfh: hasGarage,
+        has_yard: hasOutdoor
       };
 
       const btn = document.getElementById('btn-save-prop');
       btn.textContent = 'Saving...';
 
       if (hasSupabase) {
-        const { data, error } = await sb.from('properties').insert([payload]).select().single();
+        let { data, error } = await sb.from('properties').insert([dbPayload]).select().single();
+
+        // Graceful fallback if optional bathrooms column hasn't been added yet
+        if (error && /bathrooms/i.test(error.message)) {
+          const { bathrooms, ...fallbackPayload } = dbPayload;
+          const retry = await sb.from('properties').insert([fallbackPayload]).select().single();
+          data = retry.data;
+          error = retry.error;
+        }
+
         if (!error && data) {
-          activeProperty = data;
+          activeProperty = {
+            ...data,
+            bathrooms: data.bathrooms ?? baths,
+            is_modern: data.move_in_ready ?? isModern,
+            has_garage: data.has_wfh ?? hasGarage,
+            has_outdoor: data.has_yard ?? hasOutdoor
+          };
         } else {
           btn.textContent = 'Save Listing to Cloud & Lock QR Code';
           if (!silent) alert('Supabase insert error: ' + (error?.message || 'Check database permissions'));
           return;
         }
       } else {
-        activeProperty = { id: 'local-' + Date.now(), ...payload };
+        activeProperty = {
+          id: 'local-' + Date.now(),
+          ...dbPayload,
+          is_modern: isModern,
+          has_garage: hasGarage,
+          has_outdoor: hasOutdoor
+        };
       }
 
       btn.textContent = 'Save Listing to Cloud & Lock QR Code';
@@ -817,11 +873,20 @@
     async function loadPropertyById(id, fallbackAddr = '') {
       if (hasSupabase) {
         const { data } = await sb.from('properties').select('*').eq('id', id).single();
-        if (data) activeProperty = data;
-        else if (fallbackAddr) activeProperty.address = fallbackAddr;
+        if (data) {
+          activeProperty = {
+            ...data,
+            bathrooms: data.bathrooms ?? 2,
+            is_modern: Boolean(data.move_in_ready),
+            has_garage: Boolean(data.has_wfh),
+            has_outdoor: Boolean(data.has_yard)
+          };
+        } else if (fallbackAddr) {
+          activeProperty.address = fallbackAddr;
+        }
       } else {
         const found = SAMPLE_PROPERTIES.find(p => p.id === id);
-        if (found) activeProperty = found;
+        if (found) activeProperty = { ...found };
         else if (fallbackAddr) activeProperty.address = fallbackAddr;
       }
       syncUIWithProperty();
@@ -833,12 +898,20 @@
       const minP = Number(document.getElementById('prop-min')?.value) || activeProperty.price_min;
       const maxP = Number(document.getElementById('prop-max')?.value) || activeProperty.price_max;
       const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms;
+      const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
 
       activeProperty.address = street;
       activeProperty.suburb = suburb;
       activeProperty.price_min = minP;
       activeProperty.price_max = maxP;
       activeProperty.bedrooms = beds;
+      activeProperty.bathrooms = baths;
+
+      if (document.getElementById('tag-modern')) {
+        activeProperty.is_modern = document.getElementById('tag-modern').checked;
+        activeProperty.has_garage = document.getElementById('tag-garage').checked;
+        activeProperty.has_outdoor = document.getElementById('tag-outdoor').checked;
+      }
 
       const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
       document.getElementById('card-address').textContent = street;
@@ -847,7 +920,7 @@
       document.getElementById('quiz-prop-title').textContent = fullTitle;
       document.getElementById('agent-prop-title').textContent = fullTitle;
       document.getElementById('quiz-prop-guide').textContent =
-        `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed`;
+        `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed • ${baths} Bath`;
 
       const baseUrl = window.location.origin + window.location.pathname;
       const encodedAddr = encodeURIComponent(fullTitle);
@@ -881,48 +954,39 @@
       canvas.height = 820;
       const ctx = canvas.getContext('2d');
 
-      // White card background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Dark header band
       ctx.fillStyle = '#0B1120';
       ctx.fillRect(0, 0, canvas.width, 210);
 
-      // Pill label
       ctx.fillStyle = '#34d399';
       ctx.font = 'bold 20px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('30-SEC OPEN HOME FIT CHECK', 320, 62);
 
-      // Property Street Address
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 34px sans-serif';
       ctx.fillText(activeProperty.address.slice(0, 32), 320, 122);
 
-      // Suburb
       ctx.fillStyle = '#cbd5e1';
       ctx.font = '500 24px sans-serif';
       ctx.fillText(activeProperty.suburb || '', 320, 165);
 
-      // Instructions
       ctx.fillStyle = '#475569';
       ctx.font = '500 22px sans-serif';
       ctx.fillText('Scan to check your borrowing power', 320, 275);
       ctx.fillText('& property match score in 30 seconds', 320, 308);
 
-      // QR Frame
       ctx.strokeStyle = '#0B1120';
       ctx.lineWidth = 6;
       ctx.strokeRect(165, 345, 310, 345);
       ctx.drawImage(qrCanvas, 190, 365, 260, 260);
 
-      // Address inside QR frame footer
       ctx.fillStyle = '#0B1120';
       ctx.font = 'bold 18px sans-serif';
       ctx.fillText(activeProperty.address.slice(0, 28), 320, 665);
 
-      // Privacy footer
       ctx.fillStyle = '#94a3b8';
       ctx.font = '18px sans-serif';
       ctx.fillText('Private estimate • Income never shared with agent', 320, 755);
@@ -937,10 +1001,15 @@
     // ==================== 5. BUYER QUIZ & AUSTRALIAN BORROWING MATHS ====================
     function selectSingle(key, val, btn) {
       quizState[key] = val;
+      const isCompact = btn.parentElement.id.startsWith('chips-min-');
       btn.parentElement.querySelectorAll('.chip-btn').forEach(b => {
-        b.className = 'chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition';
+        b.className = isCompact
+          ? 'chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50'
+          : 'chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition';
       });
-      btn.className = 'chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-slate-900 text-white border-slate-900 transition';
+      btn.className = isCompact
+        ? 'chip-btn py-2 rounded-lg border-2 text-xs font-bold bg-slate-900 text-white border-slate-900'
+        : 'chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-slate-900 text-white border-slate-900 transition';
     }
 
     function toggleMulti(tag, btn) {
@@ -1001,16 +1070,26 @@
         finPts = 15;
       }
 
-      let fitPct = 100;
-      if (quizState.must_haves.length > 0) {
-        let matched = 0;
-        quizState.must_haves.forEach(tag => {
-          if (tag === 'wfh' && activeProperty.has_wfh) matched++;
-          if (tag === 'yard' && activeProperty.has_yard) matched++;
-          if (tag === 'renovated' && activeProperty.move_in_ready) matched++;
-        });
-        fitPct = Math.round((matched / quizState.must_haves.length) * 100);
+      // Score across all 5 property criteria (Min Beds, Min Baths, Modern, Garage, Outdoor)
+      let totalCriteria = 0;
+      let matchedCriteria = 0;
+
+      if (quizState.min_beds > 0) {
+        totalCriteria++;
+        if (Number(activeProperty.bedrooms) >= quizState.min_beds) matchedCriteria++;
       }
+      if (quizState.min_baths > 0) {
+        totalCriteria++;
+        if (Number(activeProperty.bathrooms) >= quizState.min_baths) matchedCriteria++;
+      }
+      quizState.must_haves.forEach(tag => {
+        totalCriteria++;
+        if (tag === 'modern' && activeProperty.is_modern) matchedCriteria++;
+        if (tag === 'garage' && activeProperty.has_garage) matchedCriteria++;
+        if (tag === 'outdoor' && activeProperty.has_outdoor) matchedCriteria++;
+      });
+
+      const fitPct = totalCriteria > 0 ? Math.round((matchedCriteria / totalCriteria) * 100) : 100;
 
       let readyPts = 10;
       if ((quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') && quizState.timeline === 'ASAP') readyPts = 30;
@@ -1044,13 +1123,18 @@
       btn.disabled = true;
       btn.textContent = 'Saving...';
 
+      // Combine feature tags + min beds/baths into must_haves array
+      const combinedMustHaves = [...quizState.must_haves];
+      if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
+      if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
+
       const record = {
         property_id: activeProperty.id,
         buyer_name: name,
         buyer_mobile: mobile,
         household: quizState.household,
         pets: quizState.pets,
-        must_haves: quizState.must_haves,
+        must_haves: combinedMustHaves,
         buying_stage: quizState.stage,
         timeline: quizState.timeline,
         income: quizState.income,
@@ -1124,14 +1208,27 @@
             ? 'bg-amber-100 text-amber-800 border border-amber-200'
             : 'bg-slate-100 text-slate-700 border border-slate-200';
 
+        // Check all 5 property features for Cross-Sell Alerts
+        const tags = r.must_haves || [];
         const missing = [];
-        if ((r.must_haves || []).includes('wfh') && !activeProperty.has_wfh) missing.push('WFH Study');
-        if ((r.must_haves || []).includes('yard') && !activeProperty.has_yard) missing.push('Pet Yard');
-        if ((r.must_haves || []).includes('renovated') && !activeProperty.move_in_ready) missing.push('Renovated');
+        if (tags.includes('modern') && !activeProperty.is_modern) missing.push('Modern Interiors');
+        if (tags.includes('garage') && !activeProperty.has_garage) missing.push('Secure Garage/Parking');
+        if (tags.includes('outdoor') && !activeProperty.has_outdoor) missing.push('Outdoor Entertaining/Yard');
+
+        const bedTag = tags.find(t => t.startsWith('beds:'));
+        if (bedTag) {
+          const reqBeds = Number(bedTag.split(':')[1]);
+          if (reqBeds > Number(activeProperty.bedrooms)) missing.push(`${reqBeds}+ Beds`);
+        }
+        const bathTag = tags.find(t => t.startsWith('baths:'));
+        if (bathTag) {
+          const reqBaths = Number(bathTag.split(':')[1]);
+          if (reqBaths > Number(activeProperty.bathrooms)) missing.push(`${reqBaths}+ Baths`);
+        }
 
         const crossSellHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
           ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-800 px-3.5 py-2 rounded-xl border border-indigo-100 font-semibold">
-               Cross-Sell Alert: Budget-ready buyer missing ${escapeHtml(missing.join(' & '))} — pitch another listing!
+               Cross-Sell Alert: Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing!
              </div>`
           : '';
 
