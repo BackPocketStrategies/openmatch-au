@@ -330,17 +330,17 @@
         <div class="bg-gradient-to-br from-[#004852] to-[#0B1120] text-white p-6">
           <div class="flex justify-between items-center text-[11px] text-teal-300 font-bold tracking-wider uppercase mb-1.5">
             <span>30-Sec Property Match</span>
-            <span id="quiz-step-label" class="bg-white/10 text-white px-2.5 py-0.5 rounded-full">Step 1 of 5</span>
+            <span id="quiz-step-label" class="bg-white/10 text-white px-2.5 py-0.5 rounded-full">Step 1 of 4</span>
           </div>
           <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">42 Kensington Road, Norwood SA 5067</h2>
           <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
           <div class="w-full bg-slate-700/70 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div id="quiz-progress" class="bg-teal-400 h-full transition-all duration-300 rounded-full" style="width: 20%"></div>
+            <div id="quiz-progress" class="bg-teal-400 h-full transition-all duration-300 rounded-full" style="width: 25%"></div>
           </div>
         </div>
 
         <div class="p-6">
-          <!-- STEP 1 -->
+          <!-- STEP 1: HOUSEHOLD & BUYING STAGE (No Pet Question, "Still Looking") -->
           <div id="q-step-1" class="quiz-step space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-2.5">Who would be living here?</h3>
@@ -350,18 +350,30 @@
                 <button type="button" onclick="selectSingle('household', 'Family', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">Family</button>
               </div>
             </div>
+
             <div>
-              <h3 class="font-bold text-base text-slate-900 mb-2.5">Any furry family members?</h3>
-              <div class="grid grid-cols-3 gap-2.5" id="chips-pets">
-                <button type="button" onclick="selectSingle('pets', 'No Pets', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]">No Pets</button>
-                <button type="button" onclick="selectSingle('pets', 'Indoor Pet', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">Indoor Pet</button>
-                <button type="button" onclick="selectSingle('pets', 'Dog (Yard)', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">Dog (Yard)</button>
+              <h3 class="font-bold text-base text-slate-900 mb-2.5">Where are you at in your buying journey?</h3>
+              <div class="grid grid-cols-2 gap-2.5" id="chips-stage">
+                <button type="button" onclick="selectSingle('stage', 'Pre-Approved', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]">Pre-Approved</button>
+                <button type="button" onclick="selectSingle('stage', 'Cash Buyer', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">Cash Buyer</button>
+                <button type="button" onclick="selectSingle('stage', 'Need to Sell', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">Need to Sell First</button>
+                <button type="button" onclick="selectSingle('stage', 'Still Looking', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">Still Looking</button>
               </div>
             </div>
+
+            <div>
+              <h3 class="font-bold text-base text-slate-900 mb-2.5">Ideal timeframe to buy?</h3>
+              <div class="grid grid-cols-3 gap-2.5" id="chips-timeline">
+                <button type="button" onclick="selectSingle('timeline', 'ASAP', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]">ASAP</button>
+                <button type="button" onclick="selectSingle('timeline', '1-3 Months', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">1–3 Months</button>
+                <button type="button" onclick="selectSingle('timeline', '3+ Months', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50">3+ Months</button>
+              </div>
+            </div>
+
             <button onclick="goQuizStep(2)" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm mt-2">Continue →</button>
           </div>
 
-          <!-- STEP 2 -->
+          <!-- STEP 2: PROPERTY MUST-HAVES -->
           <div id="q-step-2" class="quiz-step hidden space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-1">Your property must-haves?</h3>
@@ -406,84 +418,115 @@
             </div>
           </div>
 
-          <!-- STEP 3 -->
-          <div id="q-step-3" class="quiz-step hidden space-y-5">
+          <!-- STEP 3: BEST-GUESS PURCHASE PRICE ($20K STEPS FROM MIDPOINT) & DEPOSIT VS EQUITY -->
+          <div id="q-step-3" class="quiz-step hidden space-y-4">
             <div>
-              <h3 class="font-bold text-base text-slate-900 mb-2.5">Where are you at in your buying journey?</h3>
-              <div class="grid grid-cols-2 gap-2.5" id="chips-stage">
-                <button type="button" onclick="selectSingle('stage', 'Pre-Approved', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]">Pre-Approved</button>
-                <button type="button" onclick="selectSingle('stage', 'Cash Buyer', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">Cash Buyer</button>
-                <button type="button" onclick="selectSingle('stage', 'Need to Sell', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">Need to Sell First</button>
-                <button type="button" onclick="selectSingle('stage', 'Just Starting', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">Just Starting</button>
-              </div>
+              <h3 class="font-bold text-base text-slate-900">Best-guess price & deposit</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Rough estimates only — no exact numbers needed.</p>
             </div>
-            <div>
-              <h3 class="font-bold text-base text-slate-900 mb-2.5">Ideal timeframe to buy?</h3>
-              <div class="grid grid-cols-3 gap-2.5" id="chips-timeline">
-                <button type="button" onclick="selectSingle('timeline', 'ASAP', this)" class="chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]">ASAP</button>
-                <button type="button" onclick="selectSingle('timeline', '1-3 Months', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">1–3 Months</button>
-                <button type="button" onclick="selectSingle('timeline', '3+ Months', this)" class="chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">3+ Months</button>
+
+            <!-- Estimated Purchase Price Slider -->
+            <div class="bg-[#F2F9FA] p-4 rounded-2xl border border-[#006875]/25">
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-[11px] font-extrabold text-[#006875] uppercase tracking-wider">Est. Purchase Price (Best Guess)</label>
+                <span id="val-est-price" class="text-base font-extrabold text-slate-900">$880,000</span>
               </div>
+              <input id="slider-est-price" type="range" min="400000" max="1500000" step="20000" value="880000" oninput="updateSliders()" class="w-full" />
+              <p id="val-total-with-costs" class="text-[11px] font-semibold text-[#006875] mt-1.5">
+                + ~4% purchase costs ($35,200 stamp duty, transfer & legal) = <strong>$915,200 total</strong>
+              </p>
             </div>
-            <div class="flex gap-2.5">
+
+            <!-- Cash Deposit Slider -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Cash Deposit (Best Guess)</label>
+                <span id="val-cash-deposit" class="text-base font-extrabold text-[#006875]">$120,000</span>
+              </div>
+              <input id="slider-cash-deposit" type="range" min="0" max="1000000" step="20000" value="120000" oninput="updateSliders()" class="w-full" />
+              <p class="text-[10.5px] text-slate-500 mt-1">Cash savings used — lowers both your loan size and LVR.</p>
+            </div>
+
+            <!-- Usable Equity Slider -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Usable Home Equity (Best Guess)</label>
+                <span id="val-usable-equity" class="text-base font-extrabold text-[#006875]">$0</span>
+              </div>
+              <input id="slider-usable-equity" type="range" min="0" max="1200000" step="20000" value="0" oninput="updateSliders()" class="w-full" />
+              <p class="text-[10.5px] text-slate-500 mt-1">Available equity from another property — lowers LVR while income services the full purchase.</p>
+            </div>
+
+            <div class="flex gap-2.5 pt-1">
               <button onclick="goQuizStep(2)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
               <button onclick="goQuizStep(4)" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl">Continue →</button>
             </div>
           </div>
 
-          <!-- STEP 4 -->
-          <div id="q-step-4" class="quiz-step hidden space-y-5">
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-              <div class="flex justify-between items-baseline mb-2">
-                <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Combined Gross Income</label>
+          <!-- STEP 4: BEST-GUESS INCOME & OPEN LIABILITIES -->
+          <div id="q-step-4" class="quiz-step hidden space-y-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900">Best-guess income & commitments</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Only include debts & card limits you plan to <strong>keep open</strong> during the application.</p>
+            </div>
+
+            <!-- Combined Gross Income -->
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Combined Gross Income (Best Guess)</label>
                 <span id="val-income" class="text-base font-extrabold text-[#006875]">$180,000 / yr</span>
               </div>
-              <input id="slider-income" type="range" min="60000" max="500000" step="10000" value="180000" oninput="updateSliders()" class="w-full" />
+              <input id="slider-income" type="range" min="60000" max="600000" step="10000" value="180000" oninput="updateSliders()" class="w-full" />
             </div>
 
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-              <div class="flex justify-between items-baseline mb-2">
-                <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Deposit / Available Equity</label>
-                <span id="val-deposit" class="text-base font-extrabold text-[#006875]">$150,000</span>
+            <!-- Monthly Loan Repayments Keeping Open -->
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Monthly Loan Repayments (Keeping Open)</label>
+                <span id="val-monthly-loans" class="text-base font-extrabold text-[#006875]">$0 / mo</span>
               </div>
-              <input id="slider-deposit" type="range" min="20000" max="800000" step="10000" value="150000" oninput="updateSliders()" class="w-full" />
+              <input id="slider-monthly-loans" type="range" min="0" max="5000" step="100" value="0" oninput="updateSliders()" class="w-full" />
+              <p class="text-[10.5px] text-slate-500 mt-1">Car, personal, or HECS repayments not being paid out before settlement.</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">Dependants</label>
-                <select id="input-dependants" class="w-full p-2.5 text-sm font-medium border border-slate-300 rounded-xl bg-white">
-                  <option value="0">0 Dependants</option>
-                  <option value="1">1 Dependant</option>
-                  <option value="2">2 Dependants</option>
-                  <option value="3">3+ Dependants</option>
-                </select>
+            <!-- Total Credit Card Limits Keeping Open -->
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+              <div class="flex justify-between items-baseline mb-1">
+                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Total Credit Card Limits (Keeping Open)</label>
+                <span id="val-cc-limits" class="text-base font-extrabold text-[#006875]">$5,000</span>
               </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">Card / Loan Limits</label>
-                <select id="input-debts" class="w-full p-2.5 text-sm font-medium border border-slate-300 rounded-xl bg-white">
-                  <option value="0">None ($0)</option>
-                  <option value="5000" selected>~$5k Card Limit</option>
-                  <option value="15000">~$15k Limit / Car</option>
-                  <option value="35000">$35k+ Commitments</option>
-                </select>
-              </div>
+              <input id="slider-cc-limits" type="range" min="0" max="60000" step="2000" value="5000" oninput="updateSliders()" class="w-full" />
+              <p class="text-[10.5px] text-slate-500 mt-1">Exclude cards you intend to close or reduce before applying.</p>
             </div>
 
-            <div class="flex gap-2.5">
+            <!-- Dependants -->
+            <div class="flex items-center justify-between bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200/80">
+              <label class="text-xs font-bold text-slate-700">Dependants</label>
+              <select id="input-dependants" class="p-2 text-sm font-bold border border-slate-300 rounded-xl bg-white text-slate-800">
+                <option value="0">0 Dependants</option>
+                <option value="1">1 Dependant</option>
+                <option value="2">2 Dependants</option>
+                <option value="3">3+ Dependants</option>
+              </select>
+            </div>
+
+            <div class="flex gap-2.5 pt-1">
               <button onclick="goQuizStep(3)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
               <button onclick="calculateAndShowResults()" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl shadow-md">See My Results →</button>
             </div>
           </div>
 
-          <!-- STEP 5 -->
+          <!-- STEP 5: RESULTS (COLOR-CODED LVR + LIMITING FACTOR + LEAD CAPTURE) -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="grid grid-cols-2 gap-3">
-              <div class="bg-[#0B1120] text-white p-4 rounded-2xl">
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Est. Max Borrowing</p>
-                <p id="res-max-loan" class="text-xl font-extrabold text-teal-300 mt-1">$844,000</p>
-                <p id="res-total-power" class="text-[11px] text-slate-300 mt-1">Total Budget: $994k</p>
+              <!-- Max Borrowing Box (Color-coded by LVR Tier: Green / Orange / Red) -->
+              <div id="res-borrow-card" class="bg-emerald-950 text-white p-4 rounded-2xl border-2 border-emerald-500">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-200">Est. Max Borrow</p>
+                <p id="res-max-loan" class="text-xl font-extrabold text-emerald-300 mt-1">$844,000</p>
+                <p id="res-lvr-tier-label" class="text-[10.5px] font-bold text-emerald-200 mt-1 leading-snug">≤ 80% LVR • Best Rates & Fees</p>
               </div>
+
+              <!-- Property Match Box -->
               <div class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]">Property Match</p>
                 <p id="res-fit-score" class="text-2xl font-extrabold text-[#006875] mt-0.5">100%</p>
@@ -491,11 +534,17 @@
               </div>
             </div>
 
-            <p class="text-[11px] leading-relaxed text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-              <strong>Indicative Estimate Only:</strong> Calculated using a 3.0% APRA serviceability buffer and standard living expense benchmarks. Not a formal credit assessment or loan approval.
+            <!-- Limiting Factor Insight Callout -->
+            <div id="res-limiting-box" class="bg-slate-900 text-white p-3.5 rounded-2xl text-left space-y-1">
+              <p id="res-limiting-title" class="text-xs font-extrabold text-teal-300">What's Limiting Your Purchasing Power?</p>
+              <p id="res-limiting-desc" class="text-[11.5px] text-slate-200 leading-relaxed"></p>
+            </div>
+
+            <p class="text-[10.5px] leading-relaxed text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+              <strong>Indicative Best-Guess Estimate Only:</strong> Includes ~4% purchase costs (stamp duty, transfer, registration & conveyancing) and a 3.0% APRA serviceability buffer. Not a formal credit assessment.
             </p>
 
-            <div class="border-t border-slate-100 pt-3.5 space-y-3">
+            <div class="border-t border-slate-100 pt-3 space-y-2.5">
               <p class="text-xs font-extrabold text-slate-800">Save your Property Match results:</p>
               <input id="buyer-name" type="text" placeholder="Your Full Name *" class="w-full p-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
               <input id="buyer-mobile" type="tel" placeholder="Mobile Number *" class="w-full p-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
@@ -503,7 +552,7 @@
               <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer">
                 <input id="buyer-opt-in" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
                 <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Send to Alex Fyfe (Optional):</strong> Tick here to have Alex double-check your exact borrowing power across 30+ lenders before offers close.
+                  <strong>Send to Alex Fyfe (Optional):</strong> Tick here to have Alex double-check your exact borrowing power, guarantor options, or LVR tiers across 30+ lenders.
                 </span>
               </label>
 
@@ -579,10 +628,26 @@
     let brokerOptInOnly = true;
 
     let quizState = {
-      household: 'Solo', pets: 'No Pets', min_beds: 0, min_baths: 0, must_haves: [],
-      stage: 'Pre-Approved', timeline: 'ASAP', income: 180000, deposit: 150000,
-      dependants: 0, existing_debts: 5000, est_max_loan: 0, fit_percentage: 0,
-      budget_badge: 'Within Reach', leaderboard_score: 0
+      household: 'Solo',
+      stage: 'Pre-Approved',
+      timeline: 'ASAP',
+      min_beds: 0,
+      min_baths: 0,
+      must_haves: [],
+      est_purchase_price: 880000,
+      cash_deposit: 120000,
+      usable_equity: 0,
+      income: 180000,
+      monthly_loans: 0,
+      cc_limits: 5000,
+      dependants: 0,
+      est_max_loan: 0,
+      base_lvr_pct: 80,
+      lvr_tier: 'green',
+      limiting_factor: 'Balanced',
+      fit_percentage: 0,
+      budget_badge: 'Within Reach',
+      leaderboard_score: 0
     };
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -877,341 +942,4 @@
 
       if (hasSupabase) {
         let { data, error } = await sb.from('properties').insert([dbPayload]).select().single();
-        if (error && /bathrooms/i.test(error.message)) {
-          const { bathrooms, ...fallbackPayload } = dbPayload;
-          const retry = await sb.from('properties').insert([fallbackPayload]).select().single();
-          data = retry.data; error = retry.error;
-        }
-        if (!error && data) {
-          activeProperty = { ...data, bathrooms: data.bathrooms ?? baths, is_modern: data.move_in_ready ?? isModern, has_garage: data.has_wfh ?? hasGarage, has_outdoor: data.has_yard ?? hasOutdoor };
-        } else {
-          btn.textContent = 'Save Listing to Cloud & Lock QR Code';
-          if (!silent) alert('Supabase error: ' + (error?.message || 'Check permissions'));
-          return;
-        }
-      } else {
-        activeProperty = { id: 'local-' + Date.now(), ...dbPayload, is_modern: isModern, has_garage: hasGarage, has_outdoor: hasOutdoor };
-      }
-
-      btn.textContent = 'Save Listing to Cloud & Lock QR Code';
-      syncUIWithProperty();
-      if (!silent) alert('Listing saved & QR card updated!');
-    }
-
-    async function loadPropertyById(id, fallbackAddr = '') {
-      if (hasSupabase) {
-        const { data } = await sb.from('properties').select('*').eq('id', id).single();
-        if (data) {
-          activeProperty = { ...data, bathrooms: data.bathrooms ?? 2, is_modern: Boolean(data.move_in_ready), has_garage: Boolean(data.has_wfh), has_outdoor: Boolean(data.has_yard) };
-        } else if (fallbackAddr) activeProperty.address = fallbackAddr;
-      } else {
-        const found = SAMPLE_PROPERTIES.find(p => p.id === id);
-        if (found) activeProperty = { ...found };
-        else if (fallbackAddr) activeProperty.address = fallbackAddr;
-      }
-      syncUIWithProperty();
-    }
-
-    function syncUIWithProperty() {
-      const street = document.getElementById('prop-address')?.value.trim() || activeProperty.address;
-      const suburb = document.getElementById('prop-suburb')?.value.trim() || activeProperty.suburb;
-      const minP = Number(document.getElementById('prop-min')?.value) || activeProperty.price_min;
-      const maxP = Number(document.getElementById('prop-max')?.value) || activeProperty.price_max;
-      const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms;
-      const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
-
-      activeProperty.address = street;
-      activeProperty.suburb = suburb;
-      activeProperty.price_min = minP;
-      activeProperty.price_max = maxP;
-      activeProperty.bedrooms = beds;
-      activeProperty.bathrooms = baths;
-
-      if (document.getElementById('tag-modern')) {
-        activeProperty.is_modern = document.getElementById('tag-modern').checked;
-        activeProperty.has_garage = document.getElementById('tag-garage').checked;
-        activeProperty.has_outdoor = document.getElementById('tag-outdoor').checked;
-      }
-
-      const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
-      document.getElementById('card-address').textContent = street;
-      document.getElementById('card-suburb').textContent = suburb || 'Open Home Inspection';
-      document.getElementById('card-specs-pill').textContent = `${beds} Bed • ${baths} Bath`;
-      document.getElementById('qr-caption-address').textContent = street;
-      document.getElementById('qr-caption-suburb').textContent = suburb || '';
-      document.getElementById('quiz-prop-title').textContent = fullTitle;
-      document.getElementById('agent-prop-title').textContent = fullTitle;
-      document.getElementById('quiz-prop-guide').textContent = `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed • ${baths} Bath`;
-
-      const baseUrl = window.location.origin + window.location.pathname;
-      const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
-      const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}`;
-
-      document.getElementById('share-buyer-url').value = buyerUrl;
-      document.getElementById('share-agent-url').value = agentUrl;
-
-      const qrEl = document.getElementById('qrcode');
-      qrEl.innerHTML = '';
-      new QRCode(qrEl, {
-        text: buyerUrl,
-        width: 225,
-        height: 225,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
-
-    // ==================== BUYER QUIZ & BORROWING MATHS ====================
-    function selectSingle(key, val, btn) {
-      quizState[key] = val;
-      const isCompact = btn.parentElement.id.startsWith('chips-min-');
-      btn.parentElement.querySelectorAll('.chip-btn').forEach(b => {
-        b.className = isCompact
-          ? 'chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700'
-          : 'chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50';
-      });
-      btn.className = isCompact
-        ? 'chip-btn py-2 rounded-lg border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]'
-        : 'chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]';
-    }
-
-    function toggleMulti(tag, btn) {
-      const idx = quizState.must_haves.indexOf(tag);
-      const ind = btn.querySelector('.check-ind');
-      if (idx === -1) {
-        quizState.must_haves.push(tag);
-        btn.classList.add('border-[#006875]', 'bg-[#F2F9FA]');
-        ind.className = 'check-ind text-[#006875] font-extrabold text-base';
-      } else {
-        quizState.must_haves.splice(idx, 1);
-        btn.classList.remove('border-[#006875]', 'bg-[#F2F9FA]');
-        ind.className = 'check-ind text-slate-300 text-base';
-      }
-    }
-
-    function updateSliders() {
-      quizState.income = Number(document.getElementById('slider-income').value);
-      quizState.deposit = Number(document.getElementById('slider-deposit').value);
-      document.getElementById('val-income').textContent = `$${quizState.income.toLocaleString()} / yr`;
-      document.getElementById('val-deposit').textContent = `$${quizState.deposit.toLocaleString()}`;
-    }
-
-    function goQuizStep(step) {
-      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
-      document.getElementById('q-step-' + step).classList.remove('hidden');
-      document.getElementById('quiz-step-label').textContent = `Step ${step} of 5`;
-      document.getElementById('quiz-progress').style.width = `${step * 20}%`;
-    }
-
-    function calculateAndShowResults() {
-      quizState.income = Number(document.getElementById('slider-income').value);
-      quizState.deposit = Number(document.getElementById('slider-deposit').value);
-      quizState.dependants = Number(document.getElementById('input-dependants').value);
-      quizState.existing_debts = Number(document.getElementById('input-debts').value);
-
-      const netMonthly = (quizState.income * 0.73) / 12;
-      const livingExpenses = 2400 + (quizState.dependants * 550);
-      const debtCommitments = quizState.existing_debts * 0.038;
-      const surplus = Math.max(0, (netMonthly - livingExpenses - debtCommitments) * 0.85);
-
-      const servicingMaxLoan = Math.round((surplus / 0.0084085) / 1000) * 1000;
-      const dtiMaxLoan = quizState.income * 6;
-      const estMaxLoan = Math.max(0, Math.min(servicingMaxLoan, dtiMaxLoan));
-      const totalBuyingPower = estMaxLoan + quizState.deposit;
-
-      const targetWithCosts = activeProperty.price_max * 1.05;
-      let budgetBadge = 'Stretch', finPts = 5;
-      if (totalBuyingPower >= targetWithCosts) { budgetBadge = 'Budget Ready'; finPts = 40; }
-      else if (totalBuyingPower >= activeProperty.price_min) { budgetBadge = 'Within Reach'; finPts = 25; }
-      else if (quizState.stage === 'Need to Sell') { budgetBadge = 'Subject to Sale'; finPts = 15; }
-
-      let totalCriteria = 0, matchedCriteria = 0;
-      if (quizState.min_beds > 0) { totalCriteria++; if (Number(activeProperty.bedrooms) >= quizState.min_beds) matchedCriteria++; }
-      if (quizState.min_baths > 0) { totalCriteria++; if (Number(activeProperty.bathrooms) >= quizState.min_baths) matchedCriteria++; }
-      quizState.must_haves.forEach(tag => {
-        totalCriteria++;
-        if (tag === 'modern' && activeProperty.is_modern) matchedCriteria++;
-        if (tag === 'garage' && activeProperty.has_garage) matchedCriteria++;
-        if (tag === 'outdoor' && activeProperty.has_outdoor) matchedCriteria++;
-      });
-
-      const fitPct = totalCriteria > 0 ? Math.round((matchedCriteria / totalCriteria) * 100) : 100;
-      let readyPts = 10;
-      if ((quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') && quizState.timeline === 'ASAP') readyPts = 30;
-      else if (quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') readyPts = 22;
-      else if (quizState.timeline === 'ASAP') readyPts = 18;
-
-      quizState.est_max_loan = estMaxLoan;
-      quizState.fit_percentage = fitPct;
-      quizState.budget_badge = budgetBadge;
-      quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
-
-      document.getElementById('res-max-loan').textContent = `$${estMaxLoan.toLocaleString()}`;
-      document.getElementById('res-total-power').textContent = `Total Budget: $${totalBuyingPower.toLocaleString()}`;
-      document.getElementById('res-fit-score').textContent = `${fitPct}%`;
-      document.getElementById('res-budget-label').textContent = budgetBadge;
-
-      goQuizStep(5);
-    }
-
-    async function submitBuyerScan() {
-      const name = document.getElementById('buyer-name').value.trim();
-      const mobile = document.getElementById('buyer-mobile').value.trim();
-      if (!name || !mobile) return alert('Please enter your name and mobile number.');
-
-      const btn = document.getElementById('btn-submit-scan');
-      btn.disabled = true; btn.textContent = 'Saving...';
-
-      const combinedMustHaves = [...quizState.must_haves];
-      if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
-      if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
-
-      const record = {
-        property_id: activeProperty.id, buyer_name: name, buyer_mobile: mobile,
-        household: quizState.household, pets: quizState.pets, must_haves: combinedMustHaves,
-        buying_stage: quizState.stage, timeline: quizState.timeline, income: quizState.income,
-        deposit: quizState.deposit, dependants: quizState.dependants, existing_debts: quizState.existing_debts,
-        est_max_loan: quizState.est_max_loan, fit_percentage: quizState.fit_percentage,
-        budget_badge: quizState.budget_badge, leaderboard_score: quizState.leaderboard_score,
-        broker_opt_in: document.getElementById('buyer-opt-in').checked
-      };
-
-      if (hasSupabase) {
-        const { error } = await sb.from('buyer_scans').insert([record]);
-        if (error) { btn.disabled = false; btn.textContent = 'Save My Property Match'; return alert('Supabase error: ' + error.message); }
-      } else {
-        localScans.unshift({ id: 's-' + Date.now(), ...record });
-        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
-      }
-
-      btn.disabled = false; btn.textContent = 'Save My Property Match';
-      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
-      document.getElementById('q-step-done').classList.remove('hidden');
-    }
-
-    function resetQuiz() {
-      document.getElementById('buyer-name').value = '';
-      document.getElementById('buyer-mobile').value = '';
-      document.getElementById('buyer-opt-in').checked = false;
-      goQuizStep(1);
-    }
-
-    // ==================== AGENT DASHBOARD ====================
-    async function renderAgentDashboard() {
-      let rows = [];
-      if (hasSupabase) {
-        const { data, error } = await sb.from('agent_leaderboard_view').select('*').eq('property_id', activeProperty.id).order('leaderboard_score', { ascending: false });
-        if (error) return document.getElementById('agent-leaderboard-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
-        rows = data || [];
-      } else {
-        rows = localScans.filter(s => s.property_id === activeProperty.id).sort((a, b) => b.leaderboard_score - a.leaderboard_score);
-      }
-
-      const container = document.getElementById('agent-leaderboard-list');
-      if (rows.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-3xl border text-center text-sm text-slate-500">No buyer scans recorded for this listing yet.</div>`;
-
-      container.innerHTML = rows.map((r, idx) => {
-        const badgeColor = r.budget_badge === 'Budget Ready' ? 'bg-emerald-100 text-emerald-800' : r.budget_badge === 'Within Reach' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700';
-        const tags = r.must_haves || [];
-        const missing = [];
-        if (tags.includes('modern') && !activeProperty.is_modern) missing.push('Modern Interiors');
-        if (tags.includes('garage') && !activeProperty.has_garage) missing.push('Secure Garage/Parking');
-        if (tags.includes('outdoor') && !activeProperty.has_outdoor) missing.push('Outdoor Entertaining/Yard');
-        const bedTag = tags.find(t => t.startsWith('beds:'));
-        if (bedTag && Number(bedTag.split(':')[1]) > Number(activeProperty.bedrooms)) missing.push(`${bedTag.split(':')[1]}+ Beds`);
-        const bathTag = tags.find(t => t.startsWith('baths:'));
-        if (bathTag && Number(bathTag.split(':')[1]) > Number(activeProperty.bathrooms)) missing.push(`${bathTag.split(':')[1]}+ Baths`);
-
-        const crossSellHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
-          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-800 px-3.5 py-2 rounded-xl border border-indigo-100 font-semibold">Cross-Sell Alert: Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing!</div>`
-          : '';
-
-        return `
-          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90">
-            <div class="flex flex-wrap justify-between items-start gap-3">
-              <div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-xs font-extrabold bg-[#0B1120] text-white px-2.5 py-0.5 rounded-lg">#${idx + 1}</span>
-                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)}</h3>
-                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${badgeColor}">${escapeHtml(r.budget_badge)}</span>
-                </div>
-                <p class="text-xs text-slate-500 font-medium mt-1.5">${escapeHtml(r.buyer_mobile)} • ${escapeHtml(r.buying_stage)} (${escapeHtml(r.timeline)}) • ${escapeHtml(r.household)} / ${escapeHtml(r.pets)}</p>
-              </div>
-              <div class="text-right bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-100">
-                <span class="text-lg font-extrabold text-slate-900">${r.fit_percentage}%</span>
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">House Fit</p>
-              </div>
-            </div>
-            ${crossSellHtml}
-          </div>`;
-      }).join('');
-    }
-
-    function copyAgentWrapUp() {
-      navigator.clipboard.writeText(`Property Match Buyer Wrap-Up — ${activeProperty.address}\nCheck the live ranked call list:\n${document.getElementById('share-agent-url').value}`);
-      alert('Post-open SMS summary copied!');
-    }
-
-    // ==================== BROKER LEADS ====================
-    function setLeadFilter(optInOnly) {
-      brokerOptInOnly = optInOnly;
-      document.getElementById('btn-filter-optin').className = optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
-      document.getElementById('btn-filter-all').className = !optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
-      renderBrokerLeads();
-    }
-
-    async function renderBrokerLeads() {
-      let rows = [];
-      if (hasSupabase) {
-        let query = sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
-        if (brokerOptInOnly) query = query.eq('broker_opt_in', true);
-        const { data, error } = await query;
-        if (error) return document.getElementById('broker-leads-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
-        rows = data || [];
-      } else {
-        rows = brokerOptInOnly ? localScans.filter(s => s.broker_opt_in) : localScans;
-      }
-
-      const container = document.getElementById('broker-leads-list');
-      if (rows.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-3xl border text-center text-sm text-slate-500">No leads found for this filter.</div>`;
-
-      container.innerHTML = rows.map(r => {
-        const totalPower = Number(r.est_max_loan) + Number(r.deposit);
-        const gap = totalPower - (activeProperty.price_max * 1.05);
-        const gapLabel = gap >= 0 ? `+$${Math.round(gap / 1000)}k Surplus above guide + costs` : `-$${Math.round(Math.abs(gap) / 1000)}k Gap vs guide + costs`;
-
-        return `
-          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-3.5">
-            <div class="flex flex-wrap justify-between items-start gap-2">
-              <div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <span class="text-[#006875]">${escapeHtml(r.buyer_mobile)}</span></h3>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${r.broker_opt_in ? 'Opted In' : 'Agent Only'}</span>
-                </div>
-                <p class="text-xs text-slate-500 font-medium mt-1">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
-              </div>
-              <span class="text-xs font-bold px-3 py-1 rounded-full ${gap >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${gapLabel}</span>
-            </div>
-            <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
-              <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Deposit / Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Loan</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    function copyInput(id) {
-      const el = document.getElementById(id);
-      el.select();
-      navigator.clipboard.writeText(el.value);
-      alert('Link copied!');
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
-  </script>
-</body>
-</html>
+        if (error && /bathrooms
