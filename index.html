@@ -146,7 +146,7 @@
 
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Property Features (Matched Against Buyer Quiz)</label>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer">
                 <input id="tag-modern" type="checkbox" checked class="w-4 h-4 rounded accent-[#006875]" /> Modern / Updated Interiors
               </label>
@@ -155,6 +155,9 @@
               </label>
               <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer">
                 <input id="tag-outdoor" type="checkbox" checked class="w-4 h-4 rounded accent-[#006875]" /> Outdoor Entertaining / Yard
+              </label>
+              <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer">
+                <input id="tag-office" type="checkbox" checked class="w-4 h-4 rounded accent-[#006875]" /> Home Office / 2nd Living Area
               </label>
             </div>
           </div>
@@ -308,7 +311,7 @@
             <button onclick="goQuizStep(2)" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm mt-2">Continue →</button>
           </div>
 
-          <!-- STEP 2: PROPERTY MUST-HAVES -->
+          <!-- STEP 2: PROPERTY MUST-HAVES (6 Requirements) -->
           <div id="q-step-2" class="quiz-step hidden space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-1">Your property must-haves?</h3>
@@ -344,6 +347,9 @@
                 </button>
                 <button type="button" onclick="toggleMulti('outdoor', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
                   <span>🌿 Outdoor Entertaining / Yard</span><span class="check-ind text-slate-300 text-base">✓</span>
+                </button>
+                <button type="button" onclick="toggleMulti('office', this)" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-sm font-semibold flex justify-between items-center hover:bg-slate-50">
+                  <span>💻 Home Office / 2nd Living Area</span><span class="check-ind text-slate-300 text-base">✓</span>
                 </button>
               </div>
             </div>
@@ -554,8 +560,8 @@
     const sb = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
     const SAMPLE_PROPERTIES = [
-      { id: '11111111-1111-1111-1111-111111111111', address: '42 Kensington Road', suburb: 'Norwood SA 5067', price_min: 850000, price_max: 910000, bedrooms: 3, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: true, agent_name: 'Sarah Jenkins' },
-      { id: '22222222-2222-2222-2222-222222222222', address: '18 Jetty Street', suburb: 'Glenelg SA 5045', price_min: 1150000, price_max: 1250000, bedrooms: 4, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: false, agent_name: 'Marcus Vance' }
+      { id: '11111111-1111-1111-1111-111111111111', address: '42 Kensington Road', suburb: 'Norwood SA 5067', price_min: 850000, price_max: 910000, bedrooms: 3, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: true, has_office: true, agent_name: 'Sarah Jenkins' },
+      { id: '22222222-2222-2222-2222-222222222222', address: '18 Jetty Street', suburb: 'Glenelg SA 5045', price_min: 1150000, price_max: 1250000, bedrooms: 4, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: false, has_office: false, agent_name: 'Marcus Vance' }
     ];
 
     let activeProperty = { ...SAMPLE_PROPERTIES[0] };
@@ -763,6 +769,7 @@
       document.getElementById('tag-modern').checked = /modern|updated|renovated|contemporary|new kitchen|stylish|immaculate|nothing to spend/i.test(txt);
       document.getElementById('tag-garage').checked = /garage|carport|lock-up|parking|car space|off-street/i.test(txt);
       document.getElementById('tag-outdoor').checked = /yard|garden|alfresco|entertaining|pergola|deck|courtyard|patio|outdoor/i.test(txt);
+      document.getElementById('tag-office').checked = /home office|study|second living|2nd living|rumpus|retreat|family room|theatre|media room/i.test(txt);
     }
 
     async function parseListingText(autoSave = false) {
@@ -786,6 +793,7 @@
       document.getElementById('tag-modern').checked = activeProperty.is_modern;
       document.getElementById('tag-garage').checked = activeProperty.has_garage;
       document.getElementById('tag-outdoor').checked = activeProperty.has_outdoor;
+      document.getElementById('tag-office').checked = activeProperty.has_office;
       syncUIWithProperty();
     }
 
@@ -793,6 +801,7 @@
       const isModern = document.getElementById('tag-modern').checked;
       const hasGarage = document.getElementById('tag-garage').checked;
       const hasOutdoor = document.getElementById('tag-outdoor').checked;
+      const hasOffice = document.getElementById('tag-office').checked;
       const beds = Number(document.getElementById('prop-beds').value) || 3;
       const baths = Number(document.getElementById('prop-baths').value) || 2;
 
@@ -803,7 +812,7 @@
         price_max: Number(document.getElementById('prop-max').value) || 910000,
         bedrooms: beds, bathrooms: baths,
         agent_name: document.getElementById('prop-agent').value.trim(),
-        move_in_ready: isModern, has_wfh: hasGarage, has_yard: hasOutdoor
+        move_in_ready: isModern, has_wfh: hasGarage, has_yard: hasOutdoor, has_office: hasOffice
       };
 
       const btn = document.getElementById('btn-save-prop');
@@ -811,20 +820,34 @@
 
       if (hasSupabase) {
         let { data, error } = await sb.from('properties').insert([dbPayload]).select().single();
-        if (error && /bathrooms/i.test(error.message)) {
-          const { bathrooms, ...fallbackPayload } = dbPayload;
+        if (error && /bathrooms|has_office/i.test(error.message)) {
+          const { bathrooms, has_office, ...fallbackPayload } = dbPayload;
           const retry = await sb.from('properties').insert([fallbackPayload]).select().single();
           data = retry.data; error = retry.error;
         }
         if (!error && data) {
-          activeProperty = { ...data, bathrooms: data.bathrooms ?? baths, is_modern: data.move_in_ready ?? isModern, has_garage: data.has_wfh ?? hasGarage, has_outdoor: data.has_yard ?? hasOutdoor };
+          activeProperty = {
+            ...data,
+            bathrooms: data.bathrooms ?? baths,
+            is_modern: data.move_in_ready ?? isModern,
+            has_garage: data.has_wfh ?? hasGarage,
+            has_outdoor: data.has_yard ?? hasOutdoor,
+            has_office: data.has_office ?? hasOffice
+          };
         } else {
           btn.textContent = 'Save Listing to Cloud & Lock QR Code';
           if (!silent) alert('Supabase error: ' + (error?.message || 'Check permissions'));
           return;
         }
       } else {
-        activeProperty = { id: 'local-' + Date.now(), ...dbPayload, is_modern: isModern, has_garage: hasGarage, has_outdoor: hasOutdoor };
+        activeProperty = {
+          id: 'local-' + Date.now(),
+          ...dbPayload,
+          is_modern: isModern,
+          has_garage: hasGarage,
+          has_outdoor: hasOutdoor,
+          has_office: hasOffice
+        };
       }
 
       btn.textContent = 'Save Listing to Cloud & Lock QR Code';
@@ -836,7 +859,14 @@
       if (hasSupabase) {
         const { data } = await sb.from('properties').select('*').eq('id', id).single();
         if (data) {
-          activeProperty = { ...data, bathrooms: data.bathrooms ?? 2, is_modern: Boolean(data.move_in_ready), has_garage: Boolean(data.has_wfh), has_outdoor: Boolean(data.has_yard) };
+          activeProperty = {
+            ...data,
+            bathrooms: data.bathrooms ?? 2,
+            is_modern: Boolean(data.move_in_ready),
+            has_garage: Boolean(data.has_wfh),
+            has_outdoor: Boolean(data.has_yard),
+            has_office: Boolean(data.has_office ?? true)
+          };
         } else if (fallbackAddr) activeProperty.address = fallbackAddr;
       } else {
         const found = SAMPLE_PROPERTIES.find(p => p.id === id);
@@ -865,6 +895,7 @@
         activeProperty.is_modern = document.getElementById('tag-modern').checked;
         activeProperty.has_garage = document.getElementById('tag-garage').checked;
         activeProperty.has_outdoor = document.getElementById('tag-outdoor').checked;
+        activeProperty.has_office = document.getElementById('tag-office').checked;
       }
 
       const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
@@ -1068,7 +1099,7 @@
         limitingDescEl.textContent = `Both your income ($${servicingMaxLoan.toLocaleString()} servicing capacity) and deposit/equity (~${roundedBaseLvr}% base LVR) comfortably cover your $${estPrice.toLocaleString()} estimate plus 4% purchase costs.`;
       }
 
-      // 6. Score Property Match across the 5 criteria
+      // 6. Score Property Match across all 6 criteria
       let totalCriteria = 0, matchedCriteria = 0;
       if (quizState.min_beds > 0) { totalCriteria++; if (Number(activeProperty.bedrooms) >= quizState.min_beds) matchedCriteria++; }
       if (quizState.min_baths > 0) { totalCriteria++; if (Number(activeProperty.bathrooms) >= quizState.min_baths) matchedCriteria++; }
@@ -1077,6 +1108,7 @@
         if (tag === 'modern' && activeProperty.is_modern) matchedCriteria++;
         if (tag === 'garage' && activeProperty.has_garage) matchedCriteria++;
         if (tag === 'outdoor' && activeProperty.has_outdoor) matchedCriteria++;
+        if (tag === 'office' && activeProperty.has_office) matchedCriteria++;
       });
 
       const fitPct = totalCriteria > 0 ? Math.round((matchedCriteria / totalCriteria) * 100) : 100;
@@ -1185,6 +1217,7 @@
         if (tags.includes('modern') && !activeProperty.is_modern) missing.push('Modern Interiors');
         if (tags.includes('garage') && !activeProperty.has_garage) missing.push('Secure Garage/Parking');
         if (tags.includes('outdoor') && !activeProperty.has_outdoor) missing.push('Outdoor Entertaining/Yard');
+        if (tags.includes('office') && !activeProperty.has_office) missing.push('Home Office / 2nd Living');
         const bedTag = tags.find(t => t.startsWith('beds:'));
         if (bedTag && Number(bedTag.split(':')[1]) > Number(activeProperty.bedrooms)) missing.push(`${bedTag.split(':')[1]}+ Beds`);
         const bathTag = tags.find(t => t.startsWith('baths:'));
@@ -1284,3 +1317,4 @@
     }
   </script>
 </body>
+</html>
