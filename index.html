@@ -564,20 +564,54 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 3: AGENT DASHBOARD ==================== -->
+    <!-- ==================== VIEW 3: AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST) ==================== -->
     <section id="view-agent" class="hidden space-y-5">
-      <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 flex flex-wrap justify-between items-start gap-4">
-        <div>
-          <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Agent Call List</span>
-          <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">42 Kensington Road, Norwood SA 5067</h1>
-          <p class="text-xs text-slate-500 mt-1">Ranked by buyer readiness & property fit • Exact buyer financial figures stay private.</p>
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
+        <div class="flex flex-wrap justify-between items-start gap-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Open Home Buyer Call List</span>
+              <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">🔒 Exact incomes & deposits kept private</span>
+            </div>
+            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">42 Kensington Road, Norwood SA 5067</h1>
+            <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium mt-0.5">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="btn-seed-demo" onclick="seedAgentDemoBuyers()" class="bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/25 text-xs font-bold px-3.5 py-2.5 rounded-xl">
+              + Load 3 Sample Buyers
+            </button>
+            <button onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2.5 rounded-xl">Refresh</button>
+            <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Copy Post-Open SMS</button>
+          </div>
         </div>
-        <div class="flex gap-2">
-          <button onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2.5 rounded-xl">Refresh</button>
-          <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Copy Post-Open SMS</button>
+
+        <!-- 4-Card Executive Summary Bar -->
+        <div id="agent-kpi-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+          <div class="bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Scanned Buyers</p>
+            <p id="kpi-total" class="text-2xl font-extrabold text-slate-900 mt-0.5">0</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">Ranked by readiness</p>
+          </div>
+          <div class="bg-emerald-50/80 border border-emerald-200 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-emerald-700">Green • Can Afford</p>
+            <p id="kpi-green" class="text-2xl font-extrabold text-emerald-800 mt-0.5">0</p>
+            <p class="text-[11px] text-emerald-700 font-medium mt-0.5">Priority 1:00 PM calls</p>
+          </div>
+          <div class="bg-amber-50/80 border border-amber-200 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-amber-700">Orange • Close / Sale</p>
+            <p id="kpi-orange" class="text-2xl font-extrabold text-amber-800 mt-0.5">0</p>
+            <p class="text-[11px] text-amber-700 font-medium mt-0.5">Within reach / sell first</p>
+          </div>
+          <div class="bg-[#F2F9FA] border border-[#006875]/20 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-[#006875]">Avg. Buyer Price Est.</p>
+            <p id="kpi-avg-price" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">—</p>
+            <p id="kpi-price-vs-guide" class="text-[11px] text-[#006875] font-semibold mt-0.5">Market feedback</p>
+          </div>
         </div>
       </div>
-      <div id="agent-leaderboard-list" class="space-y-3"></div>
+
+      <!-- Traffic-Light Buyer Call List -->
+      <div id="agent-leaderboard-list" class="space-y-3.5"></div>
     </section>
 
     <!-- ==================== VIEW 4: BROKER LEADS ==================== -->
@@ -945,6 +979,7 @@
       }
 
       const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
+      const guideString = `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed • ${baths} Bath`;
       document.getElementById('card-address').textContent = street;
       document.getElementById('card-suburb').textContent = suburb || 'Open Home Inspection';
       document.getElementById('card-specs-pill').textContent = `${beds} Bed • ${baths} Bath`;
@@ -952,7 +987,8 @@
       document.getElementById('qr-caption-suburb').textContent = suburb || '';
       document.getElementById('quiz-prop-title').textContent = fullTitle;
       document.getElementById('agent-prop-title').textContent = fullTitle;
-      document.getElementById('quiz-prop-guide').textContent = `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed • ${baths} Bath`;
+      document.getElementById('agent-prop-subtitle').textContent = guideString;
+      document.getElementById('quiz-prop-guide').textContent = guideString;
 
       // Configure buyer's Estimated Purchase Price slider to start at the guide midpoint in $20k increments
       const midPrice = Math.round(((minP + maxP) / 2) / 20000) * 20000;
@@ -1179,12 +1215,13 @@
       if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
       if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
 
+      // Store buyer's estimated purchase price safely alongside LVR tier so agent leaderboard sees it across devices
       const dbRecord = {
         property_id: activeProperty.id,
         buyer_name: name,
         buyer_mobile: mobile,
         household: quizState.household,
-        pets: `${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`,
+        pets: `est_price:${quizState.est_purchase_price}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`,
         must_haves: combinedMustHaves,
         buying_stage: quizState.stage,
         timeline: quizState.timeline,
@@ -1231,7 +1268,104 @@
       goQuizStep(1);
     }
 
-    // ==================== AGENT DASHBOARD ====================
+    // ==================== AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST) ====================
+    function extractBuyerEstPrice(r) {
+      if (r.est_purchase_price && Number(r.est_purchase_price) > 0) return Number(r.est_purchase_price);
+      if (r.pets && typeof r.pets === 'string') {
+        const m = r.pets.match(/est_price:(\d+)/);
+        if (m) return Number(m[1]);
+      }
+      return null;
+    }
+
+    function cleanLvrLabel(r) {
+      if (!r.pets || typeof r.pets !== 'string') return r.budget_badge || '';
+      return r.pets.replace(/^est_price:\d+\|/, '');
+    }
+
+    async function seedAgentDemoBuyers() {
+      const btn = document.getElementById('btn-seed-demo');
+      btn.disabled = true;
+      btn.textContent = 'Loading Demo...';
+
+      const midPrice = Math.round(((activeProperty.price_min + activeProperty.price_max) / 2) / 20000) * 20000;
+      const demoBuyers = [
+        {
+          property_id: activeProperty.id,
+          buyer_name: 'Sam & Taylor Reid',
+          buyer_mobile: '0412 884 910',
+          household: 'Couple',
+          pets: `est_price:${midPrice + 20000}|GREEN LVR (76.0%)`,
+          must_haves: ['beds:3', 'baths:2', 'modern', 'garage', 'office'],
+          buying_stage: 'Pre-Approved',
+          timeline: 'ASAP',
+          income: 240000,
+          deposit: 240000,
+          dependants: 0,
+          existing_debts: 4000,
+          est_max_loan: 1050000,
+          fit_percentage: activeProperty.has_office ? 100 : 80,
+          budget_badge: 'Budget Ready',
+          leaderboard_score: 98,
+          broker_opt_in: true
+        },
+        {
+          property_id: activeProperty.id,
+          buyer_name: 'Jordan & Priya Patel',
+          buyer_mobile: '0438 219 405',
+          household: 'Family',
+          pets: `est_price:${midPrice}|ORANGE LVR (86.5%)`,
+          must_haves: ['beds:3', 'baths:2', 'outdoor', 'garage'],
+          buying_stage: 'Within Reach',
+          timeline: '1-3 Months',
+          income: 185000,
+          deposit: 140000,
+          dependants: 2,
+          existing_debts: 6000,
+          est_max_loan: 780000,
+          fit_percentage: 100,
+          budget_badge: 'Within Reach',
+          leaderboard_score: 77,
+          broker_opt_in: true
+        },
+        {
+          property_id: activeProperty.id,
+          buyer_name: 'Casey Morgan',
+          buyer_mobile: '0401 772 630',
+          household: 'Solo',
+          pets: `est_price:${Math.max(400000, midPrice - 120000)}|RED LVR (94.0%)`,
+          must_haves: ['beds:2', 'modern'],
+          buying_stage: 'Still Looking',
+          timeline: '3+ Months',
+          income: 110000,
+          deposit: 60000,
+          dependants: 0,
+          existing_debts: 10000,
+          est_max_loan: 540000,
+          fit_percentage: 100,
+          budget_badge: 'Stretch',
+          leaderboard_score: 45,
+          broker_opt_in: false
+        }
+      ];
+
+      if (hasSupabase) {
+        const { error } = await sb.from('buyer_scans').insert(demoBuyers);
+        if (error) {
+          btn.disabled = false;
+          btn.textContent = '+ Load 3 Sample Buyers';
+          return alert('Supabase error: ' + error.message);
+        }
+      } else {
+        demoBuyers.forEach((b, i) => localScans.unshift({ id: 'demo-' + Date.now() + '-' + i, ...b }));
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      }
+
+      btn.disabled = false;
+      btn.textContent = '+ Load 3 Sample Buyers';
+      renderAgentDashboard();
+    }
+
     async function renderAgentDashboard() {
       let rows = [];
       if (hasSupabase) {
@@ -1242,42 +1376,166 @@
         rows = localScans.filter(s => s.property_id === activeProperty.id).sort((a, b) => b.leaderboard_score - a.leaderboard_score);
       }
 
+      // Compute KPI Summary Strip
+      const totalCount = rows.length;
+      const greenCount = rows.filter(r => r.budget_badge === 'Budget Ready').length;
+      const orangeCount = rows.filter(r => r.budget_badge === 'Within Reach' || r.budget_badge === 'Subject to Sale').length;
+      const priceEstimates = rows.map(extractBuyerEstPrice).filter(p => p && p > 0);
+
+      document.getElementById('kpi-total').textContent = totalCount;
+      document.getElementById('kpi-green').textContent = greenCount;
+      document.getElementById('kpi-orange').textContent = orangeCount;
+
+      if (priceEstimates.length > 0) {
+        const avgPrice = Math.round(priceEstimates.reduce((a, b) => a + b, 0) / priceEstimates.length);
+        const guideMid = (activeProperty.price_min + activeProperty.price_max) / 2;
+        const diff = avgPrice - guideMid;
+        const diffLabel = diff >= 0
+          ? `+$${Math.round(diff / 1000)}k above guide mid`
+          : `-$${Math.round(Math.abs(diff) / 1000)}k vs guide mid`;
+        document.getElementById('kpi-avg-price').textContent = `$${avgPrice.toLocaleString()}`;
+        document.getElementById('kpi-price-vs-guide').textContent = diffLabel;
+      } else {
+        document.getElementById('kpi-avg-price').textContent = '—';
+        document.getElementById('kpi-price-vs-guide').textContent = 'Awaiting buyer scans';
+      }
+
       const container = document.getElementById('agent-leaderboard-list');
-      if (rows.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-3xl border text-center text-sm text-slate-500">No buyer scans recorded for this listing yet.</div>`;
+      if (rows.length === 0) {
+        return container.innerHTML = `
+          <div class="bg-white p-10 rounded-3xl border border-slate-200/90 text-center space-y-3">
+            <p class="text-sm font-bold text-slate-700">No buyer scans recorded for this listing yet.</p>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">Click <strong>"+ Load 3 Sample Buyers"</strong> above to preview how the Green, Orange, and Red buyer call list looks for your agent meeting.</p>
+          </div>`;
+      }
 
       container.innerHTML = rows.map((r, idx) => {
-        const badgeColor = r.budget_badge === 'Budget Ready' ? 'bg-emerald-100 text-emerald-800' : r.budget_badge === 'Within Reach' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700';
-        const tags = r.must_haves || [];
-        const missing = [];
-        if (tags.includes('modern') && !activeProperty.is_modern) missing.push('Modern Interiors');
-        if (tags.includes('garage') && !activeProperty.has_garage) missing.push('Secure Garage/Parking');
-        if (tags.includes('outdoor') && !activeProperty.has_outdoor) missing.push('Outdoor Entertaining/Yard');
-        if (tags.includes('office') && !activeProperty.has_office) missing.push('Home Office / 2nd Living');
-        const bedTag = tags.find(t => t.startsWith('beds:'));
-        if (bedTag && Number(bedTag.split(':')[1]) > Number(activeProperty.bedrooms)) missing.push(`${bedTag.split(':')[1]}+ Beds`);
-        const bathTag = tags.find(t => t.startsWith('baths:'));
-        if (bathTag && Number(bathTag.split(':')[1]) > Number(activeProperty.bathrooms)) missing.push(`${bathTag.split(':')[1]}+ Baths`);
+        // Traffic-Light Affordability Styling: Green (Can Afford), Orange (Close / Subject to Sale), Red (Nowhere Near)
+        let cardBorderClass = 'border-l-8 border-l-rose-500 border-rose-200/90';
+        let statusPillClass = 'bg-rose-100 text-rose-800 border border-rose-200';
+        let statusDotClass = 'bg-rose-500';
+        let statusHeadline = 'RED • NOWHERE NEAR GUIDE';
+        let actionPrompt = 'Long-term nurture — keep on database for lower-priced stock';
 
-        const otherListingHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
-          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-800 px-3.5 py-2 rounded-xl border border-indigo-100 font-semibold">Other Listing Match: Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing on your books!</div>`
+        if (r.budget_badge === 'Budget Ready') {
+          cardBorderClass = 'border-l-8 border-l-emerald-500 border-emerald-200/90';
+          statusPillClass = 'bg-emerald-100 text-emerald-900 border border-emerald-300';
+          statusDotClass = 'bg-emerald-500';
+          statusHeadline = 'GREEN • CAN AFFORD PROPERTY';
+          actionPrompt = 'Priority 1:00 PM Callback — Verified capacity covers guide + costs';
+        } else if (r.budget_badge === 'Within Reach' || r.budget_badge === 'Subject to Sale') {
+          cardBorderClass = 'border-l-8 border-l-amber-500 border-amber-200/90';
+          statusPillClass = 'bg-amber-100 text-amber-900 border border-amber-300';
+          statusDotClass = 'bg-amber-500';
+          statusHeadline = r.budget_badge === 'Subject to Sale'
+            ? 'ORANGE • SUBJECT TO SALE'
+            : 'ORANGE • CLOSE / WITHIN REACH';
+          actionPrompt = r.budget_badge === 'Subject to Sale'
+            ? 'Appraisal Opportunity — Needs to sell current home first'
+            : 'Strong Contender — Close to guide; worth discussing terms';
+        }
+
+        // Parse Non-Negotiables & Specs (Beds, Baths, 4 Features) and check whether THIS property meets each one
+        const tags = Array.isArray(r.must_haves) ? r.must_haves : [];
+        const reqPills = [];
+        const missing = [];
+
+        const bedTag = tags.find(t => t.startsWith('beds:'));
+        if (bedTag) {
+          const reqBeds = Number(bedTag.split(':')[1]);
+          const met = Number(activeProperty.bedrooms) >= reqBeds;
+          if (!met) missing.push(`${reqBeds}+ Beds`);
+          reqPills.push({ label: `${reqBeds}+ Beds`, met });
+        }
+
+        const bathTag = tags.find(t => t.startsWith('baths:'));
+        if (bathTag) {
+          const reqBaths = Number(bathTag.split(':')[1]);
+          const met = Number(activeProperty.bathrooms) >= reqBaths;
+          if (!met) missing.push(`${reqBaths}+ Baths`);
+          reqPills.push({ label: `${reqBaths}+ Baths`, met });
+        }
+
+        if (tags.includes('modern')) {
+          const met = Boolean(activeProperty.is_modern);
+          if (!met) missing.push('Modern Interiors');
+          reqPills.push({ label: 'Modern Interiors', met });
+        }
+        if (tags.includes('garage')) {
+          const met = Boolean(activeProperty.has_garage);
+          if (!met) missing.push('Secure Garage/Parking');
+          reqPills.push({ label: 'Secure Garage/Parking', met });
+        }
+        if (tags.includes('outdoor')) {
+          const met = Boolean(activeProperty.has_outdoor);
+          if (!met) missing.push('Outdoor / Yard');
+          reqPills.push({ label: 'Outdoor / Yard', met });
+        }
+        if (tags.includes('office')) {
+          const met = Boolean(activeProperty.has_office);
+          if (!met) missing.push('Home Office / 2nd Living');
+          reqPills.push({ label: 'Home Office / 2nd Living', met });
+        }
+
+        const reqPillsHtml = reqPills.length > 0
+          ? reqPills.map(p => p.met
+              ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">✓ ${escapeHtml(p.label)}</span>`
+              : `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">✕ Wants ${escapeHtml(p.label)}</span>`
+            ).join('')
+          : `<span class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">No strict dealbreakers selected</span>`;
+
+        const estPrice = extractBuyerEstPrice(r);
+        const estPriceDisplay = estPrice ? `$${estPrice.toLocaleString()}` : 'Not stated';
+
+        // Option A: Other Listing Match Alert for Green/Orange buyers missing a non-negotiable on this home
+        const otherListingHtml = ((r.budget_badge === 'Budget Ready' || r.budget_badge === 'Within Reach') && missing.length > 0)
+          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-900 px-3.5 py-2.5 rounded-xl border border-indigo-200 font-semibold flex items-center gap-2">
+               <span class="shrink-0 text-indigo-600 font-extrabold">💡</span>
+               <span><strong>Other Listing Match:</strong> Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing on your books!</span>
+             </div>`
           : '';
 
         return `
-          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90">
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border ${cardBorderClass} space-y-4">
+            <!-- Top Row: Rank, Name, Traffic-Light Affordability Badge & Call Action -->
             <div class="flex flex-wrap justify-between items-start gap-3">
-              <div>
+              <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="text-xs font-extrabold bg-[#0B1120] text-white px-2.5 py-0.5 rounded-lg">#${idx + 1}</span>
-                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)}</h3>
-                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${badgeColor}">${escapeHtml(r.budget_badge)}</span>
+                  <h3 class="font-extrabold text-base sm:text-lg text-slate-900">${escapeHtml(r.buyer_name)}</h3>
+                  <span class="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1 rounded-full ${statusPillClass}">
+                    <span class="w-2 h-2 rounded-full ${statusDotClass}"></span>
+                    ${statusHeadline}
+                  </span>
                 </div>
-                <p class="text-xs text-slate-500 font-medium mt-1.5">${escapeHtml(r.buyer_mobile)} • ${escapeHtml(r.buying_stage)} (${escapeHtml(r.timeline)}) • ${escapeHtml(r.household)}</p>
+                <p class="text-xs text-slate-600 font-semibold">
+                  <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline font-extrabold">${escapeHtml(r.buyer_mobile)}</a>
+                  • ${escapeHtml(r.buying_stage)} • Timeframe: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)}
+                </p>
+                <p class="text-[11px] text-slate-500 font-medium">${actionPrompt}</p>
               </div>
-              <div class="text-right bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-100">
-                <span class="text-lg font-extrabold text-slate-900">${r.fit_percentage}%</span>
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">House Fit</p>
+
+              <!-- Buyer's Estimated Price & House Fit % -->
+              <div class="flex items-center gap-2.5 shrink-0">
+                <div class="bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-200/80 text-right">
+                  <span class="text-sm sm:text-base font-extrabold text-slate-900">${estPriceDisplay}</span>
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Buyer Price Est.</p>
+                </div>
+                <div class="bg-[#F2F9FA] px-3.5 py-2 rounded-2xl border border-[#006875]/20 text-right">
+                  <span class="text-sm sm:text-base font-extrabold text-[#006875]">${r.fit_percentage}%</span>
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]/80">House Fit</p>
+                </div>
               </div>
             </div>
+
+            <!-- Middle Row: Buyer Non-Negotiables & Specs -->
+            <div class="pt-3 border-t border-slate-100">
+              <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Buyer Non-Negotiables & Specs vs. This Home</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${reqPillsHtml}
+              </div>
+            </div>
+
             ${otherListingHtml}
           </div>`;
       }).join('');
@@ -1312,10 +1570,11 @@
       if (rows.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-3xl border text-center text-sm text-slate-500">No leads found for this filter.</div>`;
 
       container.innerHTML = rows.map(r => {
-        const lvrTag = r.pets && r.pets.includes('LVR') ? r.pets : r.budget_badge;
+        const lvrTag = cleanLvrLabel(r);
         const isRed = lvrTag.startsWith('RED');
         const isOrange = lvrTag.startsWith('ORANGE');
         const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+        const estPrice = extractBuyerEstPrice(r);
 
         return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-3.5">
@@ -1325,7 +1584,7 @@
                   <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <span class="text-[#006875]">${escapeHtml(r.buyer_mobile)}</span></h3>
                   <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${r.broker_opt_in ? 'Opted In' : 'Agent Only'}</span>
                 </div>
-                <p class="text-xs text-slate-500 font-medium mt-1">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants</p>
+                <p class="text-xs text-slate-500 font-medium mt-1">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants${estPrice ? ' • Est. Price: $' + estPrice.toLocaleString() : ''}</p>
               </div>
               <span class="text-xs font-bold px-3 py-1 rounded-full ${lvrPillClass}">
                 ${escapeHtml(lvrTag)}
