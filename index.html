@@ -15,12 +15,21 @@
     .font-fun { font-family: 'Playpen Sans', cursive; }
     .font-clean-display { font-family: 'Outfit', sans-serif; }
     input[type="range"] { accent-color: #006875; }
-    /* Guarantee crisp visible QR canvas across all browsers and PDF print */
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
+
+    /* Full-Page A4 PDF Print Styling */
     @media print {
-      @page { size: auto; margin: 12mm; }
-      body { background: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      @page { size: A4 portrait; margin: 10mm; }
+      html, body {
+        width: 210mm;
+        height: 297mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
       body * { visibility: hidden; }
       #printable-strut-card, #printable-strut-card * { visibility: visible; }
       #printable-strut-card {
@@ -28,10 +37,41 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 420px;
+        width: 186mm;
+        height: 272mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-radius: 26px !important;
         box-shadow: none !important;
-        border: 2px solid #006875 !important;
+        border: 3px solid #006875 !important;
+        overflow: hidden !important;
       }
+      #printable-strut-card .print-header { padding: 28px 32px !important; }
+      #printable-strut-card .print-title { font-size: 56px !important; line-height: 1.05 !important; }
+      #printable-strut-card .print-subtitle { font-size: 28px !important; margin-top: 12px !important; }
+      #printable-strut-card .print-heart { width: 36px !important; height: 36px !important; }
+      #printable-strut-card .print-address-band { padding: 20px 32px !important; }
+      #printable-strut-card #card-address { font-size: 28px !important; }
+      #printable-strut-card #card-suburb { font-size: 15px !important; }
+      #printable-strut-card #card-specs-pill { font-size: 15px !important; padding: 8px 14px !important; }
+      #printable-strut-card .print-body {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        padding: 32px !important;
+      }
+      #printable-strut-card .print-scan-copy {
+        font-size: 18px !important;
+        max-width: 520px !important;
+        margin-bottom: 16px !important;
+      }
+      #printable-strut-card .print-qr-box { padding: 22px !important; }
+      #printable-strut-card #qrcode { width: 340px !important; height: 340px !important; }
+      #printable-strut-card #qr-caption-address { font-size: 18px !important; max-width: 340px !important; }
+      #printable-strut-card #qr-caption-suburb { font-size: 13px !important; max-width: 340px !important; }
+      #printable-strut-card .print-privacy-text { font-size: 14px !important; }
     }
   </style>
 </head>
@@ -64,7 +104,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
             <span class="text-[11px] font-bold uppercase tracking-widest text-teal-200">Instant Listing Importer</span>
-            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">Import Property & Generate QR Card</h1>
+            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">Import Property & Generate A4 QR Flyer</h1>
           </div>
           <div class="flex gap-2">
             <button onclick="loadSample(0)" class="text-xs bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-lg font-medium">Demo: Norwood</button>
@@ -145,7 +185,10 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Property Features (Matched Against Buyer Quiz)</label>
+            <div class="flex flex-wrap items-center justify-between gap-1 mb-2">
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Property Features (Matched Against Buyer Quiz)</label>
+              <span class="text-[11px] text-slate-400">Not stated on ad? Leave unticked</span>
+            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer">
                 <input id="tag-modern" type="checkbox" checked class="w-4 h-4 rounded accent-[#006875]" /> Modern / Updated Interiors
@@ -167,27 +210,27 @@
           </button>
         </div>
 
-        <!-- Right Column: Centered Property Match QR Card & PDF Export -->
+        <!-- Right Column: Centered Property Match QR Card & A4 PDF Export -->
         <div class="lg:col-span-5 space-y-4">
 
-          <!-- Printable / PDF QR Card -->
+          <!-- Printable / A4 PDF QR Card -->
           <div id="printable-strut-card" class="bg-white rounded-[2rem] shadow-lg border-2 border-[#006875]/30 overflow-hidden text-center">
 
-            <!-- Centered Top Header: Big Cool "Property Match" + Larger "Find Your Perfect Match" + Large Pink Heart (No Question Mark) -->
-            <div class="bg-[#006875] px-6 py-5 text-white text-center">
-              <h1 class="font-fun text-3xl sm:text-[36px] font-extrabold leading-none text-white tracking-tight">
+            <!-- Centered Top Header -->
+            <div class="print-header bg-[#006875] px-6 py-5 text-white text-center">
+              <h1 class="print-title font-fun text-3xl sm:text-[36px] font-extrabold leading-none text-white tracking-tight">
                 Property Match
               </h1>
-              <p class="font-clean-display text-lg sm:text-xl font-extrabold text-teal-100 mt-2 inline-flex items-center justify-center gap-1.5 leading-tight">
+              <p class="print-subtitle font-clean-display text-lg sm:text-xl font-extrabold text-teal-100 mt-2 inline-flex items-center justify-center gap-1.5 leading-tight">
                 <span>Find Your Perfect Match</span>
-                <svg viewBox="0 0 24 24" class="w-7 h-7 sm:w-8 sm:h-8 shrink-0 drop-shadow-sm" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="print-heart w-7 h-7 sm:w-8 sm:h-8 shrink-0 drop-shadow-sm" aria-hidden="true">
                   <path fill="#ec4899" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
               </p>
             </div>
 
             <!-- Elevated Architectural Property Address Band -->
-            <div class="bg-white px-5 py-3.5 border-b border-[#006875]/15 flex items-center justify-between gap-3 text-left">
+            <div class="print-address-band bg-white px-5 py-3.5 border-b border-[#006875]/15 flex items-center justify-between gap-3 text-left">
               <div class="flex items-center gap-3 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-[#006875]/10 text-[#006875] flex items-center justify-center shrink-0">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
@@ -206,15 +249,15 @@
             </div>
 
             <!-- Card Body: Centered Larger QR Code -->
-            <div class="p-6 pb-5 bg-gradient-to-br from-white via-[#F5FAFB] to-[#E6F4F6] text-center">
-              <p class="text-xs text-slate-600 font-semibold max-w-[300px] mx-auto mb-4 leading-relaxed">
+            <div class="print-body p-6 pb-5 bg-gradient-to-br from-white via-[#F5FAFB] to-[#E6F4F6] text-center">
+              <p class="print-scan-copy text-xs text-slate-600 font-semibold max-w-[300px] mx-auto mb-4 leading-relaxed">
                 Scan in 30 seconds to check your borrowing power & see how well this home fits your wish list.
               </p>
 
               <!-- Centered Large QR Code Box -->
-              <div class="inline-block mx-auto bg-white p-3.5 rounded-3xl border-2 border-[#006875] shadow-md">
+              <div class="print-qr-box inline-block mx-auto bg-white p-3.5 rounded-3xl border-2 border-[#006875] shadow-md">
                 <div id="qrcode" class="bg-white w-[235px] sm:w-[250px] h-[235px] sm:h-[250px] mx-auto"></div>
-                <div class="mt-2.5 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px]">
+                <div class="mt-2.5 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px] mx-auto">
                   <p id="qr-caption-address" class="text-xs font-extrabold text-slate-900 leading-tight truncate">42 Kensington Road</p>
                   <p id="qr-caption-suburb" class="text-[10px] font-bold uppercase tracking-wider text-[#006875] truncate mt-0.5">Norwood SA 5067</p>
                 </div>
@@ -227,18 +270,21 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                   </svg>
                 </span>
-                <p class="text-[10.5px] font-semibold text-[#006875] leading-snug">
+                <p class="print-privacy-text text-[10.5px] font-semibold text-[#006875] leading-snug">
                   Independent Mortgage Choice tool — your financial figures stay private and are never shown to the selling agent.
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- PDF Export & Share Links -->
+          <!-- A4 PDF Export & Share Links -->
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
             <button onclick="window.print()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
-              Save as PDF / Print QR Card
+              Save A4 PDF / Print Full-Page QR Flyer
             </button>
+            <p class="text-[11px] text-slate-500 text-center">
+              Formatted for a single <strong>A4 page</strong> — print it out or choose <em>"Save as PDF"</em> to email straight to the agent.
+            </p>
 
             <div class="pt-2 border-t border-slate-100 space-y-2">
               <div>
@@ -278,7 +324,7 @@
         </div>
 
         <div class="p-6">
-          <!-- STEP 1: HOUSEHOLD & BUYING STAGE (No Pet Question, "Still Looking") -->
+          <!-- STEP 1: HOUSEHOLD & BUYING STAGE -->
           <div id="q-step-1" class="quiz-step space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-2.5">Who would be living here?</h3>
@@ -457,10 +503,10 @@
             </div>
           </div>
 
-          <!-- STEP 5: RESULTS (COLOR-CODED LVR + LIMITING FACTOR + LEAD CAPTURE) -->
+          <!-- STEP 5: RESULTS -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="grid grid-cols-2 gap-3">
-              <!-- Max Borrowing Box (Color-coded by LVR Tier: Green / Orange / Red) -->
+              <!-- Max Borrowing Box -->
               <div id="res-borrow-card" class="bg-emerald-950 text-white p-4 rounded-2xl border-2 border-emerald-500">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-200">Est. Max Borrow</p>
                 <p id="res-max-loan" class="text-xl font-extrabold text-emerald-300 mt-1">$844,000</p>
@@ -736,11 +782,11 @@
       syncUIWithProperty();
 
       if (fetchedSuccess) {
-        showScrapeFeedback('✓ Imported property address, details & updated QR card!');
+        showScrapeFeedback('✓ Imported property address, details & updated A4 QR flyer!');
         await saveProperty(true);
       } else if (slugData && (slugData.street || slugData.suburbLine)) {
         document.getElementById('paste-fallback-box').classList.remove('hidden');
-        showScrapeFeedback('Address extracted onto QR card! Because this portal blocks automated scrapers, paste the listing text below to auto-fill price & features.', true);
+        showScrapeFeedback('Address extracted onto QR flyer! Because this portal blocks automated scrapers, paste the listing text below to auto-fill price & features.', true);
       } else {
         document.getElementById('paste-fallback-box').classList.remove('hidden');
         showScrapeFeedback('Portal blocked direct fetch. Copy the listing page (Ctrl+A then Ctrl+C) and paste below to auto-fill.', true);
@@ -777,7 +823,7 @@
       if (!txt.trim()) return;
       applyTextParsingRules(txt);
       syncUIWithProperty();
-      showScrapeFeedback('✓ Extracted address, beds/baths, price guide & features onto the QR card!');
+      showScrapeFeedback('✓ Extracted address, beds/baths, price guide & features onto the QR flyer!');
       if (autoSave) await saveProperty(true);
     }
 
@@ -852,7 +898,7 @@
 
       btn.textContent = 'Save Listing to Cloud & Lock QR Code';
       syncUIWithProperty();
-      if (!silent) alert('Listing saved & QR card updated!');
+      if (!silent) alert('Listing saved & A4 QR flyer updated!');
     }
 
     async function loadPropertyById(id, fallbackAddr = '') {
@@ -865,7 +911,7 @@
             is_modern: Boolean(data.move_in_ready),
             has_garage: Boolean(data.has_wfh),
             has_outdoor: Boolean(data.has_yard),
-            has_office: Boolean(data.has_office ?? true)
+            has_office: Boolean(data.has_office ?? false)
           };
         } else if (fallbackAddr) activeProperty.address = fallbackAddr;
       } else {
@@ -932,8 +978,8 @@
       qrEl.innerHTML = '';
       new QRCode(qrEl, {
         text: buyerUrl,
-        width: 250,
-        height: 250,
+        width: 340,
+        height: 340,
         colorDark: '#000000',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
@@ -1007,14 +1053,10 @@
       updateSliders();
       quizState.dependants = Number(document.getElementById('input-dependants').value);
 
-      // 1. Purchase Price + 4% Purchase Costs (stamp duty, transfer, registration, conveyancer)
       const estPrice = quizState.est_purchase_price;
       const totalRequired = Math.round(estPrice * 1.04);
-
-      // Cash deposit reduces loan size & LVR; usable equity reduces effective LVR while income services full loan
       const loanNeededForPurchase = Math.max(0, totalRequired - quizState.cash_deposit);
 
-      // 2. Serviceability Max Loan (Income vs Living Expenses & Open Commitments)
       const netMonthly = (quizState.income * 0.73) / 12;
       const livingExpenses = 2400 + (quizState.dependants * 550);
       const ccMonthlyCommitment = quizState.cc_limits * 0.038;
@@ -1025,19 +1067,14 @@
       const dtiCapLoan = quizState.income * 6;
       const servicingMaxLoan = Math.max(0, Math.min(rawServicingLoan, dtiCapLoan));
 
-      // 3. LVR Max Loan Cap (94% base LVR cap excluding LMI, taking usable equity into account)
       const lvrMaxLoan = Math.round((estPrice * 0.94 + quizState.usable_equity) / 1000) * 1000;
-
-      // Most limiting factor between Serviceability and LVR sets Est. Max Borrow
       const estMaxLoan = Math.max(0, Math.min(servicingMaxLoan, lvrMaxLoan));
 
-      // Effective Base LVR at buyer's estimated purchase price (excluding LMI)
       const baseLvrPct = estPrice > 0
         ? Math.max(0, ((loanNeededForPurchase - quizState.usable_equity) / estPrice) * 100)
         : 0;
       const roundedBaseLvr = Math.round(baseLvrPct * 10) / 10;
 
-      // 4. Color-Coded LVR Tier Styling (Green <=80%, Orange 80-90%, Red 90-94% base / 90-98% incl. LMI)
       const borrowCard = document.getElementById('res-borrow-card');
       const maxLoanEl = document.getElementById('res-max-loan');
       const lvrLabelEl = document.getElementById('res-lvr-tier-label');
@@ -1062,7 +1099,6 @@
         lvrLabelEl.textContent = `90–94% Base LVR (90–98% incl. LMI) • Higher Rates & Fees`;
       }
 
-      // 5. Budget Readiness Badge & Limiting Factor Diagnosis
       const canCoverLoan = estMaxLoan >= loanNeededForPurchase;
       const within94Lvr = baseLvrPct <= 94;
       let budgetBadge = 'Stretch', finPts = 5;
@@ -1099,7 +1135,6 @@
         limitingDescEl.textContent = `Both your income ($${servicingMaxLoan.toLocaleString()} servicing capacity) and deposit/equity (~${roundedBaseLvr}% base LVR) comfortably cover your $${estPrice.toLocaleString()} estimate plus 4% purchase costs.`;
       }
 
-      // 6. Score Property Match across all 6 criteria
       let totalCriteria = 0, matchedCriteria = 0;
       if (quizState.min_beds > 0) { totalCriteria++; if (Number(activeProperty.bedrooms) >= quizState.min_beds) matchedCriteria++; }
       if (quizState.min_baths > 0) { totalCriteria++; if (Number(activeProperty.bathrooms) >= quizState.min_baths) matchedCriteria++; }
