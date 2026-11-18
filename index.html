@@ -1223,8 +1223,8 @@
         const bathTag = tags.find(t => t.startsWith('baths:'));
         if (bathTag && Number(bathTag.split(':')[1]) > Number(activeProperty.bathrooms)) missing.push(`${bathTag.split(':')[1]}+ Baths`);
 
-        const crossSellHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
-          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-800 px-3.5 py-2 rounded-xl border border-indigo-100 font-semibold">Cross-Sell Alert: Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing!</div>`
+        const otherListingHtml = (r.budget_badge === 'Budget Ready' && missing.length > 0)
+          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-800 px-3.5 py-2 rounded-xl border border-indigo-100 font-semibold">Other Listing Match: Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing on your books!</div>`
           : '';
 
         return `
@@ -1243,7 +1243,7 @@
                 <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">House Fit</p>
               </div>
             </div>
-            ${crossSellHtml}
+            ${otherListingHtml}
           </div>`;
       }).join('');
     }
