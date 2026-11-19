@@ -18,60 +18,62 @@
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
 
-    /* Full-Page A4 PDF Print Styling */
+    /* Full-Bleed A4 PDF Print Styling (Zero White Border) */
     @media print {
-      @page { size: A4 portrait; margin: 10mm; }
+      @page { size: A4 portrait; margin: 0 !important; }
       html, body {
-        width: 210mm;
-        height: 297mm;
+        width: 210mm !important;
+        height: 297mm !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #ffffff !important;
+        overflow: hidden !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
       body * { visibility: hidden; }
       #printable-strut-card, #printable-strut-card * { visibility: visible; }
       #printable-strut-card {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 186mm;
-        height: 272mm;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border-radius: 26px !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        transform: none !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        border-radius: 0 !important;
         box-shadow: none !important;
-        border: 3px solid #006875 !important;
+        border: none !important;
         overflow: hidden !important;
       }
-      #printable-strut-card .print-header { padding: 28px 32px !important; }
-      #printable-strut-card .print-title { font-size: 56px !important; line-height: 1.05 !important; }
-      #printable-strut-card .print-subtitle { font-size: 28px !important; margin-top: 12px !important; }
-      #printable-strut-card .print-heart { width: 36px !important; height: 36px !important; }
-      #printable-strut-card .print-address-band { padding: 20px 32px !important; }
-      #printable-strut-card #card-address { font-size: 28px !important; }
-      #printable-strut-card #card-suburb { font-size: 15px !important; }
-      #printable-strut-card #card-specs-pill { font-size: 15px !important; padding: 8px 14px !important; }
+      #printable-strut-card .print-header { padding: 34px 36px !important; }
+      #printable-strut-card .print-title { font-size: 60px !important; line-height: 1.05 !important; }
+      #printable-strut-card .print-subtitle { font-size: 30px !important; margin-top: 14px !important; }
+      #printable-strut-card .print-heart { width: 38px !important; height: 38px !important; }
+      #printable-strut-card .print-address-band { padding: 22px 36px !important; }
+      #printable-strut-card #card-address { font-size: 30px !important; }
+      #printable-strut-card #card-suburb { font-size: 16px !important; }
+      #printable-strut-card #card-specs-pill { font-size: 16px !important; padding: 9px 16px !important; }
       #printable-strut-card .print-body {
         flex: 1 !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
-        padding: 32px !important;
+        padding: 36px 40px !important;
       }
       #printable-strut-card .print-scan-copy {
-        font-size: 18px !important;
-        max-width: 520px !important;
-        margin-bottom: 16px !important;
+        font-size: 19px !important;
+        max-width: 560px !important;
+        margin-bottom: 18px !important;
       }
-      #printable-strut-card .print-qr-box { padding: 22px !important; }
-      #printable-strut-card #qrcode { width: 340px !important; height: 340px !important; }
-      #printable-strut-card #qr-caption-address { font-size: 18px !important; max-width: 340px !important; }
-      #printable-strut-card #qr-caption-suburb { font-size: 13px !important; max-width: 340px !important; }
-      #printable-strut-card .print-privacy-text { font-size: 14px !important; }
+      #printable-strut-card .print-qr-box { padding: 24px !important; }
+      #printable-strut-card #qrcode { width: 360px !important; height: 360px !important; }
+      #printable-strut-card #qr-caption-address { font-size: 19px !important; max-width: 360px !important; }
+      #printable-strut-card #qr-caption-suburb { font-size: 14px !important; max-width: 360px !important; }
+      #printable-strut-card .print-privacy-text { font-size: 15px !important; }
     }
   </style>
 </head>
@@ -283,7 +285,7 @@
               Save A4 PDF / Print Full-Page QR Flyer
             </button>
             <p class="text-[11px] text-slate-500 text-center">
-              Formatted for a single <strong>A4 page</strong> — print it out or choose <em>"Save as PDF"</em> to email straight to the agent.
+              Formatted for a single full-bleed <strong>A4 page</strong> — in your print dialog, ensure margins are set to <em>None</em> for zero white border.
             </p>
 
             <div class="pt-2 border-t border-slate-100 space-y-2">
@@ -412,6 +414,14 @@
               <p class="text-xs text-slate-500 mt-0.5">Rough estimates only — no exact numbers needed.</p>
             </div>
 
+            <!-- Noticeable Privacy Assurance Banner -->
+            <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
+              <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
+              <p class="text-xs font-bold text-[#004852] leading-snug">
+                100% Private: No financial figures or property price estimations get sent through to the selling agent or broker.
+              </p>
+            </div>
+
             <!-- Estimated Purchase Price Slider -->
             <div class="bg-[#F2F9FA] p-4 rounded-2xl border border-[#006875]/25">
               <div class="flex justify-between items-baseline mb-1">
@@ -455,6 +465,14 @@
             <div>
               <h3 class="font-bold text-base text-slate-900">Best-guess income & commitments</h3>
               <p class="text-xs text-slate-500 mt-0.5">Only include debts & card limits you plan to <strong>keep open</strong> during the application.</p>
+            </div>
+
+            <!-- Noticeable Privacy Assurance Banner -->
+            <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
+              <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
+              <p class="text-xs font-bold text-[#004852] leading-snug">
+                100% Private: No financial figures or property price estimations get sent through to the selling agent or broker.
+              </p>
             </div>
 
             <!-- Combined Gross Income -->
@@ -506,19 +524,27 @@
           <!-- STEP 5: RESULTS -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="grid grid-cols-2 gap-3">
-              <!-- Max Borrowing Box -->
-              <div id="res-borrow-card" class="bg-emerald-950 text-white p-4 rounded-2xl border-2 border-emerald-500">
-                <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-200">Est. Max Borrow</p>
-                <p id="res-max-loan" class="text-xl font-extrabold text-emerald-300 mt-1">$844,000</p>
-                <p id="res-lvr-tier-label" class="text-[10.5px] font-bold text-emerald-200 mt-1 leading-snug">≤ 80% LVR • Best Rates & Fees</p>
+              <!-- Max Borrowing Box (Light Blue/Teal Matching Property Match) -->
+              <div id="res-borrow-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl flex flex-col justify-between">
+                <div>
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]">Est. Max Borrow</p>
+                  <p id="res-max-loan" class="text-2xl font-extrabold text-[#006875] mt-1">$844,000</p>
+                </div>
+                <p id="res-lvr-tier-label" class="text-[11px] font-bold text-emerald-700 mt-2 leading-snug">≤ 80% LVR • Best Rates & Fees</p>
               </div>
 
-              <!-- Property Match Box With Real Weighted Breakdown -->
-              <div class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl">
-                <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]">Property Match</p>
-                <p id="res-fit-score" class="text-2xl font-extrabold text-[#006875] mt-0.5">88%</p>
-                <p id="res-budget-label" class="text-[11px] font-bold text-[#006875] mt-0.5">Budget Ready</p>
-                <p id="res-fit-breakdown" class="text-[9.5px] font-semibold text-slate-500 mt-1 leading-tight">Wish list • Budget • Space</p>
+              <!-- Property Match Box (Green if >90%, Pink "Perfect Match" + Large Pink Heart) -->
+              <div id="res-match-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl text-center flex flex-col items-center justify-between">
+                <p id="res-match-heading" class="text-[10px] font-bold uppercase tracking-wider text-[#006875]">Property Match</p>
+                <p id="res-perfect-label" class="text-[11px] font-extrabold uppercase tracking-wider text-pink-600 mt-1">Perfect Match</p>
+                <div class="relative w-20 h-20 mx-auto my-0.5 flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" class="w-full h-full drop-shadow-sm" aria-hidden="true">
+                    <path fill="#ec4899" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  </svg>
+                  <span id="res-fit-score" class="relative z-10 text-white font-extrabold text-lg tracking-tight -mt-1">88%</span>
+                </div>
+                <p id="res-budget-label" class="text-[11px] font-bold text-[#006875]">Budget Ready</p>
+                <p id="res-fit-breakdown" class="text-[9.5px] font-semibold text-slate-500 mt-0.5 leading-tight">Wish list • Budget • Space</p>
               </div>
             </div>
 
@@ -540,12 +566,12 @@
               <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer">
                 <input id="buyer-opt-in" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
                 <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Send to Alex Fyfe (Optional):</strong> Tick here to have Alex double-check your exact borrowing power, guarantor options, or LVR tiers across 30+ lenders.
+                  <strong>Send to Alex Fyfe — Mortgage Broking Specialist (Optional):</strong> Tick here to have Alex, your mortgage broking specialist, double-check your exact borrowing power, guarantor options, or LVR tiers across 30+ lenders.
                 </span>
               </label>
 
               <p class="text-[10px] text-slate-400 leading-normal">
-                Independent Mortgage Choice tool: Your income, deposit, and borrowing figures stay private and are never shown to the selling agent. Alex Fyfe — Owner Manager, Mortgage Choice.
+                Independent Mortgage Choice tool: Your income, deposit, and borrowing figures stay private and are never shown to the selling agent. Alex Fyfe — Mortgage Broking Specialist & Owner Manager, Mortgage Choice.
               </p>
 
               <button id="btn-submit-scan" onclick="submitBuyerScan()" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm">
@@ -1015,8 +1041,8 @@
       qrEl.innerHTML = '';
       new QRCode(qrEl, {
         text: buyerUrl,
-        width: 340,
-        height: 340,
+        width: 360,
+        height: 360,
         colorDark: '#000000',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
@@ -1094,13 +1120,13 @@
 
       if (params.min_beds > 0) {
         if (propBeds >= params.min_beds) criteriaScores.push(1.0);
-        else if (propBeds === params.min_beds - 1) criteriaScores.push(0.4); // 1 bedroom short = partial credit
+        else if (propBeds === params.min_beds - 1) criteriaScores.push(0.4);
         else criteriaScores.push(0.0);
       }
 
       if (params.min_baths > 0) {
         if (propBaths >= params.min_baths) criteriaScores.push(1.0);
-        else if (propBaths === params.min_baths - 1) criteriaScores.push(0.45); // 1 bathroom short = partial credit
+        else if (propBaths === params.min_baths - 1) criteriaScores.push(0.45);
         else criteriaScores.push(0.0);
       }
 
@@ -1111,7 +1137,6 @@
         if (tag === 'office') criteriaScores.push(prop.has_office ? 1.0 : 0.0);
       });
 
-      // If buyer skipped Step 2 without picking any must-haves, assign a neutral 70% baseline instead of a free 100%
       const wishListRatio = criteriaScores.length > 0
         ? criteriaScores.reduce((sum, v) => sum + v, 0) / criteriaScores.length
         : 0.70;
@@ -1131,7 +1156,6 @@
         budgetRatio = 0.65;
         budgetLabel = 'Subj. Sale';
       } else {
-        // Scale proportionally for Stretch buyers based on how close their buying power is to guide min
         const powerRatio = prop.price_min > 0 ? Math.min(0.55, (params.total_buying_power / prop.price_min) * 0.5) : 0.2;
         budgetRatio = Math.max(0.15, powerRatio);
       }
@@ -1198,24 +1222,22 @@
       const maxLoanEl = document.getElementById('res-max-loan');
       const lvrLabelEl = document.getElementById('res-lvr-tier-label');
 
+      // Keep Est. Max Borrow in the same light blue/teal palette as Property Match
+      borrowCard.className = 'bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl flex flex-col justify-between';
+      maxLoanEl.className = 'text-2xl font-extrabold text-[#006875] mt-1';
+
       if (baseLvrPct <= 80) {
         quizState.lvr_tier = 'green';
-        borrowCard.className = 'bg-emerald-950 text-white p-4 rounded-2xl border-2 border-emerald-500';
-        maxLoanEl.className = 'text-xl font-extrabold text-emerald-300 mt-1';
-        lvrLabelEl.className = 'text-[10.5px] font-bold text-emerald-200 mt-1 leading-snug';
+        lvrLabelEl.className = 'text-[11px] font-bold text-emerald-700 mt-2 leading-snug';
         lvrLabelEl.textContent = `~${roundedBaseLvr}% Base LVR (≤80%) • Best Rates & Fees`;
       } else if (baseLvrPct <= 90) {
         quizState.lvr_tier = 'orange';
-        borrowCard.className = 'bg-amber-950 text-white p-4 rounded-2xl border-2 border-amber-500';
-        maxLoanEl.className = 'text-xl font-extrabold text-amber-300 mt-1';
-        lvrLabelEl.className = 'text-[10.5px] font-bold text-amber-200 mt-1 leading-snug';
-        lvrLabelEl.textContent = `~${roundedBaseLvr}% LVR (80–90%) • Slightly Higher Rates & LMI`;
+        lvrLabelEl.className = 'text-[11px] font-bold text-orange-600 mt-2 leading-snug';
+        lvrLabelEl.textContent = `~${roundedBaseLvr}% LVR (80–90%) • Higher rates and fees could be included (LMI)`;
       } else {
         quizState.lvr_tier = 'red';
-        borrowCard.className = 'bg-rose-950 text-white p-4 rounded-2xl border-2 border-rose-500';
-        maxLoanEl.className = 'text-xl font-extrabold text-rose-300 mt-1';
-        lvrLabelEl.className = 'text-[10.5px] font-bold text-rose-200 mt-1 leading-snug';
-        lvrLabelEl.textContent = `90–94% Base LVR (90–98% incl. LMI) • Higher Rates & Fees`;
+        lvrLabelEl.className = 'text-[11px] font-bold text-rose-500 mt-2 leading-snug';
+        lvrLabelEl.textContent = `90–94% Base LVR (90–98% incl. LMI) • Higher rates and fees could be included`;
       }
 
       const canCoverLoan = estMaxLoan >= loanNeededForPurchase;
@@ -1282,6 +1304,21 @@
       document.getElementById('res-fit-breakdown').textContent = matchResult.hasCriteria
         ? `Wish List ${matchResult.wishListPct}% • Budget ${matchResult.budgetLabel} • Space ${matchResult.spaceLabel}`
         : `No must-haves picked • Budget ${matchResult.budgetLabel} • Space ${matchResult.spaceLabel}`;
+
+      // Turn Property Match card green when > 90%
+      const matchCard = document.getElementById('res-match-card');
+      const matchHeading = document.getElementById('res-match-heading');
+      const budgetLabelEl = document.getElementById('res-budget-label');
+
+      if (fitPct > 90) {
+        matchCard.className = 'bg-emerald-50 border-2 border-emerald-500 p-4 rounded-2xl text-center flex flex-col items-center justify-between';
+        matchHeading.className = 'text-[10px] font-extrabold uppercase tracking-wider text-emerald-800';
+        budgetLabelEl.className = 'text-[11px] font-extrabold text-emerald-700';
+      } else {
+        matchCard.className = 'bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl text-center flex flex-col items-center justify-between';
+        matchHeading.className = 'text-[10px] font-bold uppercase tracking-wider text-[#006875]';
+        budgetLabelEl.className = 'text-[11px] font-bold text-[#006875]';
+      }
 
       goQuizStep(5);
       document.getElementById('quiz-step-label').textContent = 'Your Results';
@@ -1603,7 +1640,7 @@
                 </div>
                 <p class="text-xs text-slate-600 font-semibold">
                   <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline font-extrabold">${escapeHtml(r.buyer_mobile)}</a>
-                  • ${escapeHtml(r.buying_stage)} • Timeframe: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)}
+- ${escapeHtml(r.buying_stage)} • Timeframe: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)}
                 </p>
                 <p class="text-[11px] text-slate-500 font-medium">${actionPrompt}</p>
               </div>
