@@ -101,35 +101,38 @@
     <!-- ==================== VIEW 1: PROPERTY IMPORTER & QR STUDIO ==================== -->
     <section id="view-admin" class="space-y-6">
 
-      <!-- Saved Weekend Properties Switcher Bar -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-[#006875] shrink-0">Saved Listings:</span>
+      <!-- Prominent Saved Properties Switcher Bar -->
+      <div class="bg-white rounded-3xl shadow-sm border-2 border-[#006875]/30 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[260px]">
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="w-8 h-8 rounded-xl bg-[#006875]/10 text-[#006875] flex items-center justify-center font-extrabold text-sm">🏠</span>
+            <div>
+              <span class="block text-xs font-extrabold uppercase tracking-wider text-[#006875]">Your Saved Properties</span>
+              <span id="saved-prop-count" class="block text-[11px] font-semibold text-slate-500">Select a listing to reload its QR & Agent Link</span>
+            </div>
+          </div>
           <select id="saved-prop-select" onchange="onSelectSavedProperty(this.value)"
-            class="flex-1 min-w-[200px] max-w-md text-xs sm:text-sm font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-[#006875]">
+            class="flex-1 min-w-[220px] max-w-md text-xs sm:text-sm font-extrabold text-slate-900 bg-[#F2F9FA] border-2 border-[#006875]/30 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#006875]">
           </select>
         </div>
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="refreshSavedProperties()" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="copyInput('share-agent-url')" class="text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2.5 rounded-xl">
+            Copy Agent Link
+          </button>
+          <button type="button" onclick="refreshSavedProperties()" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl">
             Sync Cloud
           </button>
-          <button type="button" onclick="startNewListing()" class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-3.5 py-2 rounded-xl shadow-sm">
-            + New Listing
+          <button type="button" onclick="startNewListing()" class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-4 py-2.5 rounded-xl shadow-sm">
+            + New Property
           </button>
         </div>
       </div>
 
       <!-- Smart Listing URL & Text Scraper -->
       <div class="bg-gradient-to-br from-[#004852] via-[#006875] to-[#0B1120] text-white rounded-3xl p-6 sm:p-7 shadow-lg">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div>
-            <span class="text-[11px] font-bold uppercase tracking-widest text-teal-200">Instant Listing Importer</span>
-            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">Import Property & Generate A4 QR Flyer</h1>
-          </div>
-          <div class="flex gap-2">
-            <button onclick="loadSample(0)" class="text-xs bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-lg font-medium">Demo: Norwood</button>
-            <button onclick="loadSample(1)" class="text-xs bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-lg font-medium">Demo: Glenelg</button>
-          </div>
+        <div class="mb-4">
+          <span class="text-[11px] font-bold uppercase tracking-widest text-teal-200">Instant Listing Importer</span>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">Import Property & Generate A4 QR Flyer</h1>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-2.5">
@@ -716,14 +719,24 @@
     const hasSupabase = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
     const sb = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-    const SAMPLE_PROPERTIES = [
-      { id: '11111111-1111-1111-1111-111111111111', address: '42 Kensington Road', suburb: 'Norwood SA 5067', price_min: 850000, price_max: 910000, bedrooms: 3, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: true, has_office: false, agent_name: 'Sarah Jenkins' },
-      { id: '22222222-2222-2222-2222-222222222222', address: '18 Jetty Street', suburb: 'Glenelg SA 5045', price_min: 1150000, price_max: 1250000, bedrooms: 4, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: false, has_office: true, agent_name: 'Marcus Vance' }
-    ];
+    const DEFAULT_PROPERTY = {
+      id: '11111111-1111-1111-1111-111111111111',
+      address: '42 Kensington Road',
+      suburb: 'Norwood SA 5067',
+      price_min: 850000,
+      price_max: 910000,
+      bedrooms: 3,
+      bathrooms: 2,
+      is_modern: true,
+      has_garage: true,
+      has_outdoor: true,
+      has_office: false,
+      agent_name: 'Sarah Jenkins'
+    };
 
-    let activeProperty = { ...SAMPLE_PROPERTIES[0] };
+    let activeProperty = { ...DEFAULT_PROPERTY };
     let localProperties = JSON.parse(localStorage.getItem('openmatch_properties') || '[]');
-    let savedPropertiesList = [...SAMPLE_PROPERTIES];
+    let savedPropertiesList = [];
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
     let undoBackup = JSON.parse(localStorage.getItem('openmatch_undo_backup') || 'null');
     let brokerOptInOnly = true;
@@ -799,43 +812,59 @@
       const merged = [];
       const seen = new Set();
 
-      const addUnique = (item, isDemo = false) => {
+      const addUnique = (item) => {
         if (!item || !item.id || seen.has(item.id)) return;
         seen.add(item.id);
-        merged.push({ ...normalizePropertyRow(item), _isDemo: isDemo });
+        merged.push(normalizePropertyRow(item));
       };
 
-      // Put activeProperty first if it isn't in lists yet, then cloud/local properties, then samples
-      if (activeProperty && activeProperty.id && !SAMPLE_PROPERTIES.some(s => s.id === activeProperty.id)) {
-        addUnique(activeProperty, false);
+      // Include current active property if it has a real address and is already saved
+      if (activeProperty && activeProperty.id && activeProperty.address && !String(activeProperty.id).startsWith('new-')) {
+        if (localProperties.some(p => p.id === activeProperty.id)) {
+          addUnique(activeProperty);
+        }
       }
-      localProperties.forEach(p => addUnique(p, false));
-      SAMPLE_PROPERTIES.forEach(s => addUnique(s, true));
+      localProperties.forEach(p => addUnique(p));
 
       savedPropertiesList = merged;
 
-      const optionsHtml = merged.map(p => {
-        const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`;
-        const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
-        const prefix = p._isDemo ? '[Demo] ' : '';
-        const selected = p.id === activeProperty.id ? 'selected' : '';
-        return `<option value="${escapeHtml(p.id)}" ${selected}>${escapeHtml(prefix + title + priceTag)}</option>`;
-      }).join('');
+      const countEl = document.getElementById('saved-prop-count');
+      if (countEl) {
+        countEl.textContent = merged.length > 0
+          ? `${merged.length} saved listing${merged.length === 1 ? '' : 's'} — select any to reload its QR & Agent Link`
+          : 'No saved properties yet — enter details below & click Save';
+      }
+
+      let optionsHtml = '';
+      if (merged.length === 0) {
+        optionsHtml = `<option value="">No saved properties yet — save a listing below</option>`;
+      } else {
+        if (String(activeProperty.id).startsWith('new-') || !seen.has(activeProperty.id)) {
+          optionsHtml += `<option value="" selected>— New Unsaved Listing (or choose saved below) —</option>`;
+        }
+        optionsHtml += merged.map(p => {
+          const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`;
+          const agentTag = p.agent_name ? ` • Agent: ${p.agent_name}` : '';
+          const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
+          const selected = p.id === activeProperty.id ? 'selected' : '';
+          return `<option value="${escapeHtml(p.id)}" ${selected}>${escapeHtml(title + priceTag + agentTag)}</option>`;
+        }).join('');
+      }
 
       ['saved-prop-select', 'agent-prop-select'].forEach(selectId => {
         const el = document.getElementById(selectId);
         if (el) {
           el.innerHTML = optionsHtml;
-          el.value = activeProperty.id;
+          if (seen.has(activeProperty.id)) el.value = activeProperty.id;
         }
       });
     }
 
     async function refreshSavedProperties() {
       if (hasSupabase) {
-        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(50);
+        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(60);
         if (error) {
-          const retry = await sb.from('properties').select('*').limit(50);
+          const retry = await sb.from('properties').select('*').limit(60);
           data = retry.data;
         }
         if (Array.isArray(data) && data.length > 0) {
@@ -874,13 +903,14 @@
       };
       populateFormFromActiveProperty();
       syncUIWithProperty();
+      renderSavedPropertyDropdowns();
       const addrInput = document.getElementById('prop-address');
       if (addrInput) addrInput.focus();
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
       const statusEl = document.getElementById('db-status');
-      statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Local Demo Mode';
+      statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Offline Mode';
       statusEl.className = hasSupabase
         ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30'
         : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
@@ -895,12 +925,20 @@
 
       if (propParam) {
         await loadPropertyById(propParam, addrParam);
-      } else {
-        if (addrParam) {
-          applyFallbackAddress(addrParam);
-          populateFormFromActiveProperty();
-        }
+      } else if (addrParam) {
+        applyFallbackAddress(addrParam);
+        populateFormFromActiveProperty();
         syncUIWithProperty();
+      } else if (localProperties.length > 0) {
+        // Auto-load the most recently saved listing so past properties are immediately visible
+        activeProperty = normalizePropertyRow(localProperties[0]);
+        populateFormFromActiveProperty();
+        syncUIWithProperty();
+        renderSavedPropertyDropdowns();
+      } else {
+        populateFormFromActiveProperty();
+        syncUIWithProperty();
+        renderSavedPropertyDropdowns();
       }
 
       if (viewParam === 'scan') {
@@ -1073,13 +1111,6 @@
       if (autoSave) await saveProperty(true);
     }
 
-    function loadSample(idx) {
-      activeProperty = { ...SAMPLE_PROPERTIES[idx] };
-      populateFormFromActiveProperty();
-      syncUIWithProperty();
-      renderSavedPropertyDropdowns();
-    }
-
     function cachePropertyLocally(prop) {
       const normalized = normalizePropertyRow(prop);
       localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 60);
@@ -1165,14 +1196,6 @@
         const fromLocal = localProperties.find(p => p.id === id);
         if (fromLocal) {
           activeProperty = normalizePropertyRow(fromLocal);
-          loaded = true;
-        }
-      }
-
-      if (!loaded) {
-        const fromSample = SAMPLE_PROPERTIES.find(p => p.id === id);
-        if (fromSample) {
-          activeProperty = { ...fromSample };
           loaded = true;
         }
       }
