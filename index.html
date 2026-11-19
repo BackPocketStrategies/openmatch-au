@@ -200,7 +200,7 @@
                 <input id="tag-outdoor" type="checkbox" checked class="w-4 h-4 rounded accent-[#006875]" /> Outdoor Entertaining / Yard
               </label>
               <label class="flex items-center gap-2.5 text-xs font-semibold bg-slate-50 hover:bg-slate-100 px-3.5 py-3 rounded-xl border border-slate-200 cursor-pointer">
-                <input id="tag-office" type="checkbox" checked class="w-4 h-4 rounded accent-[#006875]" /> Home Office / 2nd Living Area
+                <input id="tag-office" type="checkbox" class="w-4 h-4 rounded accent-[#006875]" /> Home Office / 2nd Living Area
               </label>
             </div>
           </div>
@@ -513,11 +513,12 @@
                 <p id="res-lvr-tier-label" class="text-[10.5px] font-bold text-emerald-200 mt-1 leading-snug">≤ 80% LVR • Best Rates & Fees</p>
               </div>
 
-              <!-- Property Match Box -->
+              <!-- Property Match Box With Real Weighted Breakdown -->
               <div class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]">Property Match</p>
-                <p id="res-fit-score" class="text-2xl font-extrabold text-[#006875] mt-0.5">100%</p>
-                <p id="res-budget-label" class="text-[11px] font-bold text-[#006875] mt-1">Budget Ready</p>
+                <p id="res-fit-score" class="text-2xl font-extrabold text-[#006875] mt-0.5">88%</p>
+                <p id="res-budget-label" class="text-[11px] font-bold text-[#006875] mt-0.5">Budget Ready</p>
+                <p id="res-fit-breakdown" class="text-[9.5px] font-semibold text-slate-500 mt-1 leading-tight">Wish list • Budget • Space</p>
               </div>
             </div>
 
@@ -640,8 +641,8 @@
     const sb = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
     const SAMPLE_PROPERTIES = [
-      { id: '11111111-1111-1111-1111-111111111111', address: '42 Kensington Road', suburb: 'Norwood SA 5067', price_min: 850000, price_max: 910000, bedrooms: 3, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: true, has_office: true, agent_name: 'Sarah Jenkins' },
-      { id: '22222222-2222-2222-2222-222222222222', address: '18 Jetty Street', suburb: 'Glenelg SA 5045', price_min: 1150000, price_max: 1250000, bedrooms: 4, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: false, has_office: false, agent_name: 'Marcus Vance' }
+      { id: '11111111-1111-1111-1111-111111111111', address: '42 Kensington Road', suburb: 'Norwood SA 5067', price_min: 850000, price_max: 910000, bedrooms: 3, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: true, has_office: false, agent_name: 'Sarah Jenkins' },
+      { id: '22222222-2222-2222-2222-222222222222', address: '18 Jetty Street', suburb: 'Glenelg SA 5045', price_min: 1150000, price_max: 1250000, bedrooms: 4, bathrooms: 2, is_modern: true, has_garage: true, has_outdoor: false, has_office: true, agent_name: 'Marcus Vance' }
     ];
 
     let activeProperty = { ...SAMPLE_PROPERTIES[0] };
@@ -1022,7 +1023,7 @@
       });
     }
 
-    // ==================== BUYER QUIZ & BROKER LENDING MATHS ====================
+    // ==================== BUYER QUIZ & REAL WEIGHTED MATCHMAKING ====================
     function selectSingle(key, val, btn) {
       quizState[key] = val;
       const isCompact = btn.parentElement.id.startsWith('chips-min-');
@@ -1085,6 +1086,87 @@
       document.getElementById('quiz-progress').style.width = `${step * 25}%`;
     }
 
+    function computeWeightedPropertyMatch(prop, params) {
+      // 1. Wish List & Specs Score (out of 60 pts)
+      const criteriaScores = [];
+      const propBeds = Number(prop.bedrooms) || 3;
+      const propBaths = Number(prop.bathrooms) || 2;
+
+      if (params.min_beds > 0) {
+        if (propBeds >= params.min_beds) criteriaScores.push(1.0);
+        else if (propBeds === params.min_beds - 1) criteriaScores.push(0.4); // 1 bedroom short = partial credit
+        else criteriaScores.push(0.0);
+      }
+
+      if (params.min_baths > 0) {
+        if (propBaths >= params.min_baths) criteriaScores.push(1.0);
+        else if (propBaths === params.min_baths - 1) criteriaScores.push(0.45); // 1 bathroom short = partial credit
+        else criteriaScores.push(0.0);
+      }
+
+      (params.must_haves || []).forEach(tag => {
+        if (tag === 'modern') criteriaScores.push(prop.is_modern ? 1.0 : 0.0);
+        if (tag === 'garage') criteriaScores.push(prop.has_garage ? 1.0 : 0.0);
+        if (tag === 'outdoor') criteriaScores.push(prop.has_outdoor ? 1.0 : 0.0);
+        if (tag === 'office') criteriaScores.push(prop.has_office ? 1.0 : 0.0);
+      });
+
+      // If buyer skipped Step 2 without picking any must-haves, assign a neutral 70% baseline instead of a free 100%
+      const wishListRatio = criteriaScores.length > 0
+        ? criteriaScores.reduce((sum, v) => sum + v, 0) / criteriaScores.length
+        : 0.70;
+      const wishListPts = wishListRatio * 60;
+      const wishListPct = Math.round(wishListRatio * 100);
+
+      // 2. Budget & Price Fit Score (out of 30 pts)
+      let budgetRatio = 0.25;
+      let budgetLabel = 'Stretched';
+      if (params.budget_badge === 'Budget Ready') {
+        budgetRatio = 1.0;
+        budgetLabel = 'Strong';
+      } else if (params.budget_badge === 'Within Reach') {
+        budgetRatio = 0.70;
+        budgetLabel = 'Close';
+      } else if (params.budget_badge === 'Subject to Sale') {
+        budgetRatio = 0.65;
+        budgetLabel = 'Subj. Sale';
+      } else {
+        // Scale proportionally for Stretch buyers based on how close their buying power is to guide min
+        const powerRatio = prop.price_min > 0 ? Math.min(0.55, (params.total_buying_power / prop.price_min) * 0.5) : 0.2;
+        budgetRatio = Math.max(0.15, powerRatio);
+      }
+      const budgetPts = budgetRatio * 30;
+
+      // 3. Household & Space Fit Score (out of 10 pts)
+      let spaceRatio = 1.0;
+      let spaceLabel = 'Great';
+      if (params.household === 'Family') {
+        if (propBeds >= 3 && (prop.has_outdoor || prop.has_office)) {
+          spaceRatio = 1.0;
+          spaceLabel = 'Ideal';
+        } else if (propBeds >= 3) {
+          spaceRatio = 0.75;
+          spaceLabel = 'Good';
+        } else {
+          spaceRatio = 0.40;
+          spaceLabel = 'Tight';
+        }
+      } else if (params.household === 'Couple') {
+        spaceRatio = propBeds >= 2 ? 1.0 : 0.6;
+        spaceLabel = propBeds >= 2 ? 'Great' : 'Compact';
+      }
+      const spacePts = spaceRatio * 10;
+
+      const totalMatchPct = Math.min(100, Math.max(15, Math.round(wishListPts + budgetPts + spacePts)));
+      return {
+        totalMatchPct,
+        wishListPct,
+        budgetLabel,
+        spaceLabel,
+        hasCriteria: criteriaScores.length > 0
+      };
+    }
+
     function calculateAndShowResults() {
       updateSliders();
       quizState.dependants = Number(document.getElementById('input-dependants').value);
@@ -1105,6 +1187,7 @@
 
       const lvrMaxLoan = Math.round((estPrice * 0.94 + quizState.usable_equity) / 1000) * 1000;
       const estMaxLoan = Math.max(0, Math.min(servicingMaxLoan, lvrMaxLoan));
+      const totalBuyingPower = estMaxLoan + quizState.cash_deposit;
 
       const baseLvrPct = estPrice > 0
         ? Math.max(0, ((loanNeededForPurchase - quizState.usable_equity) / estPrice) * 100)
@@ -1171,18 +1254,17 @@
         limitingDescEl.textContent = `Both your income ($${servicingMaxLoan.toLocaleString()} servicing capacity) and deposit/equity (~${roundedBaseLvr}% base LVR) comfortably cover your $${estPrice.toLocaleString()} estimate plus 4% purchase costs.`;
       }
 
-      let totalCriteria = 0, matchedCriteria = 0;
-      if (quizState.min_beds > 0) { totalCriteria++; if (Number(activeProperty.bedrooms) >= quizState.min_beds) matchedCriteria++; }
-      if (quizState.min_baths > 0) { totalCriteria++; if (Number(activeProperty.bathrooms) >= quizState.min_baths) matchedCriteria++; }
-      quizState.must_haves.forEach(tag => {
-        totalCriteria++;
-        if (tag === 'modern' && activeProperty.is_modern) matchedCriteria++;
-        if (tag === 'garage' && activeProperty.has_garage) matchedCriteria++;
-        if (tag === 'outdoor' && activeProperty.has_outdoor) matchedCriteria++;
-        if (tag === 'office' && activeProperty.has_office) matchedCriteria++;
+      // Compute authentic weighted Property Match %
+      const matchResult = computeWeightedPropertyMatch(activeProperty, {
+        min_beds: quizState.min_beds,
+        min_baths: quizState.min_baths,
+        must_haves: quizState.must_haves,
+        household: quizState.household,
+        budget_badge: budgetBadge,
+        total_buying_power: totalBuyingPower
       });
 
-      const fitPct = totalCriteria > 0 ? Math.round((matchedCriteria / totalCriteria) * 100) : 100;
+      const fitPct = matchResult.totalMatchPct;
       let readyPts = 10;
       if ((quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') && quizState.timeline === 'ASAP') readyPts = 30;
       else if (quizState.stage === 'Pre-Approved' || quizState.stage === 'Cash Buyer') readyPts = 22;
@@ -1197,6 +1279,9 @@
       maxLoanEl.textContent = `$${estMaxLoan.toLocaleString()}`;
       document.getElementById('res-fit-score').textContent = `${fitPct}%`;
       document.getElementById('res-budget-label').textContent = budgetBadge;
+      document.getElementById('res-fit-breakdown').textContent = matchResult.hasCriteria
+        ? `Wish List ${matchResult.wishListPct}% • Budget ${matchResult.budgetLabel} • Space ${matchResult.spaceLabel}`
+        : `No must-haves picked • Budget ${matchResult.budgetLabel} • Space ${matchResult.spaceLabel}`;
 
       goQuizStep(5);
       document.getElementById('quiz-step-label').textContent = 'Your Results';
@@ -1215,13 +1300,12 @@
       if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
       if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
 
-      // Store buyer's estimated purchase price safely alongside LVR tier so agent leaderboard sees it across devices
       const dbRecord = {
         property_id: activeProperty.id,
         buyer_name: name,
         buyer_mobile: mobile,
         household: quizState.household,
-        pets: `est_price:${quizState.est_purchase_price}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`,
+        pets: `${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`,
         must_haves: combinedMustHaves,
         buying_stage: quizState.stage,
         timeline: quizState.timeline,
@@ -1289,6 +1373,20 @@
       btn.textContent = 'Loading Demo...';
 
       const midPrice = Math.round(((activeProperty.price_min + activeProperty.price_max) / 2) / 20000) * 20000;
+
+      const samMatch = computeWeightedPropertyMatch(activeProperty, {
+        min_beds: 3, min_baths: 2, must_haves: ['modern', 'garage', 'office'],
+        household: 'Couple', budget_badge: 'Budget Ready', total_buying_power: 1290000
+      });
+      const jordanMatch = computeWeightedPropertyMatch(activeProperty, {
+        min_beds: 4, min_baths: 2, must_haves: ['outdoor', 'garage'],
+        household: 'Family', budget_badge: 'Within Reach', total_buying_power: 920000
+      });
+      const caseyMatch = computeWeightedPropertyMatch(activeProperty, {
+        min_beds: 2, min_baths: 0, must_haves: ['modern'],
+        household: 'Solo', budget_badge: 'Stretch', total_buying_power: 600000
+      });
+
       const demoBuyers = [
         {
           property_id: activeProperty.id,
@@ -1304,9 +1402,9 @@
           dependants: 0,
           existing_debts: 4000,
           est_max_loan: 1050000,
-          fit_percentage: activeProperty.has_office ? 100 : 80,
+          fit_percentage: samMatch.totalMatchPct,
           budget_badge: 'Budget Ready',
-          leaderboard_score: 98,
+          leaderboard_score: 40 + 30 + Math.round(samMatch.totalMatchPct * 0.3),
           broker_opt_in: true
         },
         {
@@ -1315,17 +1413,17 @@
           buyer_mobile: '0438 219 405',
           household: 'Family',
           pets: `est_price:${midPrice}|ORANGE LVR (86.5%)`,
-          must_haves: ['beds:3', 'baths:2', 'outdoor', 'garage'],
-          buying_stage: 'Within Reach',
+          must_haves: ['beds:4', 'baths:2', 'outdoor', 'garage'],
+          buying_stage: 'Pre-Approved',
           timeline: '1-3 Months',
           income: 185000,
           deposit: 140000,
           dependants: 2,
           existing_debts: 6000,
           est_max_loan: 780000,
-          fit_percentage: 100,
+          fit_percentage: jordanMatch.totalMatchPct,
           budget_badge: 'Within Reach',
-          leaderboard_score: 77,
+          leaderboard_score: 25 + 22 + Math.round(jordanMatch.totalMatchPct * 0.3),
           broker_opt_in: true
         },
         {
@@ -1342,9 +1440,9 @@
           dependants: 0,
           existing_debts: 10000,
           est_max_loan: 540000,
-          fit_percentage: 100,
+          fit_percentage: caseyMatch.totalMatchPct,
           budget_badge: 'Stretch',
-          leaderboard_score: 45,
+          leaderboard_score: 5 + 10 + Math.round(caseyMatch.totalMatchPct * 0.3),
           broker_opt_in: false
         }
       ];
@@ -1376,7 +1474,6 @@
         rows = localScans.filter(s => s.property_id === activeProperty.id).sort((a, b) => b.leaderboard_score - a.leaderboard_score);
       }
 
-      // Compute KPI Summary Strip
       const totalCount = rows.length;
       const greenCount = rows.filter(r => r.budget_badge === 'Budget Ready').length;
       const orangeCount = rows.filter(r => r.budget_badge === 'Within Reach' || r.budget_badge === 'Subject to Sale').length;
@@ -1410,7 +1507,6 @@
       }
 
       container.innerHTML = rows.map((r, idx) => {
-        // Traffic-Light Affordability Styling: Green (Can Afford), Orange (Close / Subject to Sale), Red (Nowhere Near)
         let cardBorderClass = 'border-l-8 border-l-rose-500 border-rose-200/90';
         let statusPillClass = 'bg-rose-100 text-rose-800 border border-rose-200';
         let statusDotClass = 'bg-rose-500';
@@ -1435,7 +1531,6 @@
             : 'Strong Contender — Close to guide; worth discussing terms';
         }
 
-        // Parse Non-Negotiables & Specs (Beds, Baths, 4 Features) and check whether THIS property meets each one
         const tags = Array.isArray(r.must_haves) ? r.must_haves : [];
         const reqPills = [];
         const missing = [];
@@ -1487,7 +1582,6 @@
         const estPrice = extractBuyerEstPrice(r);
         const estPriceDisplay = estPrice ? `$${estPrice.toLocaleString()}` : 'Not stated';
 
-        // Option A: Other Listing Match Alert for Green/Orange buyers missing a non-negotiable on this home
         const otherListingHtml = ((r.budget_badge === 'Budget Ready' || r.budget_badge === 'Within Reach') && missing.length > 0)
           ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-900 px-3.5 py-2.5 rounded-xl border border-indigo-200 font-semibold flex items-center gap-2">
                <span class="shrink-0 text-indigo-600 font-extrabold">💡</span>
@@ -1497,7 +1591,6 @@
 
         return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border ${cardBorderClass} space-y-4">
-            <!-- Top Row: Rank, Name, Traffic-Light Affordability Badge & Call Action -->
             <div class="flex flex-wrap justify-between items-start gap-3">
               <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-2">
@@ -1515,7 +1608,6 @@
                 <p class="text-[11px] text-slate-500 font-medium">${actionPrompt}</p>
               </div>
 
-              <!-- Buyer's Estimated Price & House Fit % -->
               <div class="flex items-center gap-2.5 shrink-0">
                 <div class="bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-200/80 text-right">
                   <span class="text-sm sm:text-base font-extrabold text-slate-900">${estPriceDisplay}</span>
@@ -1523,12 +1615,11 @@
                 </div>
                 <div class="bg-[#F2F9FA] px-3.5 py-2 rounded-2xl border border-[#006875]/20 text-right">
                   <span class="text-sm sm:text-base font-extrabold text-[#006875]">${r.fit_percentage}%</span>
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]/80">House Fit</p>
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]/80">Property Match</p>
                 </div>
               </div>
             </div>
 
-            <!-- Middle Row: Buyer Non-Negotiables & Specs -->
             <div class="pt-3 border-t border-slate-100">
               <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Buyer Non-Negotiables & Specs vs. This Home</p>
               <div class="flex flex-wrap gap-1.5">
