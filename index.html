@@ -677,6 +677,7 @@
     ];
 
     let activeProperty = { ...SAMPLE_PROPERTIES[0] };
+    let localProperties = JSON.parse(localStorage.getItem('openmatch_properties') || '[]');
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
     let brokerOptInOnly = true;
 
@@ -703,6 +704,39 @@
       leaderboard_score: 0
     };
 
+    function isValidUuid(str) {
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(str || '').trim());
+    }
+
+    function applyFallbackAddress(fallbackAddr) {
+      if (!fallbackAddr) return;
+      const parts = fallbackAddr.split(',').map(s => s.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        activeProperty.address = parts[0];
+        activeProperty.suburb = parts.slice(1).join(', ');
+      } else {
+        activeProperty.address = fallbackAddr.trim();
+        activeProperty.suburb = '';
+      }
+    }
+
+    function populateFormFromActiveProperty() {
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+      const setChk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = Boolean(val); };
+
+      setVal('prop-address', activeProperty.address || '');
+      setVal('prop-suburb', activeProperty.suburb || '');
+      setVal('prop-min', activeProperty.price_min || 850000);
+      setVal('prop-max', activeProperty.price_max || 910000);
+      setVal('prop-beds', activeProperty.bedrooms || 3);
+      setVal('prop-baths', activeProperty.bathrooms || 2);
+      setVal('prop-agent', activeProperty.agent_name || '');
+      setChk('tag-modern', activeProperty.is_modern);
+      setChk('tag-garage', activeProperty.has_garage);
+      setChk('tag-outdoor', activeProperty.has_outdoor);
+      setChk('tag-office', activeProperty.has_office);
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
       const statusEl = document.getElementById('db-status');
       statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Local Demo Mode';
@@ -719,8 +753,8 @@
         await loadPropertyById(propParam, addrParam);
       } else {
         if (addrParam) {
-          activeProperty.address = addrParam;
-          document.getElementById('prop-address').value = addrParam;
+          applyFallbackAddress(addrParam);
+          populateFormFromActiveProperty();
         }
         syncUIWithProperty();
       }
@@ -895,18 +929,13 @@
 
     function loadSample(idx) {
       activeProperty = { ...SAMPLE_PROPERTIES[idx] };
-      document.getElementById('prop-address').value = activeProperty.address;
-      document.getElementById('prop-suburb').value = activeProperty.suburb;
-      document.getElementById('prop-min').value = activeProperty.price_min;
-      document.getElementById('prop-max').value = activeProperty.price_max;
-      document.getElementById('prop-beds').value = activeProperty.bedrooms;
-      document.getElementById('prop-baths').value = activeProperty.bathrooms;
-      document.getElementById('prop-agent').value = activeProperty.agent_name;
-      document.getElementById('tag-modern').checked = activeProperty.is_modern;
-      document.getElementById('tag-garage').checked = activeProperty.has_garage;
-      document.getElementById('tag-outdoor').checked = activeProperty.has_outdoor;
-      document.getElementById('tag-office').checked = activeProperty.has_office;
+      populateFormFromActiveProperty();
       syncUIWithProperty();
+    }
+
+    function cachePropertyLocally(prop) {
+      localProperties = [prop, ...localProperties.filter(p => p.id !== prop.id)].slice(0, 50);
+      localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
     }
 
     async function saveProperty(silent = false) {
@@ -946,6 +975,7 @@
             has_outdoor: data.has_yard ?? hasOutdoor,
             has_office: data.has_office ?? hasOffice
           };
+          cachePropertyLocally(activeProperty);
         } else {
           btn.textContent = 'Save Listing to Cloud & Lock QR Code';
           if (!silent) alert('Supabase error: ' + (error?.message || 'Check permissions'));
@@ -960,16 +990,20 @@
           has_outdoor: hasOutdoor,
           has_office: hasOffice
         };
+        cachePropertyLocally(activeProperty);
       }
 
       btn.textContent = 'Save Listing to Cloud & Lock QR Code';
+      populateFormFromActiveProperty();
       syncUIWithProperty();
       if (!silent) alert('Listing saved & A4 QR flyer updated!');
     }
 
     async function loadPropertyById(id, fallbackAddr = '') {
-      if (hasSupabase) {
-        const { data } = await sb.from('properties').select('*').eq('id', id).single();
+      let loaded = false;
+
+      if (hasSupabase && isValidUuid(id)) {
+        const { data } = await sb.from('properties').select('*').eq('id', id).maybeSingle();
         if (data) {
           activeProperty = {
             ...data,
@@ -979,12 +1013,33 @@
             has_outdoor: Boolean(data.has_yard),
             has_office: Boolean(data.has_office ?? false)
           };
-        } else if (fallbackAddr) activeProperty.address = fallbackAddr;
-      } else {
-        const found = SAMPLE_PROPERTIES.find(p => p.id === id);
-        if (found) activeProperty = { ...found };
-        else if (fallbackAddr) activeProperty.address = fallbackAddr;
+          cachePropertyLocally(activeProperty);
+          loaded = true;
+        }
       }
+
+      if (!loaded) {
+        const fromLocal = localProperties.find(p => p.id === id);
+        if (fromLocal) {
+          activeProperty = { ...fromLocal };
+          loaded = true;
+        }
+      }
+
+      if (!loaded) {
+        const fromSample = SAMPLE_PROPERTIES.find(p => p.id === id);
+        if (fromSample) {
+          activeProperty = { ...fromSample };
+          loaded = true;
+        }
+      }
+
+      if (!loaded) {
+        activeProperty.id = id;
+        if (fallbackAddr) applyFallbackAddress(fallbackAddr);
+      }
+
+      populateFormFromActiveProperty();
       syncUIWithProperty();
     }
 
@@ -1037,7 +1092,7 @@
 
       const baseUrl = window.location.origin + window.location.pathname;
       const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
-      const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}`;
+      const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
 
       document.getElementById('share-buyer-url').value = buyerUrl;
       document.getElementById('share-agent-url').value = agentUrl;
@@ -1387,7 +1442,7 @@
         limiting_factor: quizState.limiting_factor
       };
 
-      if (hasSupabase) {
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { error } = await sb.from('buyer_scans').insert([dbRecord]);
         if (error) { btn.disabled = false; btn.textContent = 'Save My Property Match'; return alert('Supabase error: ' + error.message); }
       }
@@ -1501,7 +1556,7 @@
         }
       ];
 
-      if (hasSupabase) {
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { error } = await sb.from('buyer_scans').insert(demoBuyers);
         if (error) {
           btn.disabled = false;
@@ -1520,7 +1575,7 @@
 
     async function renderAgentDashboard() {
       let rows = [];
-      if (hasSupabase) {
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { data, error } = await sb.from('agent_leaderboard_view').select('*').eq('property_id', activeProperty.id).order('leaderboard_score', { ascending: false });
         if (error) return document.getElementById('agent-leaderboard-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
         rows = data || [];
