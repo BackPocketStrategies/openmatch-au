@@ -617,6 +617,9 @@
             <button id="btn-seed-demo" onclick="seedAgentDemoBuyers()" class="bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/25 text-xs font-bold px-3.5 py-2.5 rounded-xl">
               + Load 3 Sample Buyers
             </button>
+            <button id="btn-clear-list" onclick="clearAgentList()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold px-3.5 py-2.5 rounded-xl">
+              Clear List
+            </button>
             <button onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2.5 rounded-xl">Refresh</button>
             <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Copy Post-Open SMS</button>
           </div>
@@ -639,6 +642,22 @@
             <p id="kpi-orange" class="text-2xl font-extrabold text-amber-800 mt-0.5">0</p>
             <p class="text-[11px] text-amber-700 font-medium mt-0.5">Within reach / sell first</p>
           </div>
+        </div>
+      </div>
+
+      <!-- 1-Click Undo Clear Banner -->
+      <div id="agent-undo-bar" class="hidden bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 border border-slate-700">
+        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
+          <span class="w-6 h-6 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-extrabold">↺</span>
+          <span id="agent-undo-text">Cleared buyers from list.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-undo-clear" onclick="undoAgentClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
+            Undo Restore
+          </button>
+          <button onclick="dismissUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">
+            ✕
+          </button>
         </div>
       </div>
 
@@ -679,6 +698,7 @@
     let activeProperty = { ...SAMPLE_PROPERTIES[0] };
     let localProperties = JSON.parse(localStorage.getItem('openmatch_properties') || '[]');
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
+    let undoBackup = JSON.parse(localStorage.getItem('openmatch_undo_backup') || 'null');
     let brokerOptInOnly = true;
 
     let quizState = {
@@ -1461,7 +1481,7 @@
       goQuizStep(1);
     }
 
-    // ==================== AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST) ====================
+    // ==================== AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST + CLEAR & UNDO) ====================
     function extractBuyerEstPrice(r) {
       if (r.est_purchase_price && Number(r.est_purchase_price) > 0) return Number(r.est_purchase_price);
       if (r.pets && typeof r.pets === 'string') {
@@ -1474,6 +1494,157 @@
     function cleanLvrLabel(r) {
       if (!r.pets || typeof r.pets !== 'string') return r.budget_badge || '';
       return r.pets.replace(/^est_price:\d+\|/, '');
+    }
+
+    function updateUndoBannerUI() {
+      const bar = document.getElementById('agent-undo-bar');
+      const txt = document.getElementById('agent-undo-text');
+      if (!bar || !txt) return;
+
+      if (undoBackup && undoBackup.property_id === activeProperty.id && Array.isArray(undoBackup.rows) && undoBackup.rows.length > 0) {
+        const count = undoBackup.rows.length;
+        txt.textContent = `Cleared ${count} buyer${count === 1 ? '' : 's'} from this list.`;
+        bar.classList.remove('hidden');
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
+    function setUndoBackup(rows) {
+      if (!rows || rows.length === 0) return;
+      undoBackup = {
+        property_id: activeProperty.id,
+        rows: rows
+      };
+      localStorage.setItem('openmatch_undo_backup', JSON.stringify(undoBackup));
+      updateUndoBannerUI();
+    }
+
+    function dismissUndoBar() {
+      undoBackup = null;
+      localStorage.removeItem('openmatch_undo_backup');
+      updateUndoBannerUI();
+    }
+
+    async function clearAgentList() {
+      let fullRowsToBackup = [];
+
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
+        const { data, error } = await sb.from('buyer_scans').select('*').eq('property_id', activeProperty.id);
+        if (error) return alert('Could not fetch list before clearing: ' + error.message);
+        fullRowsToBackup = data || [];
+      } else {
+        fullRowsToBackup = localScans.filter(s => s.property_id === activeProperty.id);
+      }
+
+      if (fullRowsToBackup.length === 0) {
+        return alert('The buyer list for this property is already empty.');
+      }
+
+      const ok = confirm(`Clear all ${fullRowsToBackup.length} buyer${fullRowsToBackup.length === 1 ? '' : 's'} from ${activeProperty.address}?\n\nYou can click "Undo Restore" right after if you need them back.`);
+      if (!ok) return;
+
+      const btn = document.getElementById('btn-clear-list');
+      btn.disabled = true;
+      btn.textContent = 'Clearing...';
+
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
+        const { error: delError } = await sb.from('buyer_scans').delete().eq('property_id', activeProperty.id);
+        if (delError) {
+          btn.disabled = false;
+          btn.textContent = 'Clear List';
+          return alert(
+            'Supabase blocked deleting rows (RLS policy).\n\nRun this once in your Supabase SQL Editor:\nCREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
+          );
+        }
+      }
+
+      localScans = localScans.filter(s => s.property_id !== activeProperty.id);
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      setUndoBackup(fullRowsToBackup);
+      btn.disabled = false;
+      btn.textContent = 'Clear List';
+      renderAgentDashboard();
+    }
+
+    async function removeSingleBuyer(scanId, buyerName, buyerMobile) {
+      let targetRow = null;
+
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
+        let query = sb.from('buyer_scans').select('*').eq('property_id', activeProperty.id);
+        if (scanId && isValidUuid(scanId)) {
+          query = query.eq('id', scanId);
+        } else {
+          query = query.eq('buyer_name', buyerName).eq('buyer_mobile', buyerMobile);
+        }
+        const { data } = await query.limit(1);
+        targetRow = data && data[0] ? data[0] : null;
+
+        if (targetRow) {
+          const { error: delError } = await sb.from('buyer_scans').delete().eq('id', targetRow.id);
+          if (delError) {
+            return alert(
+              'Supabase blocked deleting this row (RLS policy).\n\nRun this once in your Supabase SQL Editor:\nCREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
+            );
+          }
+        }
+      }
+
+      if (!targetRow) {
+        targetRow = localScans.find(s =>
+          s.property_id === activeProperty.id &&
+          ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile))
+        );
+      }
+
+      localScans = localScans.filter(s =>
+        !(s.property_id === activeProperty.id &&
+          ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile)))
+      );
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      if (targetRow) setUndoBackup([targetRow]);
+      renderAgentDashboard();
+    }
+
+    async function undoAgentClear() {
+      if (!undoBackup || !Array.isArray(undoBackup.rows) || undoBackup.rows.length === 0) return;
+
+      const btn = document.getElementById('btn-undo-clear');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Restoring...';
+      }
+
+      const rowsToRestore = undoBackup.rows.map(row => {
+        const { id, created_at, ...cleanRow } = row;
+        return cleanRow;
+      });
+
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
+        const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
+        if (error) {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Undo Restore';
+          }
+          return alert('Could not restore buyers to Supabase: ' + error.message);
+        }
+      } else {
+        undoBackup.rows.forEach((r, idx) => {
+          localScans.unshift({ id: r.id || ('restored-' + Date.now() + '-' + idx), ...r });
+        });
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Undo Restore';
+      }
+
+      dismissUndoBar();
+      renderAgentDashboard();
     }
 
     async function seedAgentDemoBuyers() {
@@ -1574,6 +1745,8 @@
     }
 
     async function renderAgentDashboard() {
+      updateUndoBannerUI();
+
       let rows = [];
       if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { data, error } = await sb.from('agent_leaderboard_view').select('*').eq('property_id', activeProperty.id).order('leaderboard_score', { ascending: false });
@@ -1680,6 +1853,10 @@
              </div>`
           : '';
 
+        const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
+        const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
+        const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
+
         return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border ${cardBorderClass} space-y-4">
             <div class="flex flex-wrap justify-between items-start gap-3">
@@ -1704,6 +1881,11 @@
                   <span class="text-sm sm:text-base font-extrabold text-[#006875]">${r.fit_percentage}%</span>
                   <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]/80">Property Match</p>
                 </div>
+                <button type="button" onclick="removeSingleBuyer('${safeId}', '${safeName}', '${safeMobile}')"
+                  class="text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-2 rounded-xl border border-transparent hover:border-rose-200 transition"
+                  title="Remove this entry">
+                  Remove
+                </button>
               </div>
             </div>
 
