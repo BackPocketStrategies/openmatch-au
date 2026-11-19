@@ -101,6 +101,24 @@
     <!-- ==================== VIEW 1: PROPERTY IMPORTER & QR STUDIO ==================== -->
     <section id="view-admin" class="space-y-6">
 
+      <!-- Saved Weekend Properties Switcher Bar -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-[#006875] shrink-0">Saved Listings:</span>
+          <select id="saved-prop-select" onchange="onSelectSavedProperty(this.value)"
+            class="flex-1 min-w-[200px] max-w-md text-xs sm:text-sm font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-[#006875]">
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="refreshSavedProperties()" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl">
+            Sync Cloud
+          </button>
+          <button type="button" onclick="startNewListing()" class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-3.5 py-2 rounded-xl shadow-sm">
+            + New Listing
+          </button>
+        </div>
+      </div>
+
       <!-- Smart Listing URL & Text Scraper -->
       <div class="bg-gradient-to-br from-[#004852] via-[#006875] to-[#0B1120] text-white rounded-3xl p-6 sm:p-7 shadow-lg">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -605,13 +623,21 @@
     <section id="view-agent" class="hidden space-y-5">
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
         <div class="flex flex-wrap justify-between items-start gap-4">
-          <div>
+          <div class="space-y-1.5">
             <div class="flex flex-wrap items-center gap-2">
               <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Open Home Buyer Call List</span>
               <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">🔒 Financial figures & price estimates kept private</span>
             </div>
-            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">42 Kensington Road, Norwood SA 5067</h1>
-            <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium mt-0.5">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
+            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">42 Kensington Road, Norwood SA 5067</h1>
+            <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
+
+            <!-- Admin-Only Property Switcher (Automatically Hidden When Shared With Agents) -->
+            <div id="agent-prop-switcher-wrap" class="pt-1.5 flex flex-wrap items-center gap-2">
+              <label for="agent-prop-select" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Switch Property:</label>
+              <select id="agent-prop-select" onchange="onSelectSavedProperty(this.value)"
+                class="text-xs font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 focus:outline-none focus:border-[#006875]">
+              </select>
+            </div>
           </div>
           <div class="flex flex-wrap gap-2">
             <button id="btn-seed-demo" onclick="seedAgentDemoBuyers()" class="bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/25 text-xs font-bold px-3.5 py-2.5 rounded-xl">
@@ -697,6 +723,7 @@
 
     let activeProperty = { ...SAMPLE_PROPERTIES[0] };
     let localProperties = JSON.parse(localStorage.getItem('openmatch_properties') || '[]');
+    let savedPropertiesList = [...SAMPLE_PROPERTIES];
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
     let undoBackup = JSON.parse(localStorage.getItem('openmatch_undo_backup') || 'null');
     let brokerOptInOnly = true;
@@ -728,6 +755,17 @@
       return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(str || '').trim());
     }
 
+    function normalizePropertyRow(row) {
+      return {
+        ...row,
+        bathrooms: row.bathrooms ?? 2,
+        is_modern: Boolean(row.is_modern ?? row.move_in_ready),
+        has_garage: Boolean(row.has_garage ?? row.has_wfh),
+        has_outdoor: Boolean(row.has_outdoor ?? row.has_yard),
+        has_office: Boolean(row.has_office ?? false)
+      };
+    }
+
     function applyFallbackAddress(fallbackAddr) {
       if (!fallbackAddr) return;
       const parts = fallbackAddr.split(',').map(s => s.trim()).filter(Boolean);
@@ -757,6 +795,89 @@
       setChk('tag-office', activeProperty.has_office);
     }
 
+    function renderSavedPropertyDropdowns() {
+      const merged = [];
+      const seen = new Set();
+
+      const addUnique = (item, isDemo = false) => {
+        if (!item || !item.id || seen.has(item.id)) return;
+        seen.add(item.id);
+        merged.push({ ...normalizePropertyRow(item), _isDemo: isDemo });
+      };
+
+      // Put activeProperty first if it isn't in lists yet, then cloud/local properties, then samples
+      if (activeProperty && activeProperty.id && !SAMPLE_PROPERTIES.some(s => s.id === activeProperty.id)) {
+        addUnique(activeProperty, false);
+      }
+      localProperties.forEach(p => addUnique(p, false));
+      SAMPLE_PROPERTIES.forEach(s => addUnique(s, true));
+
+      savedPropertiesList = merged;
+
+      const optionsHtml = merged.map(p => {
+        const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`;
+        const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
+        const prefix = p._isDemo ? '[Demo] ' : '';
+        const selected = p.id === activeProperty.id ? 'selected' : '';
+        return `<option value="${escapeHtml(p.id)}" ${selected}>${escapeHtml(prefix + title + priceTag)}</option>`;
+      }).join('');
+
+      ['saved-prop-select', 'agent-prop-select'].forEach(selectId => {
+        const el = document.getElementById(selectId);
+        if (el) {
+          el.innerHTML = optionsHtml;
+          el.value = activeProperty.id;
+        }
+      });
+    }
+
+    async function refreshSavedProperties() {
+      if (hasSupabase) {
+        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(50);
+        if (error) {
+          const retry = await sb.from('properties').select('*').limit(50);
+          data = retry.data;
+        }
+        if (Array.isArray(data) && data.length > 0) {
+          const normalized = data.map(normalizePropertyRow);
+          const dbIds = new Set(normalized.map(p => p.id));
+          localProperties = [...normalized, ...localProperties.filter(p => !dbIds.has(p.id))].slice(0, 60);
+          localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+        }
+      }
+      renderSavedPropertyDropdowns();
+    }
+
+    async function onSelectSavedProperty(propId) {
+      if (!propId) return;
+      await loadPropertyById(propId);
+      const agentView = document.getElementById('view-agent');
+      if (agentView && !agentView.classList.contains('hidden')) {
+        renderAgentDashboard();
+      }
+    }
+
+    function startNewListing() {
+      activeProperty = {
+        id: 'new-' + Date.now(),
+        address: '',
+        suburb: '',
+        price_min: 800000,
+        price_max: 860000,
+        bedrooms: 3,
+        bathrooms: 2,
+        is_modern: false,
+        has_garage: false,
+        has_outdoor: false,
+        has_office: false,
+        agent_name: ''
+      };
+      populateFormFromActiveProperty();
+      syncUIWithProperty();
+      const addrInput = document.getElementById('prop-address');
+      if (addrInput) addrInput.focus();
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
       const statusEl = document.getElementById('db-status');
       statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Local Demo Mode';
@@ -768,6 +889,9 @@
       const viewParam = params.get('view');
       const propParam = params.get('prop');
       const addrParam = params.get('addr');
+
+      // Load saved properties list from Supabase/localStorage first
+      await refreshSavedProperties();
 
       if (propParam) {
         await loadPropertyById(propParam, addrParam);
@@ -784,6 +908,8 @@
         switchTab('scan');
       } else if (viewParam === 'agent') {
         document.getElementById('admin-nav').classList.add('hidden');
+        const switcherWrap = document.getElementById('agent-prop-switcher-wrap');
+        if (switcherWrap) switcherWrap.classList.add('hidden');
         switchTab('agent');
       } else {
         switchTab('admin');
@@ -951,11 +1077,14 @@
       activeProperty = { ...SAMPLE_PROPERTIES[idx] };
       populateFormFromActiveProperty();
       syncUIWithProperty();
+      renderSavedPropertyDropdowns();
     }
 
     function cachePropertyLocally(prop) {
-      localProperties = [prop, ...localProperties.filter(p => p.id !== prop.id)].slice(0, 50);
+      const normalized = normalizePropertyRow(prop);
+      localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 60);
       localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+      renderSavedPropertyDropdowns();
     }
 
     async function saveProperty(silent = false) {
@@ -1016,6 +1145,7 @@
       btn.textContent = 'Save Listing to Cloud & Lock QR Code';
       populateFormFromActiveProperty();
       syncUIWithProperty();
+      renderSavedPropertyDropdowns();
       if (!silent) alert('Listing saved & A4 QR flyer updated!');
     }
 
@@ -1025,14 +1155,7 @@
       if (hasSupabase && isValidUuid(id)) {
         const { data } = await sb.from('properties').select('*').eq('id', id).maybeSingle();
         if (data) {
-          activeProperty = {
-            ...data,
-            bathrooms: data.bathrooms ?? 2,
-            is_modern: Boolean(data.move_in_ready),
-            has_garage: Boolean(data.has_wfh),
-            has_outdoor: Boolean(data.has_yard),
-            has_office: Boolean(data.has_office ?? false)
-          };
+          activeProperty = normalizePropertyRow(data);
           cachePropertyLocally(activeProperty);
           loaded = true;
         }
@@ -1041,7 +1164,7 @@
       if (!loaded) {
         const fromLocal = localProperties.find(p => p.id === id);
         if (fromLocal) {
-          activeProperty = { ...fromLocal };
+          activeProperty = normalizePropertyRow(fromLocal);
           loaded = true;
         }
       }
@@ -1061,18 +1184,21 @@
 
       populateFormFromActiveProperty();
       syncUIWithProperty();
+      renderSavedPropertyDropdowns();
     }
 
     function syncUIWithProperty() {
-      const street = document.getElementById('prop-address')?.value.trim() || activeProperty.address;
-      const suburb = document.getElementById('prop-suburb')?.value.trim() || activeProperty.suburb;
+      const streetInput = document.getElementById('prop-address');
+      const suburbInput = document.getElementById('prop-suburb');
+      const street = (streetInput ? streetInput.value.trim() : '') || activeProperty.address || 'New Property Listing';
+      const suburb = (suburbInput ? suburbInput.value.trim() : '') || activeProperty.suburb || '';
       const minP = Number(document.getElementById('prop-min')?.value) || activeProperty.price_min;
       const maxP = Number(document.getElementById('prop-max')?.value) || activeProperty.price_max;
       const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms;
       const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
 
-      activeProperty.address = street;
-      activeProperty.suburb = suburb;
+      activeProperty.address = streetInput ? streetInput.value.trim() : street;
+      activeProperty.suburb = suburbInput ? suburbInput.value.trim() : suburb;
       activeProperty.price_min = minP;
       activeProperty.price_max = maxP;
       activeProperty.bedrooms = beds;
@@ -1935,6 +2061,10 @@
         const isOrange = lvrTag.startsWith('ORANGE');
         const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
         const estPrice = extractBuyerEstPrice(r);
+        const matchedProp = savedPropertiesList.find(p => p.id === r.property_id);
+        const propBadge = matchedProp
+          ? `<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#F2F9FA] text-[#006875] border border-[#006875]/20">📍 ${escapeHtml(matchedProp.address)}</span>`
+          : '';
 
         return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-3.5">
@@ -1943,6 +2073,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                   <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <span class="text-[#006875]">${escapeHtml(r.buyer_mobile)}</span></h3>
                   <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${r.broker_opt_in ? 'Opted In' : 'Agent Only'}</span>
+                  ${propBadge}
                 </div>
                 <p class="text-xs text-slate-500 font-medium mt-1">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants${estPrice ? ' • Est. Price: $' + estPrice.toLocaleString() : ''}</p>
               </div>
