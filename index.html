@@ -87,7 +87,7 @@
     <!-- ==================== VIEW 1: PROPERTY IMPORTER & QR STUDIO ==================== -->
     <section id="view-admin" class="hidden space-y-6">
 
-      <!-- Prominent Saved Properties Switcher Bar -->
+      <!-- Saved Properties Switcher & Delete Controls -->
       <div class="bg-white rounded-3xl shadow-sm border-2 border-[#006875]/30 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[260px]">
           <div class="flex items-center gap-2 shrink-0">
@@ -110,6 +110,12 @@
           </button>
           <button type="button" onclick="refreshSavedProperties()" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl">
             Sync Cloud
+          </button>
+          <button id="btn-delete-prop" type="button" onclick="deletePropertyBackOfHouse()" class="text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2.5 rounded-xl">
+            Delete Property
+          </button>
+          <button id="btn-clear-all-props" type="button" onclick="clearAllPropertiesBackOfHouse()" class="text-xs font-extrabold bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2.5 rounded-xl shadow-sm">
+            Clear All
           </button>
           <button type="button" onclick="startNewListing()" class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-4 py-2.5 rounded-xl shadow-sm">
             + New Property
@@ -271,7 +277,7 @@
                 </div>
               </div>
 
-              <!-- Subtle Branding #3: A4 QR Flyer Bottom Strip -->
+              <!-- A4 QR Flyer Bottom Strip -->
               <div class="mt-5 pt-3 border-t border-[#006875]/15 flex items-center justify-center gap-2 text-left">
                 <span class="shrink-0 w-5 h-5 rounded-full bg-[#006875]/10 text-[#006875] flex items-center justify-center">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
@@ -427,7 +433,7 @@
               <p class="text-xs text-slate-500 mt-0.5">Rough estimates only — no exact numbers needed.</p>
             </div>
 
-            <!-- Subtle Branding #2: Step 3 Privacy Lock Banner -->
+            <!-- Step 3 Privacy Lock Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
@@ -477,7 +483,7 @@
               <p class="text-xs text-slate-500 mt-0.5">Only include debts & card limits you plan to <strong>keep open</strong> during the application.</p>
             </div>
 
-            <!-- Subtle Branding #2: Step 4 Privacy Lock Banner -->
+            <!-- Step 4 Privacy Lock Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
@@ -527,7 +533,7 @@
             </div>
           </div>
 
-          <!-- STEP 5: REQUIRED CONTACT DETAILS & SYNCED OPT-IN -->
+          <!-- STEP 5: REQUIRED CONTACT DETAILS & SINGLE OPT-IN -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="text-center space-y-1.5 pt-1">
               <span class="inline-block text-[11px] font-extrabold uppercase tracking-widest text-[#006875] bg-[#F2F9FA] px-3 py-1 rounded-full border border-[#006875]/20">
@@ -555,13 +561,13 @@
               </p>
             </div>
 
-            <!-- Auto-Ticked Opt-In (Synced with Results Screen) -->
-            <div class="bg-amber-50/90 p-3.5 rounded-2xl border-2 border-amber-300 space-y-2 shadow-sm">
+            <!-- Single Auto-Ticked Opt-In on Step 5 -->
+            <div class="bg-amber-50/90 p-3.5 rounded-2xl border-2 border-amber-300 shadow-sm">
               <label class="flex items-start gap-3 cursor-pointer">
-                <input id="buyer-opt-in-step5" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked, false)"
+                <input id="buyer-opt-in-step5" type="checkbox" checked
                   class="mt-0.5 w-4 h-4 rounded accent-[#006875] shrink-0" />
                 <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Send your details through to Alex Fyfe, Mortgage Broking Specialist</strong>, to assess your finances and check eligibility with government grants, guarantors, bridging loans, etc.
+                  <strong>Send your details through to Alex Fyfe, Mortgage Broking Specialist</strong>, to assess your finances and check eligibility with government grants, guarantors, bridging finance, etc.
                   <span class="block text-[11px] text-slate-700 font-normal mt-1">
                     Agreeing to this will automatically send through your details for Alex to assess (never shared with the selling agent).
                   </span>
@@ -577,7 +583,7 @@
             </div>
           </div>
 
-          <!-- RESULTS SCREEN -->
+          <!-- RESULTS SCREEN (NO DUPLICATE OPT-IN CHECKBOX) -->
           <div id="q-step-results" class="quiz-step hidden space-y-4">
             <div class="flex items-center justify-between">
               <button type="button" onclick="goQuizStep(4)" class="inline-flex items-center gap-1 text-xs font-bold text-[#006875] hover:text-[#004852] bg-[#F2F9FA] hover:bg-teal-100/70 px-3 py-1.5 rounded-xl border border-[#006875]/20 transition">
@@ -614,25 +620,13 @@
               <p id="res-limiting-desc" class="text-[11.5px] text-slate-200 leading-relaxed"></p>
             </div>
 
-            <!-- Auto-Ticked Broker Opt-In Box Directly Above "Text Summary to My Phone" -->
-            <div class="space-y-2">
-              <label class="flex items-start gap-3 p-3.5 rounded-2xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer shadow-sm">
-                <input id="buyer-opt-in" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked, true)" class="mt-0.5 w-4 h-4 rounded accent-[#006875] shrink-0" />
-                <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Send your details through to Alex Fyfe, Mortgage Broking Specialist</strong>, to assess your finances and check eligibility with government grants, guarantors, bridging loans, etc.
-                  <span class="block text-[11px] text-slate-700 font-normal mt-1">
-                    Agreeing to this will automatically send through your details for Alex to assess (never shared with the selling agent).
-                  </span>
-                </span>
-              </label>
+            <!-- Status Confirmation Pill Directly Above "Text Summary to My Phone" -->
+            <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-2xl leading-snug">
+              ✓ Details sent to Alex Fyfe (Mortgage Broking Specialist) to assess your finances &amp; check eligibility with government grants, guarantors, bridging finance, etc.
+            </div>
 
-              <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
-                ✓ Sent to Alex Fyfe! Alex will assess your finances &amp; check eligibility for government grants, guarantors &amp; bridging loans.
-              </div>
-
-              <div id="broker-optin-withheld" class="hidden text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl">
-                🔒 Withheld: Neither your contact details nor your financial figures were sent to Alex Fyfe. Tick the box above anytime to send them through.
-              </div>
+            <div id="broker-optin-withheld" class="hidden text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-2xl leading-snug">
+              🔒 Withheld: Neither your contact details nor your financial figures were sent to Alex Fyfe.
             </div>
 
             <!-- Free Zero-Cost Save & Send to Buyer Box -->
@@ -761,7 +755,7 @@
       <div id="agent-leaderboard-list" class="space-y-3.5"></div>
     </section>
 
-    <!-- ==================== VIEW 4: BROKER LEADS ==================== -->
+    <!-- ==================== VIEW 4: BROKER LEADS (WITH DELETE & CLEAR CONTROLS) ==================== -->
     <section id="view-leads" class="hidden space-y-5">
 
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-3.5">
@@ -770,12 +764,31 @@
             <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-600">Broker Pipeline • By Property</span>
             <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">Select a Property to Work Its Leads</h1>
           </div>
-          <button onclick="renderBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-[#006875] hover:bg-[#005560] text-white shadow-sm">
-            Refresh Leads
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btn-clear-all-leads" onclick="clearAllBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">
+              Clear All Leads
+            </button>
+            <button onclick="renderBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-[#006875] hover:bg-[#005560] text-white shadow-sm">
+              Refresh Leads
+            </button>
+          </div>
         </div>
 
         <div id="broker-property-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+      </div>
+
+      <!-- 1-Click Undo Clear Banner for Broker Leads -->
+      <div id="broker-undo-bar" class="hidden bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 border border-slate-700">
+        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
+          <span class="w-6 h-6 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-extrabold">↺</span>
+          <span id="broker-undo-text">Cleared leads.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-broker-undo" onclick="undoBrokerClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
+            Undo Restore
+          </button>
+          <button onclick="dismissBrokerUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
+        </div>
       </div>
 
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-4">
@@ -787,6 +800,12 @@
           <div class="flex flex-wrap gap-2 items-center">
             <button id="btn-filter-optin" onclick="setLeadFilter(true)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white">Opted-In Leads</button>
             <button id="btn-filter-all" onclick="setLeadFilter(false)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700">All Scans (This Home)</button>
+            <button id="btn-clear-prop-leads" onclick="clearPropertyBrokerLeads()" class="text-xs font-bold px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">
+              Clear This Home's Leads
+            </button>
+            <button id="btn-delete-prop-broker" onclick="deleteSelectedBrokerProperty()" class="text-xs font-bold px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white">
+              Delete Property
+            </button>
           </div>
         </div>
 
@@ -840,6 +859,7 @@
     let savedPropertiesList = [];
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
     let undoBackup = JSON.parse(localStorage.getItem('openmatch_undo_backup') || 'null');
+    let brokerUndoBackup = JSON.parse(localStorage.getItem('openmatch_broker_undo') || 'null');
     let brokerOptInOnly = true;
     let brokerSelectedPropertyId = null;
     let lockedAgentName = null;
@@ -916,6 +936,19 @@
       setChk('tag-office', activeProperty.has_office);
     }
 
+    function updatePropertyActionButtons() {
+      const delBtn = document.getElementById('btn-delete-prop');
+      const clearAllBtn = document.getElementById('btn-clear-all-props');
+      const isSaved = Boolean(
+        activeProperty &&
+        activeProperty.id &&
+        !String(activeProperty.id).startsWith('new-') &&
+        savedPropertiesList.some(p => p.id === activeProperty.id)
+      );
+      if (delBtn) delBtn.classList.toggle('hidden', !isSaved);
+      if (clearAllBtn) clearAllBtn.classList.toggle('hidden', savedPropertiesList.length === 0);
+    }
+
     function renderSavedPropertyDropdowns() {
       const merged = [];
       const seen = new Set();
@@ -988,19 +1021,23 @@
           }
         }
       }
+
+      updatePropertyActionButtons();
     }
 
     async function refreshSavedProperties() {
       if (hasSupabase) {
-        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(80);
+        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(100);
         if (error) {
-          const retry = await sb.from('properties').select('*').limit(80);
+          const retry = await sb.from('properties').select('*').limit(100);
           data = retry.data;
         }
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           const normalized = data.map(normalizePropertyRow);
-          const dbIds = new Set(normalized.map(p => p.id));
-          localProperties = [...normalized, ...localProperties.filter(p => !dbIds.has(p.id))].slice(0, 80);
+          localProperties = [
+            ...normalized,
+            ...localProperties.filter(p => !isValidUuid(p.id))
+          ].slice(0, 100);
           localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
         }
       }
@@ -1313,7 +1350,7 @@
 
     function cachePropertyLocally(prop) {
       const normalized = normalizePropertyRow(prop);
-      localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 80);
+      localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 100);
       localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
       renderSavedPropertyDropdowns();
     }
@@ -1378,6 +1415,122 @@
       syncUIWithProperty();
       renderSavedPropertyDropdowns();
       if (!silent) alert('Listing saved & A4 QR flyer updated!');
+    }
+
+    async function deletePropertyById(targetId) {
+      if (!targetId || String(targetId).startsWith('new-')) {
+        alert('This listing has not been saved yet.');
+        return false;
+      }
+
+      const targetProp = savedPropertiesList.find(p => p.id === targetId) || activeProperty;
+      const propTitle = `${targetProp.address}${targetProp.suburb ? ', ' + targetProp.suburb : ''}`;
+      const ok = confirm(
+        `Permanently delete "${propTitle}" from your system?\n\n` +
+        `This removes the property, deactivates its QR code, and deletes any scans attached to this property.`
+      );
+      if (!ok) return false;
+
+      if (hasSupabase && isValidUuid(targetId)) {
+        // Delete child buyer_scans first to satisfy foreign key constraints
+        await sb.from('buyer_scans').delete().eq('property_id', targetId);
+        const { data: deletedProps, error } = await sb.from('properties').delete().eq('id', targetId).select();
+
+        if (error || !deletedProps || deletedProps.length === 0) {
+          alert(
+            'Supabase blocked deleting this property because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
+            'Run these two lines once in your Supabase SQL Editor:\n\n' +
+            'CREATE POLICY "Allow anon delete properties" ON properties FOR DELETE USING (true);\n' +
+            'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
+          );
+          return false;
+        }
+      }
+
+      localProperties = localProperties.filter(p => p.id !== targetId);
+      localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+
+      localScans = localScans.filter(s => s.property_id !== targetId);
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      if (brokerSelectedPropertyId === targetId) {
+        brokerSelectedPropertyId = localProperties[0]?.id || null;
+      }
+
+      if (activeProperty.id === targetId) {
+        if (localProperties.length > 0) {
+          activeProperty = normalizePropertyRow(localProperties[0]);
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+          renderSavedPropertyDropdowns();
+        } else {
+          startNewListing();
+        }
+      } else {
+        renderSavedPropertyDropdowns();
+      }
+
+      return true;
+    }
+
+    async function deletePropertyBackOfHouse() {
+      const delBtn = document.getElementById('btn-delete-prop');
+      if (delBtn) { delBtn.disabled = true; delBtn.textContent = 'Deleting...'; }
+      await deletePropertyById(activeProperty.id);
+      if (delBtn) { delBtn.disabled = false; delBtn.textContent = 'Delete Property'; }
+    }
+
+    async function deleteSelectedBrokerProperty() {
+      const targetId = brokerSelectedPropertyId || activeProperty.id;
+      const btn = document.getElementById('btn-delete-prop-broker');
+      if (btn) { btn.disabled = true; btn.textContent = 'Deleting...'; }
+      const deleted = await deletePropertyById(targetId);
+      if (btn) { btn.disabled = false; btn.textContent = 'Delete Property'; }
+      if (deleted) renderBrokerLeads();
+    }
+
+    async function clearAllPropertiesBackOfHouse() {
+      const count = savedPropertiesList.length;
+      if (count === 0) return alert('There are no saved properties to clear.');
+
+      const ok = confirm(
+        `Permanently delete ALL ${count} saved propert${count === 1 ? 'y' : 'ies'} and all their buyer scans?\n\n` +
+        `Use this to wipe test properties before setting up your real listings.`
+      );
+      if (!ok) return;
+
+      const btn = document.getElementById('btn-clear-all-props');
+      if (btn) { btn.disabled = true; btn.textContent = 'Clearing All...'; }
+
+      if (hasSupabase) {
+        await sb.from('buyer_scans').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        const { error } = await sb.from('properties').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        const { data: remaining } = await sb.from('properties').select('id').limit(1);
+
+        if (error || (remaining && remaining.length > 0)) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Clear All'; }
+          return alert(
+            'Supabase blocked deleting properties because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
+            'Run these two lines once in your Supabase SQL Editor:\n\n' +
+            'CREATE POLICY "Allow anon delete properties" ON properties FOR DELETE USING (true);\n' +
+            'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
+          );
+        }
+      }
+
+      localProperties = [];
+      localScans = [];
+      undoBackup = null;
+      brokerUndoBackup = null;
+      brokerSelectedPropertyId = null;
+      localStorage.removeItem('openmatch_properties');
+      localStorage.removeItem('openmatch_scans');
+      localStorage.removeItem('openmatch_undo_backup');
+      localStorage.removeItem('openmatch_broker_undo');
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Clear All'; }
+      startNewListing();
+      alert('All test properties and scans cleared!');
     }
 
     async function loadPropertyById(id, fallbackAddr = '') {
@@ -1542,18 +1695,6 @@
       document.getElementById('val-cc-limits').textContent = `$${ccLimits.toLocaleString()}`;
     }
 
-    function syncBrokerOptInUI(checked) {
-      const step5Box = document.getElementById('buyer-opt-in-step5');
-      const resBox = document.getElementById('buyer-opt-in');
-      const confirmedBadge = document.getElementById('broker-optin-confirmed');
-      const withheldBadge = document.getElementById('broker-optin-withheld');
-
-      if (step5Box) step5Box.checked = checked;
-      if (resBox) resBox.checked = checked;
-      if (confirmedBadge) confirmedBadge.classList.toggle('hidden', !checked);
-      if (withheldBadge) withheldBadge.classList.toggle('hidden', checked);
-    }
-
     function clearContactGateError() {
       const errEl = document.getElementById('contact-gate-error');
       const nameInput = document.getElementById('buyer-name');
@@ -1681,9 +1822,10 @@
       btn.textContent = 'Unlocking...';
 
       updateSliders();
+      const optInChecked = Boolean(document.getElementById('buyer-opt-in-step5')?.checked);
       quizState.buyer_name = name;
       quizState.buyer_mobile = mobile;
-      quizState.broker_opt_in = Boolean(document.getElementById('buyer-opt-in-step5')?.checked);
+      quizState.broker_opt_in = optInChecked;
       quizState.dependants = Number(document.getElementById('input-dependants').value);
 
       const estPrice = quizState.est_purchase_price;
@@ -1787,7 +1929,11 @@
       quizState.budget_badge = budgetBadge;
       quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
 
-      syncBrokerOptInUI(quizState.broker_opt_in);
+      const confirmedBadge = document.getElementById('broker-optin-confirmed');
+      const withheldBadge = document.getElementById('broker-optin-withheld');
+      if (confirmedBadge) confirmedBadge.classList.toggle('hidden', !optInChecked);
+      if (withheldBadge) withheldBadge.classList.toggle('hidden', optInChecked);
+
       await persistBuyerScanRecord();
 
       const firstName = name.split(/\s+/)[0];
@@ -1875,11 +2021,7 @@
             .select()
             .maybeSingle();
 
-          if (!upErr && updated) {
-            quizState.saved_db_id = updated.id;
-          } else if (upErr) {
-            console.warn('Supabase update error:', upErr.message);
-          }
+          if (!upErr && updated) quizState.saved_db_id = updated.id;
         } else {
           const { data: inserted, error: insErr } = await sb
             .from('buyer_scans')
@@ -1887,11 +2029,7 @@
             .select()
             .maybeSingle();
 
-          if (!insErr && inserted) {
-            quizState.saved_db_id = inserted.id;
-          } else if (insErr) {
-            console.warn('Supabase insert error:', insErr.message);
-          }
+          if (!insErr && inserted) quizState.saved_db_id = inserted.id;
         }
       }
 
@@ -1917,14 +2055,6 @@
         ...localScans.filter(s => s.id !== localId && (!quizState.saved_db_id || s.id !== quizState.saved_db_id))
       ];
       localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
-    }
-
-    async function toggleBrokerOptIn(checked, shouldPersist = true) {
-      quizState.broker_opt_in = checked;
-      syncBrokerOptInUI(checked);
-      if (shouldPersist && (quizState.saved_db_id || quizState.saved_local_id)) {
-        await persistBuyerScanRecord();
-      }
     }
 
     function finishBuyerSession() {
@@ -2045,7 +2175,8 @@
       quizState.broker_opt_in = true;
       document.getElementById('buyer-name').value = '';
       document.getElementById('buyer-mobile').value = '';
-      syncBrokerOptInUI(true);
+      const step5Box = document.getElementById('buyer-opt-in-step5');
+      if (step5Box) step5Box.checked = true;
       clearContactGateError();
       goQuizStep(1);
     }
@@ -2103,9 +2234,10 @@
 
     function showSupabaseDeleteHelp() {
       alert(
-        'Supabase blocked deleting buyers because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
-        'Run once in Supabase SQL Editor:\n' +
-        'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
+        'Supabase blocked deleting records because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
+        'Run these two lines once in your Supabase SQL Editor:\n\n' +
+        'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);\n' +
+        'CREATE POLICY "Allow anon delete properties" ON properties FOR DELETE USING (true);'
       );
     }
 
@@ -2120,9 +2252,7 @@
         fullRowsToBackup = localScans.filter(s => s.property_id === activeProperty.id);
       }
 
-      if (fullRowsToBackup.length === 0) {
-        return alert('The buyer list for this property is already empty.');
-      }
+      if (fullRowsToBackup.length === 0) return alert('The buyer list for this property is already empty.');
 
       const ok = confirm(`Clear all ${fullRowsToBackup.length} buyer${fullRowsToBackup.length === 1 ? '' : 's'} from ${activeProperty.address}?\n\nYou can click "Undo Restore" right after if you need them back.`);
       if (!ok) return;
@@ -2159,11 +2289,9 @@
 
       if (hasSupabase && isValidUuid(activeProperty.id)) {
         let query = sb.from('buyer_scans').select('*').eq('property_id', activeProperty.id);
-        if (scanId && isValidUuid(scanId)) {
-          query = query.eq('id', scanId);
-        } else {
-          query = query.eq('buyer_name', buyerName).eq('buyer_mobile', buyerMobile);
-        }
+        if (scanId && isValidUuid(scanId)) query = query.eq('id', scanId);
+        else query = query.eq('buyer_name', buyerName).eq('buyer_mobile', buyerMobile);
+
         const { data } = await query.limit(1);
         targetRow = data && data[0] ? data[0] : null;
 
@@ -2174,9 +2302,7 @@
             .eq('id', targetRow.id)
             .select();
 
-          if (delError || !deletedRows || deletedRows.length === 0) {
-            return showSupabaseDeleteHelp();
-          }
+          if (delError || !deletedRows || deletedRows.length === 0) return showSupabaseDeleteHelp();
         }
       }
 
@@ -2203,10 +2329,7 @@
       const btn = document.getElementById('btn-undo-clear');
       if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
 
-      const rowsToRestore = undoBackup.rows.map(row => {
-        const { id, created_at, ...cleanRow } = row;
-        return cleanRow;
-      });
+      const rowsToRestore = undoBackup.rows.map(({ id, created_at, ...cleanRow }) => cleanRow);
 
       if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
@@ -2232,7 +2355,6 @@
       btn.textContent = 'Loading Demo...';
 
       const midPrice = Math.round(((activeProperty.price_min + activeProperty.price_max) / 2) / 20000) * 20000;
-
       const samMatch = computeWeightedPropertyMatch(activeProperty, {
         min_beds: 3, min_baths: 2, must_haves: ['modern', 'garage', 'office'],
         household: 'Couple', budget_badge: 'Budget Ready', total_buying_power: 1290000
@@ -2510,7 +2632,172 @@
       alert('Post-open SMS summary copied!');
     }
 
-    // ==================== BROKER LEADS ====================
+    // ==================== BROKER LEADS & DELETE / CLEAR CONTROLS ====================
+    function updateBrokerUndoBannerUI() {
+      const bar = document.getElementById('broker-undo-bar');
+      const txt = document.getElementById('broker-undo-text');
+      if (!bar || !txt) return;
+
+      if (brokerUndoBackup && Array.isArray(brokerUndoBackup.rows) && brokerUndoBackup.rows.length > 0) {
+        const count = brokerUndoBackup.rows.length;
+        txt.textContent = `Cleared ${count} lead${count === 1 ? '' : 's'} from Broker Leads.`;
+        bar.classList.remove('hidden');
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
+    function setBrokerUndoBackup(rows) {
+      if (!rows || rows.length === 0) return;
+      brokerUndoBackup = { rows };
+      localStorage.setItem('openmatch_broker_undo', JSON.stringify(brokerUndoBackup));
+      updateBrokerUndoBannerUI();
+    }
+
+    function dismissBrokerUndoBar() {
+      brokerUndoBackup = null;
+      localStorage.removeItem('openmatch_broker_undo');
+      updateBrokerUndoBannerUI();
+    }
+
+    async function clearPropertyBrokerLeads() {
+      if (!brokerSelectedPropertyId) return;
+      let rowsToBackup = [];
+
+      if (hasSupabase && isValidUuid(brokerSelectedPropertyId)) {
+        const { data, error } = await sb.from('buyer_scans').select('*').eq('property_id', brokerSelectedPropertyId);
+        if (error) return alert('Could not fetch leads: ' + error.message);
+        rowsToBackup = data || [];
+      } else {
+        rowsToBackup = localScans.filter(s => s.property_id === brokerSelectedPropertyId);
+      }
+
+      if (rowsToBackup.length === 0) return alert('There are no leads to clear for this home.');
+      if (!confirm(`Clear all ${rowsToBackup.length} lead${rowsToBackup.length === 1 ? '' : 's'} for this property?`)) return;
+
+      const btn = document.getElementById('btn-clear-prop-leads');
+      if (btn) { btn.disabled = true; btn.textContent = 'Clearing...'; }
+
+      if (hasSupabase && isValidUuid(brokerSelectedPropertyId)) {
+        const { data: deletedRows, error } = await sb
+          .from('buyer_scans')
+          .delete()
+          .eq('property_id', brokerSelectedPropertyId)
+          .select();
+
+        if (error || !deletedRows || deletedRows.length === 0) {
+          if (btn) { btn.disabled = false; btn.textContent = "Clear This Home's Leads"; }
+          return showSupabaseDeleteHelp();
+        }
+      }
+
+      localScans = localScans.filter(s => s.property_id !== brokerSelectedPropertyId);
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      setBrokerUndoBackup(rowsToBackup);
+
+      if (btn) { btn.disabled = false; btn.textContent = "Clear This Home's Leads"; }
+      renderBrokerLeads();
+    }
+
+    async function clearAllBrokerLeads() {
+      let rowsToBackup = [];
+
+      if (hasSupabase) {
+        const { data, error } = await sb.from('buyer_scans').select('*');
+        if (error) return alert('Could not fetch leads: ' + error.message);
+        rowsToBackup = data || [];
+      } else {
+        rowsToBackup = [...localScans];
+      }
+
+      if (rowsToBackup.length === 0) return alert('There are no leads to clear.');
+      if (!confirm(`Clear ALL ${rowsToBackup.length} lead${rowsToBackup.length === 1 ? '' : 's'} across every property?`)) return;
+
+      const btn = document.getElementById('btn-clear-all-leads');
+      if (btn) { btn.disabled = true; btn.textContent = 'Clearing...'; }
+
+      if (hasSupabase) {
+        const { data: deletedRows, error } = await sb
+          .from('buyer_scans')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000')
+          .select();
+
+        if (error || !deletedRows || deletedRows.length === 0) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Clear All Leads'; }
+          return showSupabaseDeleteHelp();
+        }
+      }
+
+      localScans = [];
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      setBrokerUndoBackup(rowsToBackup);
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Clear All Leads'; }
+      renderBrokerLeads();
+    }
+
+    async function removeSingleBrokerLead(scanId, buyerName, buyerMobile) {
+      let targetRow = null;
+
+      if (hasSupabase && scanId && isValidUuid(scanId)) {
+        const { data } = await sb.from('buyer_scans').select('*').eq('id', scanId).limit(1);
+        targetRow = data && data[0] ? data[0] : null;
+
+        if (targetRow) {
+          const { data: deletedRows, error } = await sb
+            .from('buyer_scans')
+            .delete()
+            .eq('id', targetRow.id)
+            .select();
+
+          if (error || !deletedRows || deletedRows.length === 0) return showSupabaseDeleteHelp();
+        }
+      }
+
+      if (!targetRow) {
+        targetRow = localScans.find(s =>
+          (scanId && s.id === scanId) ||
+          (s.property_id === brokerSelectedPropertyId && s.buyer_name === buyerName && s.buyer_mobile === buyerMobile)
+        );
+      }
+
+      localScans = localScans.filter(s =>
+        !((scanId && s.id === scanId) ||
+          (s.property_id === brokerSelectedPropertyId && s.buyer_name === buyerName && s.buyer_mobile === buyerMobile))
+      );
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      if (targetRow) setBrokerUndoBackup([targetRow]);
+      renderBrokerLeads();
+    }
+
+    async function undoBrokerClear() {
+      if (!brokerUndoBackup || !Array.isArray(brokerUndoBackup.rows) || brokerUndoBackup.rows.length === 0) return;
+
+      const btn = document.getElementById('btn-broker-undo');
+      if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
+
+      const rowsToRestore = brokerUndoBackup.rows.map(({ id, created_at, ...cleanRow }) => cleanRow);
+
+      if (hasSupabase) {
+        const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
+        if (error) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+          return alert('Could not restore leads to Supabase: ' + error.message);
+        }
+      } else {
+        brokerUndoBackup.rows.forEach((r, idx) => {
+          localScans.unshift({ id: r.id || ('restored-' + Date.now() + '-' + idx), ...r });
+        });
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      }
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+      dismissBrokerUndoBar();
+      renderBrokerLeads();
+    }
+
     function selectBrokerProperty(propId) {
       brokerSelectedPropertyId = propId;
       renderBrokerLeads();
@@ -2527,7 +2814,7 @@
       const firstName = (buyerName || 'there').trim().split(/\s+/)[0];
       const cleanPhone = (buyerMobile || '').replace(/[^\d+]/g, '');
       const cleanProp = propAddress || 'the property';
-      const bodyText = `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and sent your details through to assess your borrowing power, grants, guarantors, and bridging options. Free for a quick 5-min chat?`;
+      const bodyText = `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and sent your details through to assess your borrowing power, government grants, guarantors, and bridging finance options. Free for a quick 5-min chat?`;
 
       const ua = navigator.userAgent.toLowerCase();
       const isIOS = /iphone|ipad|ipod/.test(ua);
@@ -2573,6 +2860,8 @@
     }
 
     async function renderBrokerLeads() {
+      updateBrokerUndoBannerUI();
+
       let allRows = [];
       if (hasSupabase) {
         const { data, error } = await sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
@@ -2689,6 +2978,11 @@
       }
 
       container.innerHTML = displayedRows.map(r => {
+        const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
+        const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
+        const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
+        const safePropAddr = escapeHtml(selectedProp.address || '').replace(/'/g, "\\'");
+
         if (!r.broker_opt_in) {
           return `
             <div class="bg-slate-50/90 p-5 rounded-3xl border border-slate-200/90 flex flex-wrap items-center justify-between gap-3">
@@ -2701,7 +2995,10 @@
                   ${escapeHtml(r.buying_stage)} • Timeline: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)} • Match Score: <strong>${r.fit_percentage}%</strong>
                 </p>
               </div>
-              <span class="text-[11px] font-semibold text-slate-400">Contact &amp; financials not shared</span>
+              <button type="button" onclick="removeSingleBrokerLead('${safeId}', '${safeName}', '${safeMobile}')"
+                class="text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-1.5 rounded-xl border border-transparent hover:border-rose-200 transition">
+                Delete
+              </button>
             </div>`;
         }
 
@@ -2711,11 +3008,6 @@
         const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
         const estPrice = extractBuyerEstPrice(r);
         const status = extractLeadStatus(r);
-
-        const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
-        const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
-        const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
-        const safePropAddr = escapeHtml(selectedProp.address || '').replace(/'/g, "\\'");
 
         const statusBtn = (label) => {
           const isCurrent = status === label;
@@ -2750,11 +3042,18 @@
                 </p>
               </div>
 
-              <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80 shrink-0">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1.5">Status:</span>
-                ${statusBtn('New')}
-                ${statusBtn('Called')}
-                ${statusBtn('Booked')}
+              <div class="flex items-center gap-2 shrink-0">
+                <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1.5">Status:</span>
+                  ${statusBtn('New')}
+                  ${statusBtn('Called')}
+                  ${statusBtn('Booked')}
+                </div>
+                <button type="button" onclick="removeSingleBrokerLead('${safeId}', '${safeName}', '${safeMobile}')"
+                  class="text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-2 rounded-xl border border-transparent hover:border-rose-200 transition"
+                  title="Delete this lead">
+                  Delete
+                </button>
               </div>
             </div>
 
