@@ -18,7 +18,6 @@
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
 
-    /* Full-Bleed A4 PDF Print Styling (Zero White Border) */
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       html, body {
@@ -68,10 +67,10 @@
         <span id="db-status" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300">Connecting...</span>
       </div>
       <nav class="flex flex-wrap gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs sm:text-sm">
-        <button onclick="switchTab('admin')" id="tab-admin" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold bg-[#006875] text-white">1. Property & QR</button>
-        <button onclick="switchTab('scan')" id="tab-scan" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white">2. Buyer Quiz</button>
-        <button onclick="switchTab('agent')" id="tab-agent" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white">3. Agent Leaderboard</button>
-        <button onclick="switchTab('leads')" id="tab-leads" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white">4. Broker Leads</button>
+        <button type="button" onclick="switchTab('admin')" id="tab-admin" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold bg-[#006875] text-white">1. Property & QR</button>
+        <button type="button" onclick="switchTab('scan')" id="tab-scan" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white">2. Buyer Quiz</button>
+        <button type="button" onclick="switchTab('agent')" id="tab-agent" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white">3. Agent Leaderboard</button>
+        <button type="button" onclick="switchTab('leads')" id="tab-leads" class="nav-btn px-3.5 py-1.5 rounded-lg font-semibold text-slate-300 hover:text-white">4. Broker Leads</button>
       </nav>
     </div>
   </header>
@@ -99,7 +98,7 @@
           <button type="button" onclick="copyInput('share-agent-master-url')" class="text-xs font-extrabold bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/30 px-3.5 py-2.5 rounded-xl">
             Copy Agent Master Link
           </button>
-          <button type="button" onclick="refreshSavedProperties()" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl">
+          <button type="button" onclick="refreshSavedProperties(true)" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl">
             Sync Cloud
           </button>
           <button id="btn-delete-prop" type="button" onclick="deletePropertyBackOfHouse()" class="text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2.5 rounded-xl">
@@ -124,7 +123,7 @@
         <div class="flex flex-col sm:flex-row gap-2.5">
           <input id="scrape-url-input" type="url" placeholder="Paste listing URL (agency site, Domain, or realestate.com.au)..."
             class="flex-1 bg-white/10 border border-white/20 text-white placeholder-teal-100/60 text-sm px-4 py-3.5 rounded-xl focus:outline-none focus:border-white" />
-          <button id="btn-scrape-url" onclick="scrapeFromUrl()" class="bg-white hover:bg-teal-50 text-[#006875] font-extrabold text-sm px-6 py-3.5 rounded-xl shadow-md shrink-0">
+          <button id="btn-scrape-url" type="button" onclick="scrapeFromUrl()" class="bg-white hover:bg-teal-50 text-[#006875] font-extrabold text-sm px-6 py-3.5 rounded-xl shadow-md shrink-0">
             Auto-Fill From URL
           </button>
         </div>
@@ -138,7 +137,7 @@
           <div id="paste-fallback-box" class="hidden mt-2.5 space-y-2">
             <textarea id="raw-listing-text" rows="3" placeholder="Open the listing tab, press Ctrl+A then Ctrl+C, and paste here..."
               class="w-full bg-slate-950/50 border border-white/20 text-white placeholder-teal-100/50 text-xs p-3 rounded-xl focus:outline-none"></textarea>
-            <button onclick="parseListingText(true)" class="text-xs bg-white text-[#006875] font-bold px-4 py-2 rounded-lg">
+            <button type="button" onclick="parseListingText(true)" class="text-xs bg-white text-[#006875] font-bold px-4 py-2 rounded-lg">
               Extract Address & Details From Text
             </button>
           </div>
@@ -149,21 +148,23 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
         <!-- Left Column: Property Details -->
-        <div class="lg:col-span-7 bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
+        <div id="property-form-card" class="lg:col-span-7 bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-extrabold text-base text-slate-900">Property & QR Details</h2>
-            <span class="text-xs text-slate-400">Edits update the QR card live</span>
+            <span id="form-mode-badge" class="text-xs font-bold text-slate-400">Edits update the QR card live</span>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="sm:col-span-2">
               <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Street Address (Printed on QR Card) *</label>
               <input id="prop-address" type="text" value="42 Kensington Road" oninput="syncUIWithProperty()"
+                placeholder="e.g. 15 High Street"
                 class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Suburb, State & Postcode</label>
               <input id="prop-suburb" type="text" value="Norwood SA 5067" oninput="syncUIWithProperty()"
+                placeholder="e.g. Norwood SA 5067"
                 class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
             </div>
             <div>
@@ -221,11 +222,14 @@
             </div>
           </div>
 
+          <!-- Inline Status Banner for Save / New / Delete Actions -->
+          <div id="prop-action-feedback" class="hidden text-xs font-bold px-4 py-3 rounded-xl border"></div>
+
           <div class="flex flex-col sm:flex-row gap-2.5">
-            <button id="btn-save-prop" onclick="saveProperty(false, false)" class="flex-1 bg-[#006875] hover:bg-[#005560] text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-sm transition">
+            <button id="btn-save-prop" type="button" onclick="saveProperty(false, false)" class="flex-1 bg-[#006875] hover:bg-[#005560] text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-sm transition">
               Save Listing to Cloud & Lock QR Code
             </button>
-            <button id="btn-save-as-new" onclick="saveProperty(false, true)" class="hidden bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3.5 px-4 rounded-xl shadow-sm transition shrink-0">
+            <button id="btn-save-as-new" type="button" onclick="saveProperty(false, true)" class="hidden bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3.5 px-4 rounded-xl shadow-sm transition shrink-0">
               Save as New QR
             </button>
           </div>
@@ -296,7 +300,7 @@
 
           <!-- A4 PDF Export & Share Links -->
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
-            <button onclick="printQrFlyer()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
+            <button type="button" onclick="printQrFlyer()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
               Save A4 PDF / Print Full-Page QR Flyer
             </button>
             <p class="text-[11px] text-slate-500 text-center">
@@ -308,21 +312,21 @@
                 <label id="agent-master-link-label" class="block text-[11px] font-extrabold text-[#006875] mb-1">Agent Master Link (All Opens for Sarah Jenkins)</label>
                 <div class="flex gap-1.5">
                   <input id="share-agent-master-url" type="text" readonly class="w-full text-[11px] px-2.5 py-1.5 bg-[#F2F9FA] rounded-lg border border-[#006875]/30 text-slate-700 font-medium" />
-                  <button onclick="copyInput('share-agent-master-url')" class="px-3 py-1.5 bg-[#006875] text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
+                  <button type="button" onclick="copyInput('share-agent-master-url', this)" class="px-3 py-1.5 bg-[#006875] text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
                 </div>
               </div>
               <div>
                 <label class="block text-[11px] font-bold text-slate-500 mb-1">Single-Property Agent Link (This Home Only)</label>
                 <div class="flex gap-1.5">
                   <input id="share-agent-url" type="text" readonly class="w-full text-[11px] px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-200 text-slate-600" />
-                  <button onclick="copyInput('share-agent-url')" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
+                  <button type="button" onclick="copyInput('share-agent-url', this)" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
                 </div>
               </div>
               <div>
                 <label class="block text-[11px] font-bold text-slate-500 mb-1">Buyer QR Link (Mobile Quiz)</label>
                 <div class="flex gap-1.5">
                   <input id="share-buyer-url" type="text" readonly class="w-full text-[11px] px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-200 text-slate-600" />
-                  <button onclick="copyInput('share-buyer-url')" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
+                  <button type="button" onclick="copyInput('share-buyer-url', this)" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
                 </div>
               </div>
             </div>
@@ -348,7 +352,7 @@
         </div>
 
         <div class="p-6">
-          <!-- STEP 1: HOUSEHOLD & BUYING STAGE -->
+          <!-- STEP 1 -->
           <div id="q-step-1" class="quiz-step space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-2.5">Who would be living here?</h3>
@@ -378,10 +382,10 @@
               </div>
             </div>
 
-            <button onclick="goQuizStep(2)" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm mt-2">Continue →</button>
+            <button type="button" onclick="goQuizStep(2)" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm mt-2">Continue →</button>
           </div>
 
-          <!-- STEP 2: PROPERTY MUST-HAVES -->
+          <!-- STEP 2 -->
           <div id="q-step-2" class="quiz-step hidden space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-1">Your property must-haves?</h3>
@@ -424,12 +428,12 @@
               </div>
             </div>
             <div class="flex gap-2.5">
-              <button onclick="goQuizStep(1)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
-              <button onclick="goQuizStep(3)" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl">Continue →</button>
+              <button type="button" onclick="goQuizStep(1)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
+              <button type="button" onclick="goQuizStep(3)" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl">Continue →</button>
             </div>
           </div>
 
-          <!-- STEP 3: BEST-GUESS PURCHASE PRICE & DEPOSIT VS EQUITY -->
+          <!-- STEP 3 -->
           <div id="q-step-3" class="quiz-step hidden space-y-4">
             <div>
               <h3 class="font-bold text-base text-slate-900">Best-guess price & deposit</h3>
@@ -473,12 +477,12 @@
             </div>
 
             <div class="flex gap-2.5 pt-1">
-              <button onclick="goQuizStep(2)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
-              <button onclick="goQuizStep(4)" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl">Continue →</button>
+              <button type="button" onclick="goQuizStep(2)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
+              <button type="button" onclick="goQuizStep(4)" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl">Continue →</button>
             </div>
           </div>
 
-          <!-- STEP 4: BEST-GUESS INCOME & OPEN LIABILITIES -->
+          <!-- STEP 4 -->
           <div id="q-step-4" class="quiz-step hidden space-y-4">
             <div>
               <h3 class="font-bold text-base text-slate-900">Best-guess income & commitments</h3>
@@ -529,12 +533,12 @@
             </div>
 
             <div class="flex gap-2.5 pt-1">
-              <button onclick="goQuizStep(3)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
-              <button onclick="goQuizStep(5)" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl shadow-md">Continue →</button>
+              <button type="button" onclick="goQuizStep(3)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
+              <button type="button" onclick="goQuizStep(5)" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl shadow-md">Continue →</button>
             </div>
           </div>
 
-          <!-- STEP 5: REQUIRED CONTACT DETAILS GATE BEFORE SHOWING RESULTS -->
+          <!-- STEP 5: REQUIRED CONTACT DETAILS GATE -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="text-center space-y-1.5 pt-1">
               <span class="inline-block text-[11px] font-extrabold uppercase tracking-widest text-[#006875] bg-[#F2F9FA] px-3 py-1 rounded-full border border-[#006875]/20">
@@ -672,14 +676,14 @@
               <button type="button" onclick="sendResultsViaSms()" class="w-full bg-[#006875] text-white text-xs font-extrabold py-3 px-4 rounded-xl">
                 💬 Text Summary to My Phone
               </button>
-              <button onclick="resetQuiz()" class="text-xs text-[#006875] font-bold underline pt-2">Run another test scan</button>
+              <button type="button" onclick="resetQuiz()" class="text-xs text-[#006875] font-bold underline pt-2">Run another test scan</button>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ==================== VIEW 3: AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST) ==================== -->
+    <!-- ==================== VIEW 3: AGENT DASHBOARD ==================== -->
     <section id="view-agent" class="hidden space-y-5">
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
         <div class="flex flex-wrap justify-between items-start gap-4">
@@ -699,17 +703,17 @@
             </div>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button id="btn-seed-demo" onclick="seedAgentDemoBuyers()" class="bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/25 text-xs font-bold px-3.5 py-2.5 rounded-xl">
+            <button id="btn-seed-demo" type="button" onclick="seedAgentDemoBuyers()" class="bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/25 text-xs font-bold px-3.5 py-2.5 rounded-xl">
               + Load 3 Sample Buyers
             </button>
-            <button id="btn-clear-list" onclick="clearAgentList()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold px-3.5 py-2.5 rounded-xl">
+            <button id="btn-clear-list" type="button" onclick="clearAgentList()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold px-3.5 py-2.5 rounded-xl">
               Clear Buyers
             </button>
-            <button id="btn-mark-sold" onclick="markPropertySoldByAgent()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold px-3.5 py-2.5 rounded-xl">
+            <button id="btn-mark-sold" type="button" onclick="markPropertySoldByAgent()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold px-3.5 py-2.5 rounded-xl">
               Mark Sold / Remove
             </button>
-            <button onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2.5 rounded-xl">Refresh</button>
-            <button onclick="copyAgentWrapUp()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Copy Post-Open SMS</button>
+            <button type="button" onclick="renderAgentDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2.5 rounded-xl">Refresh</button>
+            <button type="button" onclick="copyAgentWrapUp(this)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Copy Post-Open SMS</button>
           </div>
         </div>
 
@@ -743,10 +747,10 @@
           <span id="agent-sold-undo-text">Marked property as sold and removed from your active list.</span>
         </div>
         <div class="flex items-center gap-2">
-          <button id="btn-undo-sold" onclick="undoMarkPropertySold()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
+          <button id="btn-undo-sold" type="button" onclick="undoMarkPropertySold()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
             Undo Restore Property
           </button>
-          <button onclick="dismissSoldUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
+          <button type="button" onclick="dismissSoldUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
         </div>
       </div>
 
@@ -756,10 +760,10 @@
           <span id="agent-undo-text">Cleared buyers from list.</span>
         </div>
         <div class="flex items-center gap-2">
-          <button id="btn-undo-clear" onclick="undoAgentClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
+          <button id="btn-undo-clear" type="button" onclick="undoAgentClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
             Undo Restore
           </button>
-          <button onclick="dismissUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
+          <button type="button" onclick="dismissUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
         </div>
       </div>
 
@@ -776,10 +780,10 @@
             <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">Select a Property to Work Its Leads</h1>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <button id="btn-clear-all-leads" onclick="clearAllBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">
+            <button id="btn-clear-all-leads" type="button" onclick="clearAllBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">
               Clear All Leads
             </button>
-            <button onclick="renderBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-[#006875] hover:bg-[#005560] text-white shadow-sm">
+            <button type="button" onclick="renderBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-[#006875] hover:bg-[#005560] text-white shadow-sm">
               Refresh Leads
             </button>
           </div>
@@ -794,10 +798,10 @@
           <span id="broker-undo-text">Cleared leads.</span>
         </div>
         <div class="flex items-center gap-2">
-          <button id="btn-broker-undo" onclick="undoBrokerClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
+          <button id="btn-broker-undo" type="button" onclick="undoBrokerClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
             Undo Restore
           </button>
-          <button onclick="dismissBrokerUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
+          <button type="button" onclick="dismissBrokerUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
         </div>
       </div>
 
@@ -808,9 +812,9 @@
             <p id="broker-selected-prop-meta" class="text-xs text-slate-500 font-medium mt-0.5">Selling Agent: Sarah Jenkins</p>
           </div>
           <div class="flex flex-wrap gap-2 items-center">
-            <button id="btn-filter-optin" onclick="setLeadFilter(true)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white">Opted-In Leads</button>
-            <button id="btn-filter-all" onclick="setLeadFilter(false)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700">All Scans (This Home)</button>
-            <button id="btn-clear-prop-leads" onclick="clearPropertyBrokerLeads()" class="text-xs font-bold px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">
+            <button id="btn-filter-optin" type="button" onclick="setLeadFilter(true)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white">Opted-In Leads</button>
+            <button id="btn-filter-all" type="button" onclick="setLeadFilter(false)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700">All Scans (This Home)</button>
+            <button id="btn-clear-prop-leads" type="button" onclick="clearPropertyBrokerLeads()" class="text-xs font-bold px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">
               Clear This Home
             </button>
           </div>
@@ -844,7 +848,9 @@
     const SUPABASE_URL = 'https://wgpezdkeehghnsnkicfo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_qdGTlIZgGmtKDYmEFIjLiA_JRPi-5qq';
     const hasSupabase = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
-    const sb = hasSupabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    const sb = (hasSupabase && window.supabase && typeof window.supabase.createClient === 'function')
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
 
     const DEFAULT_PROPERTY = {
       id: '11111111-1111-1111-1111-111111111111',
@@ -874,31 +880,32 @@
     let lockedAgentName = null;
 
     let quizState = {
-      saved_db_id: null,
-      saved_local_id: null,
-      buyer_name: '',
-      buyer_mobile: '',
-      household: 'Solo',
-      stage: 'Pre-Approved',
-      timeline: 'ASAP',
-      min_beds: 0,
-      min_baths: 0,
-      must_haves: [],
-      est_purchase_price: 880000,
-      cash_deposit: 120000,
-      usable_equity: 0,
-      income: 180000,
-      monthly_loans: 0,
-      cc_limits: 5000,
-      dependants: 0,
-      est_max_loan: 0,
-      base_lvr_pct: 80,
-      lvr_tier: 'green',
-      limiting_factor: 'Balanced',
-      fit_percentage: 0,
-      budget_badge: 'Within Reach',
-      leaderboard_score: 0
+      saved_db_id: null, saved_local_id: null, buyer_name: '', buyer_mobile: '',
+      household: 'Solo', stage: 'Pre-Approved', timeline: 'ASAP', min_beds: 0, min_baths: 0,
+      must_haves: [], est_purchase_price: 880000, cash_deposit: 120000, usable_equity: 0,
+      income: 180000, monthly_loans: 0, cc_limits: 5000, dependants: 0,
+      est_max_loan: 0, base_lvr_pct: 80, lvr_tier: 'green', limiting_factor: 'Balanced',
+      fit_percentage: 0, budget_badge: 'Within Reach', leaderboard_score: 0
     };
+
+    function showPropActionFeedback(msg, tone = 'success') {
+      const el = document.getElementById('prop-action-feedback');
+      if (!el) return;
+      el.classList.remove('hidden');
+      if (tone === 'error') {
+        el.className = 'text-xs font-bold px-4 py-3 rounded-xl border bg-rose-50 border-rose-300 text-rose-800 whitespace-pre-line';
+      } else if (tone === 'info') {
+        el.className = 'text-xs font-bold px-4 py-3 rounded-xl border bg-[#F2F9FA] border-[#006875]/35 text-[#004852]';
+      } else {
+        el.className = 'text-xs font-bold px-4 py-3 rounded-xl border bg-emerald-50 border-emerald-300 text-emerald-900';
+      }
+      el.textContent = msg;
+    }
+
+    function hidePropActionFeedback() {
+      const el = document.getElementById('prop-action-feedback');
+      if (el) el.classList.add('hidden');
+    }
 
     function isValidUuid(str) {
       return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(str || '').trim());
@@ -1011,6 +1018,7 @@
       const saveNewBtn = document.getElementById('btn-save-as-new');
       const delBtn = document.getElementById('btn-delete-prop');
       const clearAllBtn = document.getElementById('btn-clear-all-props');
+      const modeBadge = document.getElementById('form-mode-badge');
       if (!saveBtn) return;
 
       const isSavedListing = Boolean(
@@ -1024,10 +1032,18 @@
         saveBtn.textContent = 'Update Current Listing (Same QR)';
         if (saveNewBtn) saveNewBtn.classList.remove('hidden');
         if (delBtn) delBtn.classList.remove('hidden');
+        if (modeBadge) {
+          modeBadge.textContent = 'Editing saved listing';
+          modeBadge.className = 'text-xs font-bold text-[#006875]';
+        }
       } else {
         saveBtn.textContent = 'Save Listing to Cloud & Lock QR Code';
         if (saveNewBtn) saveNewBtn.classList.add('hidden');
         if (delBtn) delBtn.classList.add('hidden');
+        if (modeBadge) {
+          modeBadge.textContent = 'New unsaved listing';
+          modeBadge.className = 'text-xs font-bold text-amber-600';
+        }
       }
 
       if (clearAllBtn) {
@@ -1113,28 +1129,36 @@
       updateSaveButtonsState();
     }
 
-    async function refreshSavedProperties() {
-      if (hasSupabase) {
-        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(100);
-        if (error) {
-          const retry = await sb.from('properties').select('*').limit(100);
-          data = retry.data;
-        }
-        if (Array.isArray(data)) {
-          const normalized = data.map(normalizePropertyRow);
-          localProperties = [
-            ...normalized,
-            ...localProperties.filter(p => !isValidUuid(p.id))
-          ].slice(0, 100);
-          localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+    async function refreshSavedProperties(showBanner = false) {
+      if (sb) {
+        try {
+          let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(100);
+          if (error) {
+            const retry = await sb.from('properties').select('*').limit(100);
+            data = retry.data;
+          }
+          if (Array.isArray(data)) {
+            const normalized = data.map(normalizePropertyRow);
+            localProperties = [
+              ...normalized,
+              ...localProperties.filter(p => !isValidUuid(p.id))
+            ].slice(0, 100);
+            localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+          }
+        } catch (err) {
+          console.warn('Sync error:', err);
         }
       }
       renderSavedPropertyDropdowns();
       syncAgentSelectDropdown(document.getElementById('prop-agent')?.value || activeProperty.agent_name || '');
+      if (showBanner) {
+        showPropActionFeedback(`✓ Synced with cloud (${savedPropertiesList.length} listing${savedPropertiesList.length === 1 ? '' : 's'}).`, 'info');
+      }
     }
 
     async function onSelectSavedProperty(propId) {
       if (!propId) return;
+      hidePropActionFeedback();
       if (lockedAgentName) {
         const target = savedPropertiesList.find(p => p.id === propId);
         if (!target || target.is_sold || (target.agent_name || '').trim().toLowerCase() !== lockedAgentName.trim().toLowerCase()) {
@@ -1165,11 +1189,27 @@
         agent_name: keepAgent,
         is_sold: false
       };
+
+      const urlInput = document.getElementById('scrape-url-input');
+      const rawText = document.getElementById('raw-listing-text');
+      const scrapeFb = document.getElementById('scrape-feedback');
+      if (urlInput) urlInput.value = '';
+      if (rawText) rawText.value = '';
+      if (scrapeFb) scrapeFb.classList.add('hidden');
+
       populateFormFromActiveProperty();
       syncUIWithProperty();
       renderSavedPropertyDropdowns();
+      showPropActionFeedback('Ready for a new property — enter the Street Address below (or paste a listing URL above) and click Save.', 'info');
+
+      const formCard = document.getElementById('property-form-card');
+      if (formCard) formCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
       const addrInput = document.getElementById('prop-address');
-      if (addrInput) addrInput.focus();
+      if (addrInput) {
+        addrInput.focus();
+        addrInput.select();
+      }
     }
 
     function printQrFlyer() {
@@ -1182,8 +1222,8 @@
 
     window.addEventListener('DOMContentLoaded', async () => {
       const statusEl = document.getElementById('db-status');
-      statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Offline Mode';
-      statusEl.className = hasSupabase
+      statusEl.textContent = sb ? 'Supabase Live' : 'Offline Mode';
+      statusEl.className = sb
         ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30'
         : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
 
@@ -1197,7 +1237,7 @@
         lockedAgentName = agentParam.trim();
       }
 
-      await refreshSavedProperties();
+      await refreshSavedProperties(false);
 
       if (lockedAgentName) {
         const agentProps = savedPropertiesList.filter(
@@ -1311,7 +1351,7 @@
 
     async function scrapeFromUrl() {
       const urlInput = document.getElementById('scrape-url-input').value.trim();
-      if (!urlInput) return alert('Paste a property listing URL first.');
+      if (!urlInput) return showScrapeFeedback('Paste a property listing URL first.', true);
 
       const btn = document.getElementById('btn-scrape-url');
       btn.disabled = true;
@@ -1426,118 +1466,146 @@
     }
 
     async function saveProperty(silent = false, forceNew = false) {
-      const isModern = document.getElementById('tag-modern').checked;
-      const hasGarage = document.getElementById('tag-garage').checked;
-      const hasOutdoor = document.getElementById('tag-outdoor').checked;
-      const hasOffice = document.getElementById('tag-office').checked;
-      const beds = Number(document.getElementById('prop-beds').value) || 3;
-      const baths = Number(document.getElementById('prop-baths').value) || 2;
-      const cleanAgent = document.getElementById('prop-agent').value.trim();
-
-      const isUpdatingExisting = Boolean(
-        !forceNew &&
-        activeProperty &&
-        activeProperty.id &&
-        !String(activeProperty.id).startsWith('new-') &&
-        savedPropertiesList.some(p => p.id === activeProperty.id)
-      );
-
-      const dbPayload = {
-        address: document.getElementById('prop-address').value.trim() || '42 Kensington Road',
-        suburb: document.getElementById('prop-suburb').value.trim(),
-        price_min: Number(document.getElementById('prop-min').value) || 850000,
-        price_max: Number(document.getElementById('prop-max').value) || 910000,
-        bedrooms: beds,
-        bathrooms: baths,
-        agent_name: encodeAgentNameField(cleanAgent, isUpdatingExisting ? activeProperty.is_sold : false),
-        move_in_ready: isModern,
-        has_wfh: hasGarage,
-        has_yard: hasOutdoor,
-        has_office: hasOffice
-      };
-
       const btn = document.getElementById('btn-save-prop');
-      btn.textContent = isUpdatingExisting ? 'Updating...' : 'Saving...';
+      const saveNewBtn = document.getElementById('btn-save-as-new');
 
-      if (hasSupabase) {
-        if (isUpdatingExisting && isValidUuid(activeProperty.id)) {
-          let { data, error } = await sb.from('properties').update(dbPayload).eq('id', activeProperty.id).select().maybeSingle();
-          if (error && /bathrooms|has_office/i.test(error.message)) {
-            const { bathrooms, has_office, ...fallbackPayload } = dbPayload;
-            const retry = await sb.from('properties').update(fallbackPayload).eq('id', activeProperty.id).select().maybeSingle();
-            data = retry.data; error = retry.error;
-          }
-          if (!error && data) {
-            activeProperty = {
-              ...normalizePropertyRow(data),
-              bathrooms: data.bathrooms ?? baths,
-              is_modern: data.move_in_ready ?? isModern,
-              has_garage: data.has_wfh ?? hasGarage,
-              has_outdoor: data.has_yard ?? hasOutdoor,
-              has_office: data.has_office ?? hasOffice
-            };
-            cachePropertyLocally(activeProperty);
-          } else {
-            updateSaveButtonsState();
-            if (!silent) {
-              alert(
-                'Could not update property in Supabase (RLS policy may be blocking UPDATE).\n\n' +
-                'Run once in Supabase SQL Editor:\n' +
-                'CREATE POLICY "Allow anon update properties" ON properties FOR UPDATE USING (true);'
-              );
-            }
-            return;
-          }
-        } else {
-          let { data, error } = await sb.from('properties').insert([dbPayload]).select().single();
-          if (error && /bathrooms|has_office/i.test(error.message)) {
-            const { bathrooms, has_office, ...fallbackPayload } = dbPayload;
-            const retry = await sb.from('properties').insert([fallbackPayload]).select().single();
-            data = retry.data; error = retry.error;
-          }
-          if (!error && data) {
-            activeProperty = {
-              ...normalizePropertyRow(data),
-              bathrooms: data.bathrooms ?? baths,
-              is_modern: data.move_in_ready ?? isModern,
-              has_garage: data.has_wfh ?? hasGarage,
-              has_outdoor: data.has_yard ?? hasOutdoor,
-              has_office: data.has_office ?? hasOffice
-            };
-            cachePropertyLocally(activeProperty);
-          } else {
-            updateSaveButtonsState();
-            if (!silent) alert('Supabase error: ' + (error?.message || 'Check permissions'));
-            return;
-          }
+      try {
+        const streetRaw = document.getElementById('prop-address')?.value.trim() || '';
+        if (!streetRaw) {
+          showPropActionFeedback('Please enter a Street Address before saving.', 'error');
+          document.getElementById('prop-address')?.focus();
+          return;
         }
-      } else {
-        activeProperty = {
-          id: isUpdatingExisting ? activeProperty.id : ('local-' + Date.now()),
-          ...dbPayload,
-          agent_name: cleanAgent,
-          is_sold: isUpdatingExisting ? activeProperty.is_sold : false,
-          is_modern: isModern,
-          has_garage: hasGarage,
-          has_outdoor: hasOutdoor,
+
+        const isModern = Boolean(document.getElementById('tag-modern')?.checked);
+        const hasGarage = Boolean(document.getElementById('tag-garage')?.checked);
+        const hasOutdoor = Boolean(document.getElementById('tag-outdoor')?.checked);
+        const hasOffice = Boolean(document.getElementById('tag-office')?.checked);
+        const beds = Number(document.getElementById('prop-beds')?.value) || 3;
+        const baths = Number(document.getElementById('prop-baths')?.value) || 2;
+        const cleanAgent = document.getElementById('prop-agent')?.value.trim() || '';
+
+        const isUpdatingExisting = Boolean(
+          !forceNew &&
+          activeProperty &&
+          activeProperty.id &&
+          !String(activeProperty.id).startsWith('new-') &&
+          savedPropertiesList.some(p => p.id === activeProperty.id)
+        );
+
+        const dbPayload = {
+          address: streetRaw,
+          suburb: document.getElementById('prop-suburb')?.value.trim() || '',
+          price_min: Number(document.getElementById('prop-min')?.value) || 850000,
+          price_max: Number(document.getElementById('prop-max')?.value) || 910000,
+          bedrooms: beds,
+          bathrooms: baths,
+          agent_name: encodeAgentNameField(cleanAgent, isUpdatingExisting ? activeProperty.is_sold : false),
+          move_in_ready: isModern,
+          has_wfh: hasGarage,
+          has_yard: hasOutdoor,
           has_office: hasOffice
         };
-        cachePropertyLocally(activeProperty);
-      }
 
-      populateFormFromActiveProperty();
-      syncUIWithProperty();
-      renderSavedPropertyDropdowns();
-      if (!silent) {
-        alert(isUpdatingExisting
-          ? 'Listing updated! Your existing QR code stays valid.'
-          : 'New listing saved & A4 QR flyer locked!');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = isUpdatingExisting ? 'Updating...' : 'Saving to Cloud...';
+        }
+        if (saveNewBtn) saveNewBtn.disabled = true;
+
+        if (sb) {
+          if (isUpdatingExisting && isValidUuid(activeProperty.id)) {
+            let { data, error } = await sb.from('properties').update(dbPayload).eq('id', activeProperty.id).select().maybeSingle();
+            if (error && /bathrooms|has_office/i.test(error.message)) {
+              const { bathrooms, has_office, ...fallbackPayload } = dbPayload;
+              const retry = await sb.from('properties').update(fallbackPayload).eq('id', activeProperty.id).select().maybeSingle();
+              data = retry.data;
+              error = retry.error;
+            }
+            if (error) {
+              throw new Error(
+                `Supabase blocked updating this property (${error.message}).\n` +
+                `Run once in Supabase SQL Editor: CREATE POLICY "Allow anon update properties" ON properties FOR UPDATE USING (true);`
+              );
+            }
+            const mergedUpdated = data ? {
+              ...normalizePropertyRow(data),
+              bathrooms: data.bathrooms ?? baths,
+              is_modern: data.move_in_ready ?? isModern,
+              has_garage: data.has_wfh ?? hasGarage,
+              has_outdoor: data.has_yard ?? hasOutdoor,
+              has_office: data.has_office ?? hasOffice
+            } : {
+              ...activeProperty,
+              ...dbPayload,
+              agent_name: cleanAgent,
+              is_modern: isModern,
+              has_garage: hasGarage,
+              has_outdoor: hasOutdoor,
+              has_office: hasOffice
+            };
+            activeProperty = mergedUpdated;
+            cachePropertyLocally(activeProperty);
+          } else {
+            let { data, error } = await sb.from('properties').insert([dbPayload]).select().single();
+            if (error && /bathrooms|has_office/i.test(error.message)) {
+              const { bathrooms, has_office, ...fallbackPayload } = dbPayload;
+              const retry = await sb.from('properties').insert([fallbackPayload]).select().single();
+              data = retry.data;
+              error = retry.error;
+            }
+            if (error || !data) {
+              throw new Error(error?.message || 'Supabase did not return the saved property. Check RLS INSERT/SELECT policies.');
+            }
+            activeProperty = {
+              ...normalizePropertyRow(data),
+              bathrooms: data.bathrooms ?? baths,
+              is_modern: data.move_in_ready ?? isModern,
+              has_garage: data.has_wfh ?? hasGarage,
+              has_outdoor: data.has_yard ?? hasOutdoor,
+              has_office: data.has_office ?? hasOffice
+            };
+            cachePropertyLocally(activeProperty);
+          }
+        } else {
+          activeProperty = {
+            id: isUpdatingExisting ? activeProperty.id : ('local-' + Date.now()),
+            ...dbPayload,
+            agent_name: cleanAgent,
+            is_sold: isUpdatingExisting ? activeProperty.is_sold : false,
+            is_modern: isModern,
+            has_garage: hasGarage,
+            has_outdoor: hasOutdoor,
+            has_office: hasOffice
+          };
+          cachePropertyLocally(activeProperty);
+        }
+
+        populateFormFromActiveProperty();
+        syncUIWithProperty();
+        renderSavedPropertyDropdowns();
+
+        if (!silent) {
+          showPropActionFeedback(
+            isUpdatingExisting
+              ? `✓ Updated "${activeProperty.address}"! Your existing QR code remains active.`
+              : `✓ Saved "${activeProperty.address}" to Cloud & Locked QR Code!`,
+            'success'
+          );
+        }
+      } catch (err) {
+        console.error('saveProperty error:', err);
+        showPropActionFeedback(`Could not save property: ${err.message || err}`, 'error');
+      } finally {
+        if (btn) btn.disabled = false;
+        if (saveNewBtn) saveNewBtn.disabled = false;
+        updateSaveButtonsState();
       }
     }
 
     async function deletePropertyBackOfHouse() {
       if (!activeProperty || !activeProperty.id || String(activeProperty.id).startsWith('new-')) {
-        return alert('This listing has not been saved yet.');
+        return showPropActionFeedback('This listing has not been saved yet.', 'info');
       }
 
       const propTitle = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
@@ -1550,44 +1618,48 @@
       const delBtn = document.getElementById('btn-delete-prop');
       if (delBtn) { delBtn.disabled = true; delBtn.textContent = 'Deleting...'; }
 
-      const targetId = activeProperty.id;
+      try {
+        const targetId = activeProperty.id;
 
-      if (hasSupabase && isValidUuid(targetId)) {
-        await sb.from('buyer_scans').delete().eq('property_id', targetId);
-        const { data: deletedProps, error } = await sb.from('properties').delete().eq('id', targetId).select();
+        if (sb && isValidUuid(targetId)) {
+          await sb.from('buyer_scans').delete().eq('property_id', targetId);
+          const { data: deletedProps, error } = await sb.from('properties').delete().eq('id', targetId).select();
 
-        if (error || !deletedProps || deletedProps.length === 0) {
-          if (delBtn) { delBtn.disabled = false; delBtn.textContent = 'Delete Property'; }
-          return alert(
-            'Supabase blocked deleting this property because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
-            'Run this once in your Supabase SQL Editor:\n' +
-            'CREATE POLICY "Allow anon delete properties" ON properties FOR DELETE USING (true);'
-          );
+          if (error || !deletedProps || deletedProps.length === 0) {
+            throw new Error(
+              'Supabase blocked deleting this property (RLS DELETE policy missing).\n' +
+              'Run once in Supabase SQL Editor: CREATE POLICY "Allow anon delete properties" ON properties FOR DELETE USING (true);'
+            );
+          }
         }
-      }
 
-      localProperties = localProperties.filter(p => p.id !== targetId);
-      localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+        localProperties = localProperties.filter(p => p.id !== targetId);
+        localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
 
-      localScans = localScans.filter(s => s.property_id !== targetId);
-      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+        localScans = localScans.filter(s => s.property_id !== targetId);
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
 
-      if (delBtn) { delBtn.disabled = false; delBtn.textContent = 'Delete Property'; }
-
-      if (localProperties.length > 0) {
-        activeProperty = normalizePropertyRow(localProperties[0]);
-        populateFormFromActiveProperty();
-        syncUIWithProperty();
-        renderSavedPropertyDropdowns();
-      } else {
-        startNewListing();
+        if (localProperties.length > 0) {
+          activeProperty = normalizePropertyRow(localProperties[0]);
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+          renderSavedPropertyDropdowns();
+          showPropActionFeedback(`✓ Deleted "${propTitle}".`, 'success');
+        } else {
+          startNewListing();
+          showPropActionFeedback(`✓ Deleted "${propTitle}". Form ready for next property.`, 'success');
+        }
+      } catch (err) {
+        showPropActionFeedback(err.message || String(err), 'error');
+      } finally {
+        if (delBtn) { delBtn.disabled = false; delBtn.textContent = 'Delete Property'; }
       }
     }
 
     async function clearAllPropertiesBackOfHouse() {
       const count = savedPropertiesList.length;
       if (count === 0) {
-        return alert('There are no saved properties to clear.');
+        return showPropActionFeedback('There are no saved properties to clear.', 'info');
       }
 
       const ok = confirm(
@@ -1599,48 +1671,53 @@
       const btn = document.getElementById('btn-clear-all-props');
       if (btn) { btn.disabled = true; btn.textContent = 'Clearing All...'; }
 
-      if (hasSupabase) {
-        await sb.from('buyer_scans').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        const { error } = await sb.from('properties').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        const { data: remaining } = await sb.from('properties').select('id').limit(1);
+      try {
+        if (sb) {
+          await sb.from('buyer_scans').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+          const { error } = await sb.from('properties').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+          const { data: remaining } = await sb.from('properties').select('id').limit(1);
 
-        if (error || (remaining && remaining.length > 0)) {
-          if (btn) { btn.disabled = false; btn.textContent = 'Clear All'; }
-          return alert(
-            'Supabase blocked deleting properties because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
-            'Run these two lines once in your Supabase SQL Editor:\n\n' +
-            'CREATE POLICY "Allow anon delete properties" ON properties FOR DELETE USING (true);\n' +
-            'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
-          );
+          if (error || (remaining && remaining.length > 0)) {
+            throw new Error(
+              'Supabase blocked deleting properties (RLS DELETE policy missing).\n' +
+              'Run once in Supabase SQL Editor:\n' +
+              'CREATE POLICY "Allow anon delete properties" ON properties FOR DELETE USING (true);'
+            );
+          }
         }
+
+        localProperties = [];
+        localScans = [];
+        undoBackup = null;
+        soldUndoBackup = null;
+        brokerUndoBackup = null;
+        localStorage.removeItem('openmatch_properties');
+        localStorage.removeItem('openmatch_scans');
+        localStorage.removeItem('openmatch_undo_backup');
+        localStorage.removeItem('openmatch_sold_undo');
+        localStorage.removeItem('openmatch_broker_undo');
+
+        startNewListing();
+        showPropActionFeedback(`✓ Cleared all ${count} test properties and scans!`, 'success');
+      } catch (err) {
+        showPropActionFeedback(err.message || String(err), 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Clear All'; }
       }
-
-      localProperties = [];
-      localScans = [];
-      undoBackup = null;
-      soldUndoBackup = null;
-      brokerUndoBackup = null;
-      localStorage.removeItem('openmatch_properties');
-      localStorage.removeItem('openmatch_scans');
-      localStorage.removeItem('openmatch_undo_backup');
-      localStorage.removeItem('openmatch_sold_undo');
-      localStorage.removeItem('openmatch_broker_undo');
-
-      if (btn) { btn.disabled = false; btn.textContent = 'Clear All'; }
-      startNewListing();
-      alert('All test properties and scans cleared!');
     }
 
     async function loadPropertyById(id, fallbackAddr = '') {
       let loaded = false;
 
-      if (hasSupabase && isValidUuid(id)) {
-        const { data } = await sb.from('properties').select('*').eq('id', id).maybeSingle();
-        if (data) {
-          activeProperty = normalizePropertyRow(data);
-          cachePropertyLocally(activeProperty);
-          loaded = true;
-        }
+      if (sb && isValidUuid(id)) {
+        try {
+          const { data } = await sb.from('properties').select('*').eq('id', id).maybeSingle();
+          if (data) {
+            activeProperty = normalizePropertyRow(data);
+            cachePropertyLocally(activeProperty);
+            loaded = true;
+          }
+        } catch (e) {}
       }
 
       if (!loaded) {
@@ -1738,14 +1815,16 @@
 
       const qrEl = document.getElementById('qrcode');
       qrEl.innerHTML = '';
-      new QRCode(qrEl, {
-        text: buyerUrl,
-        width: 350,
-        height: 350,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
+      if (typeof QRCode === 'function') {
+        new QRCode(qrEl, {
+          text: buyerUrl,
+          width: 350,
+          height: 350,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
     }
 
     // ==================== BUYER QUIZ & MATCHMAKING ====================
@@ -2111,25 +2190,27 @@
         broker_opt_in: optInChecked
       };
 
-      if (hasSupabase && isValidUuid(activeProperty.id)) {
-        if (quizState.saved_db_id && isValidUuid(quizState.saved_db_id)) {
-          const { data: updated, error: upErr } = await sb
-            .from('buyer_scans')
-            .update(dbRecord)
-            .eq('id', quizState.saved_db_id)
-            .select()
-            .maybeSingle();
+      if (sb && isValidUuid(activeProperty.id)) {
+        try {
+          if (quizState.saved_db_id && isValidUuid(quizState.saved_db_id)) {
+            const { data: updated, error: upErr } = await sb
+              .from('buyer_scans')
+              .update(dbRecord)
+              .eq('id', quizState.saved_db_id)
+              .select()
+              .maybeSingle();
 
-          if (!upErr && updated) quizState.saved_db_id = updated.id;
-        } else {
-          const { data: inserted, error: insErr } = await sb
-            .from('buyer_scans')
-            .insert([dbRecord])
-            .select()
-            .maybeSingle();
+            if (!upErr && updated) quizState.saved_db_id = updated.id;
+          } else {
+            const { data: inserted, error: insErr } = await sb
+              .from('buyer_scans')
+              .insert([dbRecord])
+              .select()
+              .maybeSingle();
 
-          if (!insErr && inserted) quizState.saved_db_id = inserted.id;
-        }
+            if (!insErr && inserted) quizState.saved_db_id = inserted.id;
+          }
+        } catch (e) {}
       }
 
       const localId = quizState.saved_local_id || ('s-' + Date.now());
@@ -2171,8 +2252,10 @@
       });
       localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
 
-      if (hasSupabase && isValidUuid(activeProperty.id) && quizState.saved_db_id && isValidUuid(quizState.saved_db_id)) {
-        await sb.from('buyer_scans').update({ broker_opt_in: checked }).eq('id', quizState.saved_db_id);
+      if (sb && isValidUuid(activeProperty.id) && quizState.saved_db_id && isValidUuid(quizState.saved_db_id)) {
+        try {
+          await sb.from('buyer_scans').update({ broker_opt_in: checked }).eq('id', quizState.saved_db_id);
+        } catch (e) {}
       }
     }
 
@@ -2360,7 +2443,7 @@
       const targetProp = { ...activeProperty };
       const encodedSoldAgent = encodeAgentNameField(targetProp.agent_name, true);
 
-      if (hasSupabase && isValidUuid(targetProp.id)) {
+      if (sb && isValidUuid(targetProp.id)) {
         const { data: updatedRows, error } = await sb
           .from('properties')
           .update({ agent_name: encodedSoldAgent })
@@ -2419,6 +2502,904 @@
       const restoredProp = { ...soldUndoBackup.property, is_sold: false };
       const restoredAgentField = encodeAgentNameField(restoredProp.agent_name, false);
 
-      if (hasSupabase && isValidUuid(restoredProp.id)) {
+      if (sb && isValidUuid(restoredProp.id)) {
         const { error } = await sb.from('properties').update({ agent_name: restoredAgentField }).eq('id', restoredProp.id);
-        if (error)
+        if (error) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore Property'; }
+          return alert('Could not restore property: ' + error.message);
+        }
+      }
+
+      localProperties = localProperties.map(p => p.id === restoredProp.id ? { ...p, is_sold: false } : p);
+      localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+
+      activeProperty = normalizePropertyRow(restoredProp);
+      dismissSoldUndoBar();
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore Property'; }
+
+      populateFormFromActiveProperty();
+      syncUIWithProperty();
+      renderSavedPropertyDropdowns();
+      renderAgentDashboard();
+    }
+
+    function updateUndoBannerUI() {
+      const bar = document.getElementById('agent-undo-bar');
+      const txt = document.getElementById('agent-undo-text');
+      if (!bar || !txt) return;
+
+      if (undoBackup && undoBackup.property_id === activeProperty.id && Array.isArray(undoBackup.rows) && undoBackup.rows.length > 0) {
+        const count = undoBackup.rows.length;
+        txt.textContent = `Cleared ${count} buyer${count === 1 ? '' : 's'} from this list.`;
+        bar.classList.remove('hidden');
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
+    function setUndoBackup(rows) {
+      if (!rows || rows.length === 0) return;
+      undoBackup = { property_id: activeProperty.id, rows };
+      localStorage.setItem('openmatch_undo_backup', JSON.stringify(undoBackup));
+      updateUndoBannerUI();
+    }
+
+    function dismissUndoBar() {
+      undoBackup = null;
+      localStorage.removeItem('openmatch_undo_backup');
+      updateUndoBannerUI();
+    }
+
+    function showSupabaseDeleteHelp() {
+      alert(
+        'Supabase blocked deleting buyers because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
+        'To fix this in 10 seconds:\n' +
+        '1. Open Supabase → SQL Editor\n' +
+        '2. Run:\n' +
+        'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
+      );
+    }
+
+    async function clearAgentList() {
+      let fullRowsToBackup = [];
+
+      if (sb && isValidUuid(activeProperty.id)) {
+        const { data, error } = await sb.from('buyer_scans').select('*').eq('property_id', activeProperty.id);
+        if (error) return alert('Could not fetch list before clearing: ' + error.message);
+        fullRowsToBackup = data || [];
+      } else {
+        fullRowsToBackup = localScans.filter(s => s.property_id === activeProperty.id);
+      }
+
+      if (fullRowsToBackup.length === 0) return alert('The buyer list for this property is already empty.');
+
+      const ok = confirm(`Clear all ${fullRowsToBackup.length} buyer${fullRowsToBackup.length === 1 ? '' : 's'} from ${activeProperty.address}?\n\nYou can click "Undo Restore" right after if you need them back.`);
+      if (!ok) return;
+
+      const btn = document.getElementById('btn-clear-list');
+      btn.disabled = true; btn.textContent = 'Clearing...';
+
+      if (sb && isValidUuid(activeProperty.id)) {
+        const { data: deletedRows, error: delError } = await sb
+          .from('buyer_scans')
+          .delete()
+          .eq('property_id', activeProperty.id)
+          .select();
+
+        if (delError || !deletedRows || deletedRows.length === 0) {
+          btn.disabled = false; btn.textContent = 'Clear Buyers';
+          return showSupabaseDeleteHelp();
+        }
+      }
+
+      localScans = localScans.filter(s => s.property_id !== activeProperty.id);
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      setUndoBackup(fullRowsToBackup);
+      btn.disabled = false; btn.textContent = 'Clear Buyers';
+      renderAgentDashboard();
+    }
+
+    async function removeSingleBuyer(scanId, buyerName, buyerMobile) {
+      let targetRow = null;
+
+      if (sb && isValidUuid(activeProperty.id)) {
+        let query = sb.from('buyer_scans').select('*').eq('property_id', activeProperty.id);
+        if (scanId && isValidUuid(scanId)) query = query.eq('id', scanId);
+        else query = query.eq('buyer_name', buyerName).eq('buyer_mobile', buyerMobile);
+        const { data } = await query.limit(1);
+        targetRow = data && data[0] ? data[0] : null;
+
+        if (targetRow) {
+          const { data: deletedRows, error: delError } = await sb
+            .from('buyer_scans')
+            .delete()
+            .eq('id', targetRow.id)
+            .select();
+
+          if (delError || !deletedRows || deletedRows.length === 0) return showSupabaseDeleteHelp();
+        }
+      }
+
+      if (!targetRow) {
+        targetRow = localScans.find(s =>
+          s.property_id === activeProperty.id &&
+          ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile))
+        );
+      }
+
+      localScans = localScans.filter(s =>
+        !(s.property_id === activeProperty.id &&
+          ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile)))
+      );
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      if (targetRow) setUndoBackup([targetRow]);
+      renderAgentDashboard();
+    }
+
+    async function undoAgentClear() {
+      if (!undoBackup || !Array.isArray(undoBackup.rows) || undoBackup.rows.length === 0) return;
+
+      const btn = document.getElementById('btn-undo-clear');
+      if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
+
+      const rowsToRestore = undoBackup.rows.map(row => {
+        const { id, created_at, ...cleanRow } = row;
+        return cleanRow;
+      });
+
+      if (sb && isValidUuid(activeProperty.id)) {
+        const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
+        if (error) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+          return alert('Could not restore buyers to Supabase: ' + error.message);
+        }
+      } else {
+        undoBackup.rows.forEach((r, idx) => {
+          localScans.unshift({ id: r.id || ('restored-' + Date.now() + '-' + idx), ...r });
+        });
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      }
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+      dismissUndoBar();
+      renderAgentDashboard();
+    }
+
+    async function seedAgentDemoBuyers() {
+      const btn = document.getElementById('btn-seed-demo');
+      btn.disabled = true; btn.textContent = 'Loading Demo...';
+
+      const midPrice = Math.round(((activeProperty.price_min + activeProperty.price_max) / 2) / 20000) * 20000;
+
+      const samMatch = computeWeightedPropertyMatch(activeProperty, {
+        min_beds: 3, min_baths: 2, must_haves: ['modern', 'garage', 'office'],
+        household: 'Couple', budget_badge: 'Budget Ready', total_buying_power: 1290000
+      });
+      const jordanMatch = computeWeightedPropertyMatch(activeProperty, {
+        min_beds: 4, min_baths: 2, must_haves: ['outdoor', 'garage'],
+        household: 'Family', budget_badge: 'Within Reach', total_buying_power: 920000
+      });
+      const caseyMatch = computeWeightedPropertyMatch(activeProperty, {
+        min_beds: 2, min_baths: 0, must_haves: ['modern'],
+        household: 'Solo', budget_badge: 'Stretch', total_buying_power: 600000
+      });
+
+      const demoBuyers = [
+        {
+          property_id: activeProperty.id, buyer_name: 'Sam & Taylor Reid', buyer_mobile: '0412 884 910',
+          household: 'Couple', pets: `status:New|est_price:${midPrice + 20000}|GREEN LVR (76.0%)`,
+          must_haves: ['beds:3', 'baths:2', 'modern', 'garage', 'office'],
+          buying_stage: 'Pre-Approved', timeline: 'ASAP', income: 240000, deposit: 240000,
+          dependants: 0, existing_debts: 4000, est_max_loan: 1050000,
+          fit_percentage: samMatch.totalMatchPct, budget_badge: 'Budget Ready',
+          leaderboard_score: 40 + 30 + Math.round(samMatch.totalMatchPct * 0.3), broker_opt_in: true
+        },
+        {
+          property_id: activeProperty.id, buyer_name: 'Jordan & Priya Patel', buyer_mobile: '0438 219 405',
+          household: 'Family', pets: `status:New|est_price:${midPrice}|ORANGE LVR (86.5%)`,
+          must_haves: ['beds:4', 'baths:2', 'outdoor', 'garage'],
+          buying_stage: 'Pre-Approved', timeline: '1-3 Months', income: 185000, deposit: 140000,
+          dependants: 2, existing_debts: 6000, est_max_loan: 780000,
+          fit_percentage: jordanMatch.totalMatchPct, budget_badge: 'Within Reach',
+          leaderboard_score: 25 + 22 + Math.round(jordanMatch.totalMatchPct * 0.3), broker_opt_in: true
+        },
+        {
+          property_id: activeProperty.id, buyer_name: 'Casey Morgan', buyer_mobile: '0401 772 630',
+          household: 'Solo', pets: `status:New|est_price:${Math.max(400000, midPrice - 120000)}|RED LVR (94.0%)`,
+          must_haves: ['beds:2', 'modern'],
+          buying_stage: 'Still Looking', timeline: '3+ Months', income: 110000, deposit: 60000,
+          dependants: 0, existing_debts: 10000, est_max_loan: 540000,
+          fit_percentage: caseyMatch.totalMatchPct, budget_badge: 'Stretch',
+          leaderboard_score: 5 + 10 + Math.round(caseyMatch.totalMatchPct * 0.3), broker_opt_in: false
+        }
+      ];
+
+      if (sb && isValidUuid(activeProperty.id)) {
+        const { error } = await sb.from('buyer_scans').insert(demoBuyers);
+        if (error) {
+          btn.disabled = false; btn.textContent = '+ Load 3 Sample Buyers';
+          return alert('Supabase error: ' + error.message);
+        }
+      } else {
+        demoBuyers.forEach((b, i) => localScans.unshift({ id: 'demo-' + Date.now() + '-' + i, ...b }));
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      }
+
+      btn.disabled = false; btn.textContent = '+ Load 3 Sample Buyers';
+      renderAgentDashboard();
+    }
+
+    async function renderAgentDashboard() {
+      updateSoldUndoBannerUI();
+      updateUndoBannerUI();
+
+      if (String(activeProperty.id).startsWith('unassigned-')) {
+        document.getElementById('kpi-total').textContent = '0';
+        document.getElementById('kpi-green').textContent = '0';
+        document.getElementById('kpi-orange').textContent = '0';
+        document.getElementById('kpi-avg-price').textContent = '—';
+        document.getElementById('kpi-price-vs-guide').textContent = 'No active properties';
+        return document.getElementById('agent-leaderboard-list').innerHTML = `
+          <div class="bg-white p-10 rounded-3xl border border-slate-200/90 text-center space-y-2">
+            <p class="text-sm font-bold text-slate-700">All open homes have been marked sold or off-market.</p>
+            <p class="text-xs text-slate-500">New listings added for your upcoming opens will automatically appear here.</p>
+          </div>`;
+      }
+
+      let rows = [];
+      if (sb && isValidUuid(activeProperty.id)) {
+        const { data, error } = await sb.from('agent_leaderboard_view').select('*').eq('property_id', activeProperty.id).order('leaderboard_score', { ascending: false });
+        if (error) return document.getElementById('agent-leaderboard-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+        rows = data || [];
+      } else {
+        rows = localScans.filter(s => s.property_id === activeProperty.id).sort((a, b) => b.leaderboard_score - a.leaderboard_score);
+      }
+
+      const totalCount = rows.length;
+      const greenCount = rows.filter(r => r.budget_badge === 'Budget Ready').length;
+      const orangeCount = rows.filter(r => r.budget_badge === 'Within Reach' || r.budget_badge === 'Subject to Sale').length;
+      const priceEstimates = rows.map(extractBuyerEstPrice).filter(p => p && p > 0);
+
+      document.getElementById('kpi-total').textContent = totalCount;
+      document.getElementById('kpi-green').textContent = greenCount;
+      document.getElementById('kpi-orange').textContent = orangeCount;
+
+      if (priceEstimates.length > 0) {
+        const avgPrice = Math.round(priceEstimates.reduce((a, b) => a + b, 0) / priceEstimates.length);
+        const minEst = Math.min(...priceEstimates);
+        const maxEst = Math.max(...priceEstimates);
+        const guideMid = (Number(activeProperty.price_min) + Number(activeProperty.price_max)) / 2;
+        const diff = avgPrice - guideMid;
+        const diffText = diff >= 0 ? `+$${Math.round(diff / 1000)}k vs guide` : `-$${Math.round(Math.abs(diff) / 1000)}k vs guide`;
+        const rangeText = priceEstimates.length > 1 && minEst !== maxEst ? ` • $${Math.round(minEst / 1000)}k–$${Math.round(maxEst / 1000)}k` : '';
+
+        document.getElementById('kpi-avg-price').textContent = `$${avgPrice.toLocaleString()}`;
+        document.getElementById('kpi-price-vs-guide').textContent = `${diffText}${rangeText}`;
+      } else {
+        document.getElementById('kpi-avg-price').textContent = '—';
+        document.getElementById('kpi-price-vs-guide').textContent = 'Awaiting buyer scans';
+      }
+
+      const container = document.getElementById('agent-leaderboard-list');
+      if (rows.length === 0) {
+        return container.innerHTML = `
+          <div class="bg-white p-10 rounded-3xl border border-slate-200/90 text-center space-y-3">
+            <p class="text-sm font-bold text-slate-700">No buyer scans recorded for this listing yet.</p>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">Buyers who scan the QR flyer at your open home will appear here ranked by financial readiness.</p>
+          </div>`;
+      }
+
+      container.innerHTML = rows.map((r, idx) => {
+        let cardBorderClass = 'border-l-8 border-l-rose-500 border-rose-200/90';
+        let statusPillClass = 'bg-rose-100 text-rose-800 border border-rose-200';
+        let statusDotClass = 'bg-rose-500';
+        let statusHeadline = 'RED • NOWHERE NEAR GUIDE';
+        let actionPrompt = 'Long-term nurture — keep on database for lower-priced stock';
+
+        if (r.budget_badge === 'Budget Ready') {
+          cardBorderClass = 'border-l-8 border-l-emerald-500 border-emerald-200/90';
+          statusPillClass = 'bg-emerald-100 text-emerald-900 border border-emerald-300';
+          statusDotClass = 'bg-emerald-500';
+          statusHeadline = 'GREEN • CAN AFFORD PROPERTY';
+          actionPrompt = 'Priority Callback — Verified capacity covers guide + costs';
+        } else if (r.budget_badge === 'Within Reach' || r.budget_badge === 'Subject to Sale') {
+          cardBorderClass = 'border-l-8 border-l-amber-500 border-amber-200/90';
+          statusPillClass = 'bg-amber-100 text-amber-900 border border-amber-300';
+          statusDotClass = 'bg-amber-500';
+          statusHeadline = r.budget_badge === 'Subject to Sale' ? 'ORANGE • SUBJECT TO SALE' : 'ORANGE • CLOSE / WITHIN REACH';
+          actionPrompt = r.budget_badge === 'Subject to Sale' ? 'Appraisal Opportunity — Needs to sell current home first' : 'Strong Contender — Close to guide; worth discussing terms';
+        }
+
+        const tags = Array.isArray(r.must_haves) ? r.must_haves : [];
+        const reqPills = [];
+        const missing = [];
+
+        const bedTag = tags.find(t => t.startsWith('beds:'));
+        if (bedTag) {
+          const reqBeds = Number(bedTag.split(':')[1]);
+          const met = Number(activeProperty.bedrooms) >= reqBeds;
+          if (!met) missing.push(`${reqBeds}+ Beds`);
+          reqPills.push({ label: `${reqBeds}+ Beds`, met });
+        }
+
+        const bathTag = tags.find(t => t.startsWith('baths:'));
+        if (bathTag) {
+          const reqBaths = Number(bathTag.split(':')[1]);
+          const met = Number(activeProperty.bathrooms) >= reqBaths;
+          if (!met) missing.push(`${reqBaths}+ Baths`);
+          reqPills.push({ label: `${reqBaths}+ Baths`, met });
+        }
+
+        if (tags.includes('modern')) {
+          const met = Boolean(activeProperty.is_modern);
+          if (!met) missing.push('Modern Interiors');
+          reqPills.push({ label: 'Modern Interiors', met });
+        }
+        if (tags.includes('garage')) {
+          const met = Boolean(activeProperty.has_garage);
+          if (!met) missing.push('Secure Garage/Parking');
+          reqPills.push({ label: 'Secure Garage/Parking', met });
+        }
+        if (tags.includes('outdoor')) {
+          const met = Boolean(activeProperty.has_outdoor);
+          if (!met) missing.push('Outdoor / Yard');
+          reqPills.push({ label: 'Outdoor / Yard', met });
+        }
+        if (tags.includes('office')) {
+          const met = Boolean(activeProperty.has_office);
+          if (!met) missing.push('Home Office / 2nd Living');
+          reqPills.push({ label: 'Home Office / 2nd Living', met });
+        }
+
+        const reqPillsHtml = reqPills.length > 0
+          ? reqPills.map(p => p.met
+              ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">✓ ${escapeHtml(p.label)}</span>`
+              : `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">✕ Wants ${escapeHtml(p.label)}</span>`
+            ).join('')
+          : `<span class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">No strict dealbreakers selected</span>`;
+
+        const otherListingHtml = ((r.budget_badge === 'Budget Ready' || r.budget_badge === 'Within Reach') && missing.length > 0)
+          ? `<div class="mt-3 text-xs bg-indigo-50 text-indigo-900 px-3.5 py-2.5 rounded-xl border border-indigo-200 font-semibold flex items-center gap-2">
+               <span class="shrink-0 text-indigo-600 font-extrabold">💡</span>
+               <span><strong>Other Listing Match:</strong> Budget-ready buyer needs ${escapeHtml(missing.join(', '))} — pitch another listing on your books!</span>
+             </div>`
+          : '';
+
+        const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
+        const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
+        const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
+
+        return `
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border ${cardBorderClass} space-y-4">
+            <div class="flex flex-wrap justify-between items-start gap-3">
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs font-extrabold bg-[#0B1120] text-white px-2.5 py-0.5 rounded-lg">#${idx + 1}</span>
+                  <h3 class="font-extrabold text-base sm:text-lg text-slate-900">${escapeHtml(r.buyer_name)}</h3>
+                  <span class="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1 rounded-full ${statusPillClass}">
+                    <span class="w-2 h-2 rounded-full ${statusDotClass}"></span>
+                    ${statusHeadline}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 font-semibold">
+                  <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline font-extrabold">${escapeHtml(r.buyer_mobile)}</a>
+                  • ${escapeHtml(r.buying_stage)} • Timeframe: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)}
+                </p>
+                <p class="text-[11px] text-slate-500 font-medium">${actionPrompt}</p>
+              </div>
+
+              <div class="flex items-center gap-2.5 shrink-0">
+                <div class="bg-[#F2F9FA] px-3.5 py-2 rounded-2xl border border-[#006875]/20 text-right">
+                  <span class="text-sm sm:text-base font-extrabold text-[#006875]">${r.fit_percentage}%</span>
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-[#006875]/80">Property Match</p>
+                </div>
+                <button type="button" onclick="removeSingleBuyer('${safeId}', '${safeName}', '${safeMobile}')"
+                  class="text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-2 rounded-xl border border-transparent hover:border-rose-200 transition"
+                  title="Remove this entry">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100">
+              <p class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Buyer Non-Negotiables & Specs vs. This Home</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${reqPillsHtml}
+              </div>
+            </div>
+
+            ${otherListingHtml}
+          </div>`;
+      }).join('');
+    }
+
+    function copyAgentWrapUp(btnEl) {
+      const linkToShare = lockedAgentName
+        ? document.getElementById('share-agent-master-url').value
+        : document.getElementById('share-agent-url').value;
+      const subjectLine = lockedAgentName
+        ? `Property Match Buyer Wrap-Up — ${lockedAgentName}'s Open Homes`
+        : `Property Match Buyer Wrap-Up — ${activeProperty.address}`;
+      navigator.clipboard?.writeText(`${subjectLine}\nCheck the live ranked call list:\n${linkToShare}`);
+      if (btnEl) {
+        const orig = btnEl.textContent;
+        btnEl.textContent = '✓ Copied!';
+        setTimeout(() => { btnEl.textContent = orig; }, 1800);
+      }
+    }
+
+    // ==================== BROKER LEADS ====================
+    function selectBrokerProperty(propId) {
+      brokerSelectedPropertyId = propId;
+      renderBrokerLeads();
+    }
+
+    function setLeadFilter(optInOnly) {
+      brokerOptInOnly = optInOnly;
+      document.getElementById('btn-filter-optin').className = optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
+      document.getElementById('btn-filter-all').className = !optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
+      renderBrokerLeads();
+    }
+
+    function updateBrokerUndoBannerUI() {
+      const bar = document.getElementById('broker-undo-bar');
+      const txt = document.getElementById('broker-undo-text');
+      if (!bar || !txt) return;
+
+      if (brokerUndoBackup && Array.isArray(brokerUndoBackup.rows) && brokerUndoBackup.rows.length > 0) {
+        txt.textContent = brokerUndoBackup.label || `Cleared ${brokerUndoBackup.rows.length} lead(s).`;
+        bar.classList.remove('hidden');
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
+    function setBrokerUndoBackup(label, rows) {
+      if (!rows || rows.length === 0) return;
+      brokerUndoBackup = { label, rows };
+      localStorage.setItem('openmatch_broker_undo', JSON.stringify(brokerUndoBackup));
+      updateBrokerUndoBannerUI();
+    }
+
+    function dismissBrokerUndoBar() {
+      brokerUndoBackup = null;
+      localStorage.removeItem('openmatch_broker_undo');
+      updateBrokerUndoBannerUI();
+    }
+
+    async function removeSingleBrokerLead(scanId, buyerName, buyerMobile) {
+      let targetRow = null;
+
+      if (sb) {
+        let query = sb.from('buyer_scans').select('*');
+        if (scanId && isValidUuid(scanId)) query = query.eq('id', scanId);
+        else query = query.eq('property_id', brokerSelectedPropertyId).eq('buyer_name', buyerName).eq('buyer_mobile', buyerMobile);
+        const { data } = await query.limit(1);
+        targetRow = data && data[0] ? data[0] : null;
+
+        if (targetRow) {
+          const { data: deletedRows, error } = await sb.from('buyer_scans').delete().eq('id', targetRow.id).select();
+          if (error || !deletedRows || deletedRows.length === 0) return showSupabaseDeleteHelp();
+        }
+      }
+
+      if (!targetRow) {
+        targetRow = localScans.find(s =>
+          (scanId && s.id === scanId) ||
+          (s.property_id === brokerSelectedPropertyId && s.buyer_name === buyerName && s.buyer_mobile === buyerMobile)
+        );
+      }
+
+      localScans = localScans.filter(s =>
+        !((scanId && s.id === scanId) ||
+          (s.property_id === brokerSelectedPropertyId && s.buyer_name === buyerName && s.buyer_mobile === buyerMobile))
+      );
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      if (targetRow) setBrokerUndoBackup(`Removed ${targetRow.buyer_name} from leads.`, [targetRow]);
+      renderBrokerLeads();
+    }
+
+    async function clearPropertyBrokerLeads() {
+      if (!brokerSelectedPropertyId) return;
+
+      let rowsToBackup = [];
+      if (sb && isValidUuid(brokerSelectedPropertyId)) {
+        const { data, error } = await sb.from('buyer_scans').select('*').eq('property_id', brokerSelectedPropertyId);
+        if (error) return alert('Error fetching leads: ' + error.message);
+        rowsToBackup = data || [];
+      } else {
+        rowsToBackup = localScans.filter(s => s.property_id === brokerSelectedPropertyId);
+      }
+
+      if (rowsToBackup.length === 0) return alert('There are no leads to clear for this property.');
+
+      const propObj = savedPropertiesList.find(p => p.id === brokerSelectedPropertyId);
+      const propLabel = propObj ? propObj.address : 'this property';
+      const ok = confirm(`Clear all ${rowsToBackup.length} scan/lead record${rowsToBackup.length === 1 ? '' : 's'} for ${propLabel}?\n\nYou can click "Undo Restore" right after if needed.`);
+      if (!ok) return;
+
+      const btn = document.getElementById('btn-clear-prop-leads');
+      if (btn) { btn.disabled = true; btn.textContent = 'Clearing...'; }
+
+      if (sb && isValidUuid(brokerSelectedPropertyId)) {
+        const { data: deletedRows, error } = await sb
+          .from('buyer_scans')
+          .delete()
+          .eq('property_id', brokerSelectedPropertyId)
+          .select();
+
+        if (error || !deletedRows || deletedRows.length === 0) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Clear This Home'; }
+          return showSupabaseDeleteHelp();
+        }
+      }
+
+      localScans = localScans.filter(s => s.property_id !== brokerSelectedPropertyId);
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      setBrokerUndoBackup(`Cleared ${rowsToBackup.length} lead${rowsToBackup.length === 1 ? '' : 's'} for ${propLabel}.`, rowsToBackup);
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Clear This Home'; }
+      renderBrokerLeads();
+    }
+
+    async function clearAllBrokerLeads() {
+      let allRowsToBackup = [];
+      if (sb) {
+        const { data, error } = await sb.from('buyer_scans').select('*');
+        if (error) return alert('Error fetching leads: ' + error.message);
+        allRowsToBackup = data || [];
+      } else {
+        allRowsToBackup = [...localScans];
+      }
+
+      if (allRowsToBackup.length === 0) return alert('All broker leads are already clear.');
+
+      const ok = confirm(
+        `Clear ALL ${allRowsToBackup.length} buyer scan/lead record${allRowsToBackup.length === 1 ? '' : 's'} across ALL properties?\n\n` +
+        `You can click "Undo Restore" right after if you need them back.`
+      );
+      if (!ok) return;
+
+      const btn = document.getElementById('btn-clear-all-leads');
+      if (btn) { btn.disabled = true; btn.textContent = 'Clearing All...'; }
+
+      if (sb) {
+        const { data: deletedRows, error } = await sb
+          .from('buyer_scans')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000')
+          .select();
+
+        if (error || !deletedRows || deletedRows.length === 0) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Clear All Leads'; }
+          return showSupabaseDeleteHelp();
+        }
+      }
+
+      localScans = [];
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      setBrokerUndoBackup(`Cleared all ${allRowsToBackup.length} broker lead${allRowsToBackup.length === 1 ? '' : 's'} across all properties.`, allRowsToBackup);
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Clear All Leads'; }
+      renderBrokerLeads();
+    }
+
+    async function undoBrokerClear() {
+      if (!brokerUndoBackup || !Array.isArray(brokerUndoBackup.rows) || brokerUndoBackup.rows.length === 0) return;
+
+      const btn = document.getElementById('btn-broker-undo');
+      if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
+
+      const rowsToRestore = brokerUndoBackup.rows.map(row => {
+        const { id, created_at, ...cleanRow } = row;
+        return cleanRow;
+      });
+
+      if (sb) {
+        const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
+        if (error) {
+          if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+          return alert('Could not restore leads to Supabase: ' + error.message);
+        }
+      } else {
+        brokerUndoBackup.rows.forEach((r, idx) => {
+          localScans.unshift({ id: r.id || ('restored-' + Date.now() + '-' + idx), ...r });
+        });
+        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+      }
+
+      if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+      dismissBrokerUndoBar();
+      renderBrokerLeads();
+    }
+
+    function sendBrokerLeadSms(buyerName, buyerMobile, propAddress, isOptedIn) {
+      const firstName = (buyerName || 'there').trim().split(/\s+/)[0];
+      const cleanPhone = (buyerMobile || '').replace(/[^\d+]/g, '');
+      const cleanProp = propAddress || 'the property';
+      const bodyText = isOptedIn
+        ? `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and ticked to look at your exact borrowing power, grants, and guarantor options. Free for a quick 5-min chat?`
+        : `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today. Happy to run a quick obligation-free check on your borrowing power or grants if you're looking in the area!`;
+
+      const ua = navigator.userAgent.toLowerCase();
+      const isIOS = /iphone|ipad|ipod/.test(ua);
+      const separator = isIOS ? '&' : '?';
+      window.location.href = `sms:${cleanPhone}${separator}body=${encodeURIComponent(bodyText)}`;
+    }
+
+    async function updateBrokerLeadStatus(scanId, buyerName, buyerMobile, newStatus) {
+      const updatePetsStatus = (petsStr) => {
+        const cleanBase = String(petsStr || '').replace(/^status:[A-Za-z]+\|/, '');
+        return `status:${newStatus}|${cleanBase}`;
+      };
+
+      localScans = localScans.map(s => {
+        if ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile && s.property_id === brokerSelectedPropertyId)) {
+          return { ...s, lead_status: newStatus, pets: updatePetsStatus(s.pets) };
+        }
+        return s;
+      });
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      if (sb && scanId && isValidUuid(scanId)) {
+        const { data: existingRow } = await sb.from('buyer_scans').select('id, pets').eq('id', scanId).maybeSingle();
+        if (existingRow) {
+          const newPets = updatePetsStatus(existingRow.pets);
+          const { data: updatedRows, error } = await sb
+            .from('buyer_scans')
+            .update({ pets: newPets })
+            .eq('id', scanId)
+            .select();
+
+          if (error || !updatedRows || updatedRows.length === 0) {
+            alert(
+              'Status updated locally, but Supabase blocked saving it because Row Level Security (RLS) has no UPDATE policy yet.\n\n' +
+              'To save statuses in the cloud, run once in Supabase SQL Editor:\n' +
+              'CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);'
+            );
+          }
+        }
+      }
+
+      renderBrokerLeads();
+    }
+
+    async function renderBrokerLeads() {
+      updateBrokerUndoBannerUI();
+
+      let allRows = [];
+      if (sb) {
+        const { data, error } = await sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
+        if (error) return document.getElementById('broker-leads-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+        allRows = data || [];
+      } else {
+        allRows = [...localScans];
+      }
+
+      const propMap = new Map();
+      savedPropertiesList.forEach(p => propMap.set(p.id, normalizePropertyRow(p)));
+      if (activeProperty && activeProperty.id && !String(activeProperty.id).startsWith('new-') && !propMap.has(activeProperty.id)) {
+        propMap.set(activeProperty.id, normalizePropertyRow(activeProperty));
+      }
+      allRows.forEach(r => {
+        if (r.property_id && !propMap.has(r.property_id)) {
+          propMap.set(r.property_id, {
+            id: r.property_id, address: 'Property Listing', suburb: '', agent_name: '', is_sold: false
+          });
+        }
+      });
+
+      const propertiesForCards = Array.from(propMap.values());
+
+      if (!brokerSelectedPropertyId || !propMap.has(brokerSelectedPropertyId)) {
+        const propWithOptIn = propertiesForCards.find(p =>
+          allRows.some(r => r.property_id === p.id && r.broker_opt_in)
+        );
+        brokerSelectedPropertyId = propWithOptIn
+          ? propWithOptIn.id
+          : (propMap.has(activeProperty.id) ? activeProperty.id : (propertiesForCards[0]?.id || null));
+      }
+
+      const cardsContainer = document.getElementById('broker-property-cards');
+      if (propertiesForCards.length === 0) {
+        cardsContainer.innerHTML = `<div class="col-span-full text-xs text-slate-500 p-4 bg-slate-50 rounded-2xl">No saved properties yet. Create a property in Tab 1 first.</div>`;
+      } else {
+        cardsContainer.innerHTML = propertiesForCards.map(p => {
+          const propScans = allRows.filter(r => r.property_id === p.id);
+          const optInCount = propScans.filter(r => r.broker_opt_in).length;
+          const isSelected = p.id === brokerSelectedPropertyId;
+
+          const cardClass = isSelected
+            ? 'bg-[#F2F9FA] border-2 border-[#006875] shadow-sm'
+            : 'bg-slate-50/70 hover:bg-slate-100/80 border border-slate-200/90';
+
+          const badgeClass = optInCount > 0
+            ? 'bg-amber-100 text-amber-900 border border-amber-300'
+            : 'bg-slate-200/70 text-slate-600';
+
+          const soldPill = p.is_sold
+            ? `<span class="text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">SOLD</span>`
+            : '';
+
+          return `
+            <button type="button" onclick="selectBrokerProperty('${escapeHtml(p.id)}')"
+              class="text-left p-3.5 rounded-2xl transition flex items-center justify-between gap-2.5 ${cardClass}">
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <p class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${escapeHtml(p.address)}</p>
+                  ${soldPill}
+                </div>
+                <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                  ${escapeHtml(p.suburb || 'Open Home')}${p.agent_name ? ' • ' + escapeHtml(p.agent_name) : ''}
+                </p>
+              </div>
+              <span class="shrink-0 text-[11px] font-extrabold px-2.5 py-1 rounded-full ${badgeClass}">
+                ${optInCount} Opt-In${optInCount === 1 ? '' : 's'}
+              </span>
+            </button>`;
+        }).join('');
+      }
+
+      const selectedProp = propMap.get(brokerSelectedPropertyId) || activeProperty;
+      const propTitleEl = document.getElementById('broker-selected-prop-title');
+      const propMetaEl = document.getElementById('broker-selected-prop-meta');
+      if (propTitleEl) {
+        propTitleEl.textContent = `${selectedProp.address}${selectedProp.suburb ? ', ' + selectedProp.suburb : ''}${selectedProp.is_sold ? ' (Sold / Archived)' : ''}`;
+      }
+      if (propMetaEl) {
+        const guidePart = selectedProp.price_min
+          ? `Guide: $${Number(selectedProp.price_min).toLocaleString()} – $${Number(selectedProp.price_max).toLocaleString()}`
+          : '';
+        const agentPart = selectedProp.agent_name ? `Selling Agent: ${selectedProp.agent_name}` : '';
+        propMetaEl.textContent = [agentPart, guidePart].filter(Boolean).join(' • ') || 'Open Home Lead Breakdown';
+      }
+
+      const propertyScans = allRows.filter(r => r.property_id === brokerSelectedPropertyId);
+      const optedInRows = propertyScans.filter(r => r.broker_opt_in);
+      const displayedRows = brokerOptInOnly ? optedInRows : propertyScans;
+
+      document.getElementById('broker-kpi-optins').textContent = optedInRows.length;
+      document.getElementById('broker-kpi-total-scans').textContent = `${propertyScans.length} total scan${propertyScans.length === 1 ? '' : 's'} at this open`;
+
+      const kpiSourceRows = optedInRows.length > 0 ? optedInRows : propertyScans;
+      if (kpiSourceRows.length > 0) {
+        const avgBorrow = Math.round(
+          kpiSourceRows.reduce((sum, r) => sum + (Number(r.est_max_loan) || 0), 0) / kpiSourceRows.length
+        );
+        document.getElementById('broker-kpi-avg-borrow').textContent = `$${avgBorrow.toLocaleString()}`;
+      } else {
+        document.getElementById('broker-kpi-avg-borrow').textContent = '—';
+      }
+
+      const oppCount = kpiSourceRows.filter(r => {
+        const lvrStr = cleanLvrLabel(r).toUpperCase();
+        return lvrStr.startsWith('ORANGE') || lvrStr.startsWith('RED') || r.budget_badge === 'Subject to Sale' || r.budget_badge === 'Within Reach';
+      }).length;
+      document.getElementById('broker-kpi-opps').textContent = oppCount;
+
+      const container = document.getElementById('broker-leads-list');
+      if (displayedRows.length === 0) {
+        return container.innerHTML = `
+          <div class="bg-white p-10 rounded-3xl border border-slate-200/90 text-center space-y-2">
+            <p class="text-sm font-bold text-slate-700">
+              ${brokerOptInOnly ? 'No opted-in broker leads for this property yet.' : 'No buyer scans recorded for this property yet.'}
+            </p>
+            <p class="text-xs text-slate-500">
+              ${brokerOptInOnly && propertyScans.length > 0
+                ? `There ${propertyScans.length === 1 ? 'is 1 non-opt-in scan' : 'are ' + propertyScans.length + ' non-opt-in scans'} — click "All Scans (This Home)" above to inspect.`
+                : 'Select another property card above or check back after the open home.'}
+            </p>
+          </div>`;
+      }
+
+      container.innerHTML = displayedRows.map(r => {
+        const lvrTag = cleanLvrLabel(r);
+        const isRed = lvrTag.startsWith('RED');
+        const isOrange = lvrTag.startsWith('ORANGE');
+        const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+        const estPrice = extractBuyerEstPrice(r);
+        const status = extractLeadStatus(r);
+
+        const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
+        const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
+        const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
+        const safePropAddr = escapeHtml(selectedProp.address || '').replace(/'/g, "\\'");
+
+        const statusBtn = (label) => {
+          const isCurrent = status === label;
+          let activeClass = 'bg-slate-900 text-white border-slate-900';
+          if (isCurrent && label === 'New') activeClass = 'bg-amber-500 text-white border-amber-500';
+          if (isCurrent && label === 'Called') activeClass = 'bg-[#006875] text-white border-[#006875]';
+          if (isCurrent && label === 'Booked') activeClass = 'bg-emerald-600 text-white border-emerald-600';
+          const idleClass = 'bg-white hover:bg-slate-100 text-slate-600 border-slate-200';
+          return `<button type="button" onclick="updateBrokerLeadStatus('${safeId}', '${safeName}', '${safeMobile}', '${label}')"
+            class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border transition ${isCurrent ? activeClass : idleClass}">
+            ${label === 'Booked' && isCurrent ? '✓ Booked' : label}
+          </button>`;
+        };
+
+        const firstName = escapeHtml((r.buyer_name || 'Buyer').trim().split(/\s+/)[0]);
+
+        return `
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-4">
+            <div class="flex flex-wrap justify-between items-start gap-3">
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline">${escapeHtml(r.buyer_mobile)}</a></h3>
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-600'}">
+                    ${r.broker_opt_in ? '★ Opted In' : 'Scan Only'}
+                  </span>
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${lvrPillClass}">
+                    ${escapeHtml(lvrTag)}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium">
+                  ${escapeHtml(r.buying_stage)} • Timeline: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)} • ${r.dependants} Dependants${estPrice ? ' • Est. Price: $' + estPrice.toLocaleString() : ''}
+                </p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1.5">Status:</span>
+                  ${statusBtn('New')}
+                  ${statusBtn('Called')}
+                  ${statusBtn('Booked')}
+                </div>
+                <button type="button" onclick="removeSingleBrokerLead('${safeId}', '${safeName}', '${safeMobile}')"
+                  class="text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-2 rounded-xl border border-transparent hover:border-rose-200 transition"
+                  title="Remove this lead">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
+              <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
+              <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <span class="text-[11px] text-slate-500 font-medium">
+                Match Score: <strong>${r.fit_percentage}%</strong> (${escapeHtml(r.budget_badge)})
+              </span>
+              <div class="flex items-center gap-2">
+                <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 px-3.5 py-2 rounded-xl transition">
+                  📞 Call ${firstName}
+                </a>
+                <button type="button" onclick="sendBrokerLeadSms('${safeName}', '${safeMobile}', '${safePropAddr}', ${Boolean(r.broker_opt_in)})"
+                  class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-4 py-2 rounded-xl shadow-sm transition">
+                  💬 Text ${firstName}
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function copyInput(id, btnEl) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.select();
+      navigator.clipboard?.writeText(el.value);
+      if (btnEl) {
+        const orig = btnEl.textContent;
+        btnEl.textContent = '✓ Copied';
+        setTimeout(() => { btnEl.textContent = orig; }, 1600);
+      } else {
+        showPropActionFeedback('✓ Link copied to clipboard!', 'info');
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+  </script>
+</body>
+</html>
