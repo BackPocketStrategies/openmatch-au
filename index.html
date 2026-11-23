@@ -18,21 +18,36 @@
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
 
+    /* Full-Bleed A4 PDF Print Styling (Zero White Border) */
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       html, body {
-        width: 210mm !important; height: 297mm !important;
-        margin: 0 !important; padding: 0 !important;
-        background: #ffffff !important; overflow: hidden !important;
-        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       body * { visibility: hidden; }
       #printable-strut-card, #printable-strut-card * { visibility: visible; }
       #printable-strut-card {
-        position: fixed !important; left: 0 !important; top: 0 !important; transform: none !important;
-        width: 210mm !important; height: 297mm !important; margin: 0 !important;
-        display: flex !important; flex-direction: column !important; justify-content: space-between !important;
-        border-radius: 0 !important; box-shadow: none !important; border: none !important; overflow: hidden !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        transform: none !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: hidden !important;
       }
       #printable-strut-card .print-header { padding: 34px 36px !important; }
       #printable-strut-card .print-title { font-size: 60px !important; line-height: 1.05 !important; }
@@ -43,10 +58,17 @@
       #printable-strut-card #card-suburb { font-size: 16px !important; }
       #printable-strut-card #card-specs-pill { font-size: 16px !important; padding: 9px 16px !important; }
       #printable-strut-card .print-body {
-        flex: 1 !important; display: flex !important; flex-direction: column !important;
-        justify-content: space-between !important; padding: 36px 40px !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        padding: 36px 40px !important;
       }
-      #printable-strut-card .print-scan-copy { font-size: 19px !important; max-width: 560px !important; margin-bottom: 18px !important; }
+      #printable-strut-card .print-scan-copy {
+        font-size: 19px !important;
+        max-width: 560px !important;
+        margin-bottom: 18px !important;
+      }
       #printable-strut-card .print-qr-box { padding: 24px !important; }
       #printable-strut-card #qrcode { width: 360px !important; height: 360px !important; }
       #printable-strut-card #qr-caption-address { font-size: 19px !important; max-width: 360px !important; }
@@ -57,14 +79,14 @@
 </head>
 <body class="bg-slate-100/80 text-slate-900 min-h-screen antialiased">
 
-  <!-- CLEAN INITIAL LOADER (PREVENTS ADMIN FLASH ON QR / AGENT LINKS) -->
+  <!-- INITIAL CLEAN LOADING SCREEN (PREVENTS ADMIN FLASH ON QR / AGENT LINKS) -->
   <div id="app-loader" class="min-h-screen flex flex-col items-center justify-center px-4 text-center">
     <div class="w-14 h-14 rounded-2xl bg-[#006875] text-white flex items-center justify-center font-fun font-extrabold text-2xl shadow-md mb-4 animate-pulse">PM</div>
     <p class="font-clean-display font-extrabold text-lg text-slate-900">Property Match</p>
     <p id="loader-subtitle" class="text-xs font-semibold text-slate-500 mt-1">Loading property details...</p>
   </div>
 
-  <!-- TOP ADMIN BAR -->
+  <!-- TOP ADMIN BAR (HIDDEN UNTIL ADMIN VIEW CONFIRMED) -->
   <header id="admin-nav" class="hidden bg-[#0B1120] text-white sticky top-0 z-40 border-b border-slate-800/80">
     <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2.5">
@@ -86,6 +108,7 @@
     <!-- ==================== VIEW 1: PROPERTY IMPORTER & QR STUDIO ==================== -->
     <section id="view-admin" class="hidden space-y-6">
 
+      <!-- Prominent Saved Properties Switcher Bar -->
       <div class="bg-white rounded-3xl shadow-sm border-2 border-[#006875]/30 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[260px]">
           <div class="flex items-center gap-2 shrink-0">
@@ -115,6 +138,7 @@
         </div>
       </div>
 
+      <!-- Smart Listing URL & Text Scraper -->
       <div class="bg-gradient-to-br from-[#004852] via-[#006875] to-[#0B1120] text-white rounded-3xl p-6 sm:p-7 shadow-lg">
         <div class="mb-4">
           <span class="text-[11px] font-bold uppercase tracking-widest text-teal-200">Instant Listing Importer</span>
@@ -145,8 +169,10 @@
         </div>
       </div>
 
+      <!-- Two-Column Workspace -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
+        <!-- Left Column: Property Details -->
         <div class="lg:col-span-7 bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-extrabold text-base text-slate-900">Property & QR Details</h2>
@@ -217,10 +243,13 @@
           </button>
         </div>
 
+        <!-- Right Column: Centered Property Match QR Card & A4 PDF Export -->
         <div class="lg:col-span-5 space-y-4">
 
+          <!-- Printable / A4 PDF QR Card -->
           <div id="printable-strut-card" class="bg-white rounded-[2rem] shadow-lg border-2 border-[#006875]/30 overflow-hidden text-center">
 
+            <!-- Centered Top Header -->
             <div class="print-header bg-[#006875] px-6 py-5 text-white text-center">
               <h1 class="print-title font-fun text-3xl sm:text-[36px] font-extrabold leading-none text-white tracking-tight">
                 Property Match
@@ -233,6 +262,7 @@
               </p>
             </div>
 
+            <!-- Elevated Architectural Property Address Band -->
             <div class="print-address-band bg-white px-5 py-3.5 border-b border-[#006875]/15 flex items-center justify-between gap-3 text-left">
               <div class="flex items-center gap-3 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-[#006875]/10 text-[#006875] flex items-center justify-center shrink-0">
@@ -251,11 +281,13 @@
               </span>
             </div>
 
+            <!-- Card Body: Centered Larger QR Code -->
             <div class="print-body p-6 pb-5 bg-gradient-to-br from-white via-[#F5FAFB] to-[#E6F4F6] text-center">
               <p class="print-scan-copy text-xs text-slate-600 font-semibold max-w-[300px] mx-auto mb-4 leading-relaxed">
                 Scan in 30 seconds to check your borrowing power & see how well this home fits your wish list.
               </p>
 
+              <!-- Centered Large QR Code Box -->
               <div class="print-qr-box inline-block mx-auto bg-white p-3.5 rounded-3xl border-2 border-[#006875] shadow-md">
                 <div id="qrcode" class="bg-white w-[235px] sm:w-[250px] h-[235px] sm:h-[250px] mx-auto"></div>
                 <div class="mt-2.5 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px] mx-auto">
@@ -264,7 +296,7 @@
                 </div>
               </div>
 
-              <!-- Subtle Branding #3: A4 QR Flyer Bottom Strip -->
+              <!-- Privacy Strip -->
               <div class="mt-5 pt-3 border-t border-[#006875]/15 flex items-center justify-center gap-2 text-left">
                 <span class="shrink-0 w-5 h-5 rounded-full bg-[#006875]/10 text-[#006875] flex items-center justify-center">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
@@ -272,12 +304,13 @@
                   </svg>
                 </span>
                 <p class="print-privacy-text text-[10.5px] font-semibold text-[#006875] leading-snug">
-                  Independent Mortgage Choice tool by Alex Fyfe — your financial figures stay private and are never shown to the selling agent.
+                  Independent Mortgage Choice tool — your financial figures stay private and are never shown to the selling agent.
                 </p>
               </div>
             </div>
           </div>
 
+          <!-- A4 PDF Export & Share Links -->
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
             <button onclick="printQrFlyer()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
               Save A4 PDF / Print Full-Page QR Flyer
@@ -320,8 +353,7 @@
       <div class="bg-white rounded-[2rem] shadow-xl border border-slate-200/90 overflow-hidden">
         <div class="bg-gradient-to-br from-[#004852] to-[#0B1120] text-white p-6">
           <div class="flex justify-between items-center text-[11px] text-teal-300 font-bold tracking-wider uppercase mb-1.5">
-            <!-- Subtle Branding #1: Top Quiz Header -->
-            <span>30-Sec Property Match <span class="text-teal-100/80 font-semibold normal-case tracking-normal">• By Alex Fyfe</span></span>
+            <span>30-Sec Property Match</span>
             <span id="quiz-step-label" class="bg-white/10 text-white px-2.5 py-0.5 rounded-full">Step 1 of 5</span>
           </div>
           <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">Loading property...</h2>
@@ -420,14 +452,15 @@
               <p class="text-xs text-slate-500 mt-0.5">Rough estimates only — no exact numbers needed.</p>
             </div>
 
-            <!-- Subtle Branding #2: Step 3 Privacy Lock Banner -->
+            <!-- Agent-Private Assurance Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
-                100% Agent-Private — Protected by Alex Fyfe, Mortgage Choice. Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
+                100% Agent-Private: Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
               </p>
             </div>
 
+            <!-- Estimated Purchase Price Slider -->
             <div class="bg-[#F2F9FA] p-4 rounded-2xl border border-[#006875]/25">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-extrabold text-[#006875] uppercase tracking-wider">Est. Purchase Price (Best Guess)</label>
@@ -439,6 +472,7 @@
               </p>
             </div>
 
+            <!-- Cash Deposit Slider -->
             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Cash Deposit (Best Guess)</label>
@@ -448,6 +482,7 @@
               <p class="text-[10.5px] text-slate-500 mt-1">Cash savings used — lowers both your loan size and LVR.</p>
             </div>
 
+            <!-- Usable Equity Slider -->
             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Usable Home Equity (Best Guess)</label>
@@ -470,14 +505,15 @@
               <p class="text-xs text-slate-500 mt-0.5">Only include debts & card limits you plan to <strong>keep open</strong> during the application.</p>
             </div>
 
-            <!-- Subtle Branding #2: Step 4 Privacy Lock Banner -->
+            <!-- Agent-Private Assurance Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
-                100% Agent-Private — Protected by Alex Fyfe, Mortgage Choice. Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
+                100% Agent-Private: Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
               </p>
             </div>
 
+            <!-- Combined Gross Income -->
             <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Combined Gross Income (Best Guess)</label>
@@ -486,6 +522,7 @@
               <input id="slider-income" type="range" min="60000" max="600000" step="10000" value="180000" oninput="updateSliders()" class="w-full" />
             </div>
 
+            <!-- Monthly Loan Repayments Keeping Open -->
             <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Monthly Loan Repayments (Keeping Open)</label>
@@ -495,6 +532,7 @@
               <p class="text-[10.5px] text-slate-500 mt-1">Car, personal, or HECS repayments not being paid out before settlement.</p>
             </div>
 
+            <!-- Total Credit Card Limits Keeping Open -->
             <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Total Credit Card Limits (Keeping Open)</label>
@@ -504,6 +542,7 @@
               <p class="text-[10.5px] text-slate-500 mt-1">Exclude cards you intend to close or reduce before applying.</p>
             </div>
 
+            <!-- Dependants -->
             <div class="flex items-center justify-between bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200/80">
               <label class="text-xs font-bold text-slate-700">Dependants</label>
               <select id="input-dependants" class="p-2 text-sm font-bold border border-slate-300 rounded-xl bg-white text-slate-800">
@@ -520,7 +559,7 @@
             </div>
           </div>
 
-          <!-- STEP 5: REQUIRED CONTACT DETAILS & SYNCED OPT-IN -->
+          <!-- STEP 5: REQUIRED CONTACT DETAILS & UPFRONT BROKER CONSENT (OPTION 2) -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="text-center space-y-1.5 pt-1">
               <span class="inline-block text-[11px] font-extrabold uppercase tracking-widest text-[#006875] bg-[#F2F9FA] px-3 py-1 rounded-full border border-[#006875]/20">
@@ -528,7 +567,7 @@
               </span>
               <h3 class="font-extrabold text-xl text-slate-900">Your Property Match is Ready!</h3>
               <p class="text-xs text-slate-600 max-w-xs mx-auto leading-relaxed">
-                Enter your name and mobile number below to unlock your <strong>Property Match %</strong> and <strong>Est. Max Borrowing Power</strong>.
+                Enter your details below to unlock your <strong>Property Match %</strong> and <strong>Est. Max Borrowing Power</strong>.
               </p>
             </div>
 
@@ -548,18 +587,21 @@
               </p>
             </div>
 
-            <!-- Auto-Ticked Opt-In (Synced with Results Screen) -->
-            <div class="bg-amber-50/90 p-3.5 rounded-2xl border-2 border-amber-300 space-y-2 shadow-sm">
+            <!-- Upfront Financial Sharing Consent Toggle -->
+            <div class="bg-white p-3.5 rounded-2xl border-2 border-[#006875]/30 space-y-2.5 shadow-sm">
               <label class="flex items-start gap-3 cursor-pointer">
-                <input id="buyer-opt-in-step5" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked, false)"
+                <input id="buyer-share-finances" type="checkbox" checked onchange="onStep5ConsentChange(this.checked)"
                   class="mt-0.5 w-4 h-4 rounded accent-[#006875] shrink-0" />
                 <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Send your details through to Alex Fyfe, Mortgage Broking Specialist</strong>, to assess your finances and check eligibility with government grants, guarantors, bridging loans, etc.
-                  <span class="block text-[11px] text-slate-700 font-normal mt-1">
-                    Agreeing to this will automatically send through your details for Alex to assess (never shared with the selling agent).
+                  <strong>Share my financial estimates with Alex Fyfe (Mortgage Choice)</strong>
+                  <span class="block text-[11px] text-slate-500 font-normal mt-0.5">
+                    So Alex can check your exact borrowing power, eligible government grants &amp; guarantor options. <strong>Never shared with the selling agent.</strong>
                   </span>
                 </span>
               </label>
+              <p id="step5-consent-status" class="text-[11px] font-bold text-[#006875] bg-[#F2F9FA] px-3 py-1.5 rounded-xl border border-[#006875]/20 leading-snug">
+                ✓ Included: Your indicative income, deposit &amp; LVR breakdown will be sent confidentially to Alex Fyfe.
+              </p>
             </div>
 
             <div class="flex gap-2.5 pt-1">
@@ -580,6 +622,7 @@
             </div>
 
             <div class="space-y-3">
+              <!-- Property Match Hero Card -->
               <div id="res-match-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-5 rounded-3xl text-center flex flex-col items-center">
                 <p id="res-match-heading" class="text-xs font-extrabold uppercase tracking-widest text-[#006875]">Property Match</p>
                 <p id="res-perfect-label" class="hidden font-fun text-3xl sm:text-4xl font-extrabold text-pink-600 leading-tight mt-1">Perfect Match</p>
@@ -593,6 +636,7 @@
                 <p id="res-fit-breakdown" class="text-xs font-semibold text-slate-600 mt-0.5 leading-snug">Wish list • Budget • Space</p>
               </div>
 
+              <!-- Max Borrowing Box -->
               <div id="res-borrow-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl flex flex-col justify-between">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                   <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Est. Max Borrow</p>
@@ -602,30 +646,10 @@
               </div>
             </div>
 
+            <!-- Limiting Factor Insight Callout -->
             <div id="res-limiting-box" class="bg-slate-900 text-white p-3.5 rounded-2xl text-left space-y-1">
               <p id="res-limiting-title" class="text-xs font-extrabold text-teal-300">What's Limiting Your Purchasing Power?</p>
               <p id="res-limiting-desc" class="text-[11.5px] text-slate-200 leading-relaxed"></p>
-            </div>
-
-            <!-- Auto-Ticked Broker Opt-In Box Directly Above "Text Summary to My Phone" -->
-            <div class="space-y-2">
-              <label class="flex items-start gap-3 p-3.5 rounded-2xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer shadow-sm">
-                <input id="buyer-opt-in" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked, true)" class="mt-0.5 w-4 h-4 rounded accent-[#006875] shrink-0" />
-                <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Send your details through to Alex Fyfe, Mortgage Broking Specialist</strong>, to assess your finances and check eligibility with government grants, guarantors, bridging loans, etc.
-                  <span class="block text-[11px] text-slate-700 font-normal mt-1">
-                    Agreeing to this will automatically send through your details for Alex to assess (never shared with the selling agent).
-                  </span>
-                </span>
-              </label>
-
-              <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
-                ✓ Sent to Alex Fyfe! Alex will assess your finances &amp; check eligibility for government grants, guarantors &amp; bridging loans.
-              </div>
-
-              <div id="broker-optin-withheld" class="hidden text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl">
-                🔒 Withheld: Neither your contact details nor your financial figures were sent to Alex Fyfe. Tick the box above anytime to send them through.
-              </div>
             </div>
 
             <!-- Free Zero-Cost Save & Send to Buyer Box -->
@@ -653,7 +677,23 @@
               <strong>Indicative Best-Guess Estimate Only:</strong> Includes ~4% purchase costs (stamp duty, transfer, registration & conveyancing) and a 3.0% APRA serviceability buffer. Not a formal credit assessment.
             </p>
 
+            <!-- Broker Sharing Status / Opt-In Toggle (Synced with Step 5) -->
             <div class="border-t border-slate-100 pt-3 space-y-2.5">
+              <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer">
+                <input id="buyer-opt-in" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked)" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
+                <span class="text-xs text-slate-900 leading-snug">
+                  <strong>Share my financial figures with Alex Fyfe (Mortgage Choice)</strong> to check exact borrowing power, eligible government grants &amp; guarantor options.
+                </span>
+              </label>
+
+              <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
+                ✓ Shared confidentially with Alex Fyfe! Alex will review your borrowing options and reach out shortly.
+              </div>
+
+              <div id="broker-optin-redacted" class="hidden text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl">
+                🔒 Financial figures redacted ($0 saved). Tick the box above anytime if you'd like Alex Fyfe to review your numbers.
+              </div>
+
               <p class="text-[10px] text-slate-400 leading-normal">
                 Independent Mortgage Choice tool: Your income, deposit, and borrowing figures stay private and are never shown to the selling agent. Alex Fyfe — Mortgage Broking Specialist & Owner Manager, Mortgage Choice.
               </p>
@@ -671,7 +711,7 @@
           <div id="q-step-done" class="quiz-step hidden text-center py-8 space-y-3">
             <div class="w-14 h-14 bg-[#006875]/10 text-[#006875] rounded-2xl flex items-center justify-center mx-auto text-2xl font-extrabold">✓</div>
             <h3 class="text-xl font-extrabold text-slate-900">Property Match Saved!</h3>
-            <p class="text-sm text-slate-600 max-w-xs mx-auto">Enjoy inspecting the home. Your financial figures stay private with Mortgage Choice.</p>
+            <p class="text-sm text-slate-600 max-w-xs mx-auto">Enjoy inspecting the home. Your financial figures are never shared with the selling agent.</p>
             <div class="pt-2 flex flex-col gap-2 max-w-xs mx-auto">
               <button type="button" onclick="sendResultsViaSms()" class="w-full bg-[#006875] text-white text-xs font-extrabold py-3 px-4 rounded-xl">
                 💬 Text Summary to My Phone
@@ -683,7 +723,7 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 3: AGENT DASHBOARD ==================== -->
+    <!-- ==================== VIEW 3: AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST) ==================== -->
     <section id="view-agent" class="hidden space-y-5">
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
         <div class="flex flex-wrap justify-between items-start gap-4">
@@ -695,6 +735,7 @@
             <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">Loading property...</h1>
             <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Checking listing guide...</p>
 
+            <!-- Property Switcher -->
             <div id="agent-prop-switcher-wrap" class="pt-2 flex flex-wrap items-center gap-2">
               <label id="agent-prop-select-label" for="agent-prop-select" class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Switch Property:</label>
               <select id="agent-prop-select" onchange="onSelectSavedProperty(this.value)"
@@ -714,6 +755,7 @@
           </div>
         </div>
 
+        <!-- 4-Card Executive Summary Bar -->
         <div id="agent-kpi-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           <div class="bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl">
             <p class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Scanned Buyers</p>
@@ -738,6 +780,7 @@
         </div>
       </div>
 
+      <!-- 1-Click Undo Clear Banner -->
       <div id="agent-undo-bar" class="hidden bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 border border-slate-700">
         <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
           <span class="w-6 h-6 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-extrabold">↺</span>
@@ -747,16 +790,20 @@
           <button id="btn-undo-clear" onclick="undoAgentClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
             Undo Restore
           </button>
-          <button onclick="dismissUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
+          <button onclick="dismissUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">
+            ✕
+          </button>
         </div>
       </div>
 
+      <!-- Traffic-Light Buyer Call List -->
       <div id="agent-leaderboard-list" class="space-y-3.5"></div>
     </section>
 
-    <!-- ==================== VIEW 4: BROKER LEADS ==================== -->
+    <!-- ==================== VIEW 4: BROKER LEADS (PROPERTY-FIRST PIPELINE) ==================== -->
     <section id="view-leads" class="hidden space-y-5">
 
+      <!-- Property Selector Cards Grid -->
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-3.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -771,6 +818,7 @@
         <div id="broker-property-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
       </div>
 
+      <!-- Selected Property Broker Snapshot & Filter Bar -->
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-4">
         <div class="flex flex-wrap justify-between items-start gap-3">
           <div>
@@ -783,6 +831,7 @@
           </div>
         </div>
 
+        <!-- 3-Card Property-Level Broker Snapshot -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div class="bg-amber-50/80 border border-amber-200 p-3.5 rounded-2xl">
             <p class="text-[10.5px] font-bold uppercase tracking-wider text-amber-800">Opted-In Leads</p>
@@ -802,6 +851,7 @@
         </div>
       </div>
 
+      <!-- Property-Filtered Lead Cards -->
       <div id="broker-leads-list" class="space-y-4"></div>
     </section>
 
@@ -842,7 +892,7 @@
       saved_local_id: null,
       buyer_name: '',
       buyer_mobile: '',
-      broker_opt_in: true,
+      share_finances: true,
       household: 'Solo',
       stage: 'Pre-Approved',
       timeline: 'ASAP',
@@ -1068,6 +1118,7 @@
           loaderSubEl.textContent = 'Loading open home buyer call list...';
         }
 
+        // Pre-fill URL address immediately before Supabase call so there is zero flash of default text
         if (addrParam) {
           applyFallbackAddress(addrParam);
           const preTitle = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
@@ -1477,7 +1528,7 @@
       });
     }
 
-    // ==================== BUYER QUIZ & MATCHMAKING ====================
+    // ==================== BUYER QUIZ & WEIGHTED MATCHMAKING ====================
     function selectSingle(key, val, btn) {
       quizState[key] = val;
       const isCompact = btn.parentElement.id.startsWith('chips-min-');
@@ -1533,16 +1584,34 @@
       document.getElementById('val-cc-limits').textContent = `$${ccLimits.toLocaleString()}`;
     }
 
-    function syncBrokerOptInUI(checked) {
-      const step5Box = document.getElementById('buyer-opt-in-step5');
-      const resBox = document.getElementById('buyer-opt-in');
-      const confirmedBadge = document.getElementById('broker-optin-confirmed');
-      const withheldBadge = document.getElementById('broker-optin-withheld');
+    function onStep5ConsentChange(checked) {
+      quizState.share_finances = checked;
+      const statusEl = document.getElementById('step5-consent-status');
+      if (!statusEl) return;
 
-      if (step5Box) step5Box.checked = checked;
-      if (resBox) resBox.checked = checked;
-      if (confirmedBadge) confirmedBadge.classList.toggle('hidden', !checked);
-      if (withheldBadge) withheldBadge.classList.toggle('hidden', checked);
+      if (checked) {
+        statusEl.className = 'text-[11px] font-bold text-[#006875] bg-[#F2F9FA] px-3 py-1.5 rounded-xl border border-[#006875]/20 leading-snug';
+        statusEl.textContent = '✓ Included: Your indicative income, deposit & LVR breakdown will be sent confidentially to Alex Fyfe.';
+      } else {
+        statusEl.className = 'text-[11px] font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 leading-snug';
+        statusEl.textContent = '🔒 Redacted: Only your name, mobile & home wish-list are saved — all income, deposit & price figures are wiped ($0) and never sent.';
+      }
+    }
+
+    function syncResultsConsentUI(checked) {
+      const optInBox = document.getElementById('buyer-opt-in');
+      const confirmedBadge = document.getElementById('broker-optin-confirmed');
+      const redactedBadge = document.getElementById('broker-optin-redacted');
+
+      if (optInBox) optInBox.checked = checked;
+      if (confirmedBadge) {
+        if (checked) confirmedBadge.classList.remove('hidden');
+        else confirmedBadge.classList.add('hidden');
+      }
+      if (redactedBadge) {
+        if (!checked) redactedBadge.classList.remove('hidden');
+        else redactedBadge.classList.add('hidden');
+      }
     }
 
     function clearContactGateError() {
@@ -1672,9 +1741,10 @@
       btn.textContent = 'Unlocking...';
 
       updateSliders();
+      const shareFinances = Boolean(document.getElementById('buyer-share-finances')?.checked);
       quizState.buyer_name = name;
       quizState.buyer_mobile = mobile;
-      quizState.broker_opt_in = Boolean(document.getElementById('buyer-opt-in-step5')?.checked);
+      quizState.share_finances = shareFinances;
       quizState.dependants = Number(document.getElementById('input-dependants').value);
 
       const estPrice = quizState.est_purchase_price;
@@ -1778,7 +1848,7 @@
       quizState.budget_badge = budgetBadge;
       quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
 
-      syncBrokerOptInUI(quizState.broker_opt_in);
+      syncResultsConsentUI(shareFinances);
       await persistBuyerScanRecord();
 
       const firstName = name.split(/\s+/)[0];
@@ -1830,31 +1900,32 @@
       if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
       if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
 
-      const optInChecked = Boolean(quizState.broker_opt_in);
+      const shareFinances = Boolean(quizState.share_finances);
       const existingStatus = extractLeadStatus({ id: quizState.saved_db_id || quizState.saved_local_id });
 
-      const encodedPets = optInChecked
+      // True Redaction: If buyer unticked sharing on Step 5, wipe financial numbers ($0 / REDACTED) before saving
+      const encodedPets = shareFinances
         ? `status:${existingStatus}|est_price:${Math.round(quizState.est_purchase_price)}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`
-        : `status:${existingStatus}|WITHHELD_FROM_BROKER`;
+        : `status:${existingStatus}|REDACTED`;
 
       const dbRecord = {
         property_id: activeProperty.id,
-        buyer_name: optInChecked ? quizState.buyer_name : 'Open-Home Visitor',
-        buyer_mobile: optInChecked ? quizState.buyer_mobile : 'Withheld',
+        buyer_name: quizState.buyer_name,
+        buyer_mobile: quizState.buyer_mobile,
         household: quizState.household,
         pets: encodedPets,
         must_haves: combinedMustHaves,
         buying_stage: quizState.stage,
         timeline: quizState.timeline,
-        income: optInChecked ? quizState.income : 0,
-        deposit: optInChecked ? (quizState.cash_deposit + quizState.usable_equity) : 0,
+        income: shareFinances ? quizState.income : 0,
+        deposit: shareFinances ? (quizState.cash_deposit + quizState.usable_equity) : 0,
         dependants: quizState.dependants,
-        existing_debts: optInChecked ? (quizState.cc_limits + (quizState.monthly_loans * 12)) : 0,
-        est_max_loan: optInChecked ? quizState.est_max_loan : 0,
+        existing_debts: shareFinances ? (quizState.cc_limits + (quizState.monthly_loans * 12)) : 0,
+        est_max_loan: shareFinances ? quizState.est_max_loan : 0,
         fit_percentage: quizState.fit_percentage,
         budget_badge: quizState.budget_badge,
         leaderboard_score: quizState.leaderboard_score,
-        broker_opt_in: optInChecked
+        broker_opt_in: shareFinances
       };
 
       if (hasSupabase && isValidUuid(activeProperty.id)) {
@@ -1869,7 +1940,7 @@
           if (!upErr && updated) {
             quizState.saved_db_id = updated.id;
           } else if (upErr) {
-            console.warn('Supabase update error:', upErr.message);
+            console.warn('Supabase update blocked by RLS policy. Run: CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);');
           }
         } else {
           const { data: inserted, error: insErr } = await sb
@@ -1893,13 +1964,13 @@
         id: quizState.saved_db_id || localId,
         ...dbRecord,
         lead_status: existingStatus,
-        est_purchase_price: optInChecked ? quizState.est_purchase_price : 0,
-        cash_deposit: optInChecked ? quizState.cash_deposit : 0,
-        usable_equity: optInChecked ? quizState.usable_equity : 0,
-        monthly_loans: optInChecked ? quizState.monthly_loans : 0,
-        cc_limits: optInChecked ? quizState.cc_limits : 0,
-        base_lvr_pct: optInChecked ? quizState.base_lvr_pct : 0,
-        lvr_tier: optInChecked ? quizState.lvr_tier : 'withheld',
+        est_purchase_price: shareFinances ? quizState.est_purchase_price : 0,
+        cash_deposit: shareFinances ? quizState.cash_deposit : 0,
+        usable_equity: shareFinances ? quizState.usable_equity : 0,
+        monthly_loans: shareFinances ? quizState.monthly_loans : 0,
+        cc_limits: shareFinances ? quizState.cc_limits : 0,
+        base_lvr_pct: shareFinances ? quizState.base_lvr_pct : 0,
+        lvr_tier: shareFinances ? quizState.lvr_tier : 'redacted',
         limiting_factor: quizState.limiting_factor
       };
 
@@ -1910,12 +1981,15 @@
       localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
     }
 
-    async function toggleBrokerOptIn(checked, shouldPersist = true) {
-      quizState.broker_opt_in = checked;
-      syncBrokerOptInUI(checked);
-      if (shouldPersist && (quizState.saved_db_id || quizState.saved_local_id)) {
-        await persistBuyerScanRecord();
-      }
+    async function toggleBrokerOptIn(checked) {
+      quizState.share_finances = checked;
+      const step5Box = document.getElementById('buyer-share-finances');
+      if (step5Box) step5Box.checked = checked;
+      onStep5ConsentChange(checked);
+      syncResultsConsentUI(checked);
+
+      // Re-persist immediately so ticking un-redacts & unticking redacts in Supabase
+      await persistBuyerScanRecord();
     }
 
     function finishBuyerSession() {
@@ -1945,7 +2019,8 @@
       const ua = navigator.userAgent.toLowerCase();
       const isIOS = /iphone|ipad|ipod/.test(ua);
       const separator = isIOS ? '&' : '?';
-      window.location.href = `sms:${cleanPhone}${separator}body=${encodeURIComponent(summary)}`;
+      const smsUri = `sms:${cleanPhone}${separator}body=${encodeURIComponent(summary)}`;
+      window.location.href = smsUri;
     }
 
     async function shareResultsSummary() {
@@ -1954,58 +2029,90 @@
 
       if (navigator.share) {
         try {
-          await navigator.share({ title: `Property Match - ${propTitle}`, text: summary });
+          await navigator.share({
+            title: `Property Match - ${propTitle}`,
+            text: summary
+          });
           return;
         } catch (e) {
           if (e.name === 'AbortError') return;
         }
       }
 
-      try { await navigator.clipboard.writeText(summary); } catch (e) {}
-      window.location.href = `mailto:?subject=${encodeURIComponent(`My Property Match - ${propTitle}`)}&body=${encodeURIComponent(summary)}`;
+      try {
+        await navigator.clipboard.writeText(summary);
+      } catch (e) {}
+      const subject = encodeURIComponent(`My Property Match - ${propTitle}`);
+      const body = encodeURIComponent(summary);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
     }
 
     function downloadResultsCardImage() {
       const canvas = document.createElement('canvas');
-      canvas.width = 800; canvas.height = 960;
+      canvas.width = 800;
+      canvas.height = 960;
       const ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = '#F8FAFC'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#006875'; ctx.fillRect(0, 0, canvas.width, 210);
+      ctx.fillStyle = '#F8FAFC';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#FFFFFF'; ctx.font = '800 46px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillStyle = '#006875';
+      ctx.fillRect(0, 0, canvas.width, 210);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 46px sans-serif';
+      ctx.textAlign = 'center';
       ctx.fillText('Property Match', 400, 82);
-      ctx.fillStyle = '#CCFBF1'; ctx.font = '700 24px sans-serif';
+
+      ctx.fillStyle = '#CCFBF1';
+      ctx.font = '700 24px sans-serif';
       ctx.fillText(activeProperty.address || 'Open Home Inspection', 400, 132);
-      ctx.fillStyle = '#99F6E4'; ctx.font = '600 18px sans-serif';
+
+      ctx.fillStyle = '#99F6E4';
+      ctx.font = '600 18px sans-serif';
       ctx.fillText(activeProperty.suburb || '', 400, 166);
 
       const isPerfect = quizState.fit_percentage > 90;
       ctx.fillStyle = isPerfect ? '#ECFDF5' : '#F2F9FA';
       ctx.strokeStyle = isPerfect ? '#10B981' : '#006875';
       ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.roundRect(60, 245, 680, 310, 28); ctx.fill(); ctx.stroke();
+      ctx.beginPath();
+      ctx.roundRect(60, 245, 680, 310, 28);
+      ctx.fill();
+      ctx.stroke();
 
-      ctx.fillStyle = isPerfect ? '#065F46' : '#006875'; ctx.font = '800 18px sans-serif';
+      ctx.fillStyle = isPerfect ? '#065F46' : '#006875';
+      ctx.font = '800 18px sans-serif';
       ctx.fillText('PROPERTY MATCH SCORE', 400, 295);
 
       if (isPerfect) {
-        ctx.fillStyle = '#DB2777'; ctx.font = '800 34px sans-serif';
+        ctx.fillStyle = '#DB2777';
+        ctx.font = '800 34px sans-serif';
         ctx.fillText('Perfect Match!', 400, 345);
       }
 
-      ctx.fillStyle = isPerfect ? '#DB2777' : '#006875'; ctx.font = '800 96px sans-serif';
+      ctx.fillStyle = isPerfect ? '#DB2777' : '#006875';
+      ctx.font = '800 96px sans-serif';
       ctx.fillText(`${quizState.fit_percentage}%`, 400, isPerfect ? 455 : 425);
 
-      ctx.fillStyle = isPerfect ? '#047857' : '#006875'; ctx.font = '700 24px sans-serif';
+      ctx.fillStyle = isPerfect ? '#047857' : '#006875';
+      ctx.font = '700 24px sans-serif';
       ctx.fillText(quizState.budget_badge, 400, 515);
 
-      ctx.fillStyle = '#FFFFFF'; ctx.strokeStyle = '#CBD5E1'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.roundRect(60, 585, 680, 195, 28); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(60, 585, 680, 195, 28);
+      ctx.fill();
+      ctx.stroke();
 
-      ctx.fillStyle = '#64748B'; ctx.font = '800 17px sans-serif';
+      ctx.fillStyle = '#64748B';
+      ctx.font = '800 17px sans-serif';
       ctx.fillText('ESTIMATED MAX BORROWING POWER', 400, 635);
-      ctx.fillStyle = '#006875'; ctx.font = '800 54px sans-serif';
+
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 54px sans-serif';
       ctx.fillText(`$${Number(quizState.est_max_loan).toLocaleString()}`, 400, 702);
 
       ctx.fillStyle = quizState.base_lvr_pct <= 80 ? '#047857' : (quizState.base_lvr_pct <= 90 ? '#EA580C' : '#E11D48');
@@ -2015,9 +2122,12 @@
         : `~${quizState.base_lvr_pct}% Base LVR - Higher rates and fees could be included`;
       ctx.fillText(lvrNote, 400, 748);
 
-      ctx.fillStyle = '#475569'; ctx.font = '600 16px sans-serif';
+      ctx.fillStyle = '#475569';
+      ctx.font = '600 16px sans-serif';
       ctx.fillText(`Prepared for ${quizState.buyer_name} • Est. Price $${Number(quizState.est_purchase_price).toLocaleString()}`, 400, 835);
-      ctx.fillStyle = '#94A3B8'; ctx.font = '500 14px sans-serif';
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '500 14px sans-serif';
       ctx.fillText('Indicative estimate only (includes ~4% purchase costs & 3% buffer).', 400, 872);
       ctx.fillText('Alex Fyfe — Mortgage Broking Specialist, Mortgage Choice', 400, 900);
 
@@ -2033,15 +2143,18 @@
       quizState.saved_local_id = null;
       quizState.buyer_name = '';
       quizState.buyer_mobile = '';
-      quizState.broker_opt_in = true;
+      quizState.share_finances = true;
       document.getElementById('buyer-name').value = '';
       document.getElementById('buyer-mobile').value = '';
-      syncBrokerOptInUI(true);
+      const step5Box = document.getElementById('buyer-share-finances');
+      if (step5Box) step5Box.checked = true;
+      onStep5ConsentChange(true);
+      syncResultsConsentUI(true);
       clearContactGateError();
       goQuizStep(1);
     }
 
-    // ==================== AGENT DASHBOARD ====================
+    // ==================== AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST + CLEAR & UNDO) ====================
     function extractBuyerEstPrice(r) {
       if (r.est_purchase_price && Number(r.est_purchase_price) > 0) return Number(r.est_purchase_price);
       if (r.pets && typeof r.pets === 'string') {
@@ -2051,11 +2164,14 @@
       return null;
     }
 
-function extractLeadStatus(r) {
+    function extractLeadStatus(r) {
       if (r.lead_status && ['New', 'Called', 'Booked'].includes(r.lead_status)) return r.lead_status;
       if (r.pets && typeof r.pets === 'string') {
         const m = r.pets.match(/status:(New|Called|Booked)/i);
-        if (m) return m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+        if (m) {
+          const norm = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+          return norm;
+        }
       }
       return 'New';
     }
@@ -2081,7 +2197,10 @@ function extractLeadStatus(r) {
 
     function setUndoBackup(rows) {
       if (!rows || rows.length === 0) return;
-      undoBackup = { property_id: activeProperty.id, rows };
+      undoBackup = {
+        property_id: activeProperty.id,
+        rows: rows
+      };
       localStorage.setItem('openmatch_undo_backup', JSON.stringify(undoBackup));
       updateUndoBannerUI();
     }
@@ -2095,7 +2214,9 @@ function extractLeadStatus(r) {
     function showSupabaseDeleteHelp() {
       alert(
         'Supabase blocked deleting buyers because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
-        'Run once in Supabase SQL Editor:\n' +
+        'To fix this in 10 seconds:\n' +
+        '1. Open Supabase → SQL Editor\n' +
+        '2. Run:\n' +
         'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
       );
     }
@@ -2192,7 +2313,10 @@ function extractLeadStatus(r) {
       if (!undoBackup || !Array.isArray(undoBackup.rows) || undoBackup.rows.length === 0) return;
 
       const btn = document.getElementById('btn-undo-clear');
-      if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Restoring...';
+      }
 
       const rowsToRestore = undoBackup.rows.map(row => {
         const { id, created_at, ...cleanRow } = row;
@@ -2202,7 +2326,10 @@ function extractLeadStatus(r) {
       if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
         if (error) {
-          if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Undo Restore';
+          }
           return alert('Could not restore buyers to Supabase: ' + error.message);
         }
       } else {
@@ -2212,7 +2339,11 @@ function extractLeadStatus(r) {
         localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
       }
 
-      if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Undo Restore';
+      }
+
       dismissUndoBar();
       renderAgentDashboard();
     }
@@ -2278,10 +2409,10 @@ function extractLeadStatus(r) {
         },
         {
           property_id: activeProperty.id,
-          buyer_name: 'Open-Home Visitor',
-          buyer_mobile: 'Withheld',
+          buyer_name: 'Casey Morgan',
+          buyer_mobile: '0401 772 630',
           household: 'Solo',
-          pets: `status:New|WITHHELD_FROM_BROKER`,
+          pets: `status:New|REDACTED`,
           must_haves: ['beds:2', 'modern'],
           buying_stage: 'Still Looking',
           timeline: '3+ Months',
@@ -2341,8 +2472,12 @@ function extractLeadStatus(r) {
         const maxEst = Math.max(...priceEstimates);
         const guideMid = (Number(activeProperty.price_min) + Number(activeProperty.price_max)) / 2;
         const diff = avgPrice - guideMid;
-        const diffText = diff >= 0 ? `+$${Math.round(diff / 1000)}k vs guide` : `-$${Math.round(Math.abs(diff) / 1000)}k vs guide`;
-        const rangeText = priceEstimates.length > 1 && minEst !== maxEst ? ` • $${Math.round(minEst / 1000)}k–$${Math.round(maxEst / 1000)}k` : '';
+        const diffText = diff >= 0
+          ? `+$${Math.round(diff / 1000)}k vs guide`
+          : `-$${Math.round(Math.abs(diff) / 1000)}k vs guide`;
+        const rangeText = priceEstimates.length > 1 && minEst !== maxEst
+          ? ` • $${Math.round(minEst / 1000)}k–$${Math.round(maxEst / 1000)}k`
+          : '';
 
         document.getElementById('kpi-avg-price').textContent = `$${avgPrice.toLocaleString()}`;
         document.getElementById('kpi-price-vs-guide').textContent = `${diffText}${rangeText}`;
@@ -2377,7 +2512,9 @@ function extractLeadStatus(r) {
           cardBorderClass = 'border-l-8 border-l-amber-500 border-amber-200/90';
           statusPillClass = 'bg-amber-100 text-amber-900 border border-amber-300';
           statusDotClass = 'bg-amber-500';
-          statusHeadline = r.budget_badge === 'Subject to Sale' ? 'ORANGE • SUBJECT TO SALE' : 'ORANGE • CLOSE / WITHIN REACH';
+          statusHeadline = r.budget_badge === 'Subject to Sale'
+            ? 'ORANGE • SUBJECT TO SALE'
+            : 'ORANGE • CLOSE / WITHIN REACH';
           actionPrompt = r.budget_badge === 'Subject to Sale'
             ? 'Appraisal Opportunity — Needs to sell current home first'
             : 'Strong Contender — Close to guide; worth discussing terms';
@@ -2441,10 +2578,6 @@ function extractLeadStatus(r) {
         const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
         const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
         const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
-        const isWithheld = !r.buyer_mobile || r.buyer_mobile === 'Withheld';
-        const phoneHtml = isWithheld
-          ? `<span class="text-slate-400 font-semibold">Contact withheld</span>`
-          : `<a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline font-extrabold">${escapeHtml(r.buyer_mobile)}</a>`;
 
         return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border ${cardBorderClass} space-y-4">
@@ -2459,7 +2592,7 @@ function extractLeadStatus(r) {
                   </span>
                 </div>
                 <p class="text-xs text-slate-600 font-semibold">
-                  ${phoneHtml}
+                  <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline font-extrabold">${escapeHtml(r.buyer_mobile)}</a>
                   • ${escapeHtml(r.buying_stage)} • Timeframe: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)}
                 </p>
                 <p class="text-[11px] text-slate-500 font-medium">${actionPrompt}</p>
@@ -2501,7 +2634,7 @@ function extractLeadStatus(r) {
       alert('Post-open SMS summary copied!');
     }
 
-    // ==================== BROKER LEADS ====================
+    // ==================== BROKER LEADS (PROPERTY-FIRST PIPELINE) ====================
     function selectBrokerProperty(propId) {
       brokerSelectedPropertyId = propId;
       renderBrokerLeads();
@@ -2514,11 +2647,13 @@ function extractLeadStatus(r) {
       renderBrokerLeads();
     }
 
-    function sendBrokerLeadSms(buyerName, buyerMobile, propAddress) {
+    function sendBrokerLeadSms(buyerName, buyerMobile, propAddress, isOptedIn) {
       const firstName = (buyerName || 'there').trim().split(/\s+/)[0];
       const cleanPhone = (buyerMobile || '').replace(/[^\d+]/g, '');
       const cleanProp = propAddress || 'the property';
-      const bodyText = `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and sent your details through to assess your borrowing power, grants, guarantors, and bridging options. Free for a quick 5-min chat?`;
+      const bodyText = isOptedIn
+        ? `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and shared your estimates to look at your exact borrowing power, grants, and guarantor options. Free for a quick 5-min chat?`
+        : `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today. Happy to run a quick obligation-free check on your borrowing power or grants if you're looking in the area!`;
 
       const ua = navigator.userAgent.toLowerCase();
       const isIOS = /iphone|ipad|ipod/.test(ua);
@@ -2553,7 +2688,7 @@ function extractLeadStatus(r) {
           if (error || !updatedRows || updatedRows.length === 0) {
             alert(
               'Status updated locally, but Supabase blocked saving it because Row Level Security (RLS) has no UPDATE policy yet.\n\n' +
-              'Run once in Supabase SQL Editor:\n' +
+              'To save statuses in the cloud, run once in Supabase SQL Editor:\n' +
               'CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);'
             );
           }
@@ -2580,14 +2715,21 @@ function extractLeadStatus(r) {
       }
       allRows.forEach(r => {
         if (r.property_id && !propMap.has(r.property_id)) {
-          propMap.set(r.property_id, { id: r.property_id, address: 'Property Listing', suburb: '', agent_name: '' });
+          propMap.set(r.property_id, {
+            id: r.property_id,
+            address: 'Property Listing',
+            suburb: '',
+            agent_name: ''
+          });
         }
       });
 
       const propertiesForCards = Array.from(propMap.values());
 
       if (!brokerSelectedPropertyId || !propMap.has(brokerSelectedPropertyId)) {
-        const propWithOptIn = propertiesForCards.find(p => allRows.some(r => r.property_id === p.id && r.broker_opt_in));
+        const propWithOptIn = propertiesForCards.find(p =>
+          allRows.some(r => r.property_id === p.id && r.broker_opt_in)
+        );
         brokerSelectedPropertyId = propWithOptIn
           ? propWithOptIn.id
           : (propMap.has(activeProperty.id) ? activeProperty.id : (propertiesForCards[0]?.id || null));
@@ -2665,42 +2807,29 @@ function extractLeadStatus(r) {
 
       const container = document.getElementById('broker-leads-list');
       if (displayedRows.length === 0) {
-        const withheldCount = propertyScans.length - optedInRows.length;
         return container.innerHTML = `
           <div class="bg-white p-10 rounded-3xl border border-slate-200/90 text-center space-y-2">
             <p class="text-sm font-bold text-slate-700">
               ${brokerOptInOnly ? 'No opted-in broker leads for this property yet.' : 'No buyer scans recorded for this property yet.'}
             </p>
             <p class="text-xs text-slate-500">
-              ${brokerOptInOnly && withheldCount > 0
-                ? `${withheldCount} open-home visitor${withheldCount === 1 ? '' : 's'} opted out of sending details to Alex Fyfe.`
+              ${brokerOptInOnly && propertyScans.length > 0
+                ? `There ${propertyScans.length === 1 ? 'is 1 redacted scan' : 'are ' + propertyScans.length + ' redacted scans'} — click "All Scans (This Home)" above to view contact & wish-list details.`
                 : 'Select another property card above or check back after the open home.'}
             </p>
           </div>`;
       }
 
       container.innerHTML = displayedRows.map(r => {
-        if (!r.broker_opt_in) {
-          return `
-            <div class="bg-slate-50/90 p-5 rounded-3xl border border-slate-200/90 flex flex-wrap items-center justify-between gap-3">
-              <div class="space-y-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-xs font-extrabold text-slate-600">🔒 Open-Home Visitor (Details Withheld)</span>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-200/80 text-slate-600">Opted Out of Broker Sharing</span>
-                </div>
-                <p class="text-xs text-slate-500">
-                  ${escapeHtml(r.buying_stage)} • Timeline: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)} • Match Score: <strong>${r.fit_percentage}%</strong>
-                </p>
-              </div>
-              <span class="text-[11px] font-semibold text-slate-400">Contact &amp; financials not shared</span>
-            </div>`;
-        }
-
         const lvrTag = cleanLvrLabel(r);
+        const isRedacted = !r.broker_opt_in && Number(r.income) === 0 && Number(r.est_max_loan) === 0;
         const isRed = lvrTag.startsWith('RED');
         const isOrange = lvrTag.startsWith('ORANGE');
-        const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
-        const estPrice = extractBuyerEstPrice(r);
+        const lvrPillClass = isRedacted
+          ? 'bg-slate-100 text-slate-500 border border-slate-200'
+          : isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+        const lvrDisplayLabel = isRedacted ? '🔒 Financials Redacted' : lvrTag;
+        const estPrice = isRedacted ? null : extractBuyerEstPrice(r);
         const status = extractLeadStatus(r);
 
         const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
@@ -2723,17 +2852,28 @@ function extractLeadStatus(r) {
 
         const firstName = escapeHtml((r.buyer_name || 'Buyer').trim().split(/\s+/)[0]);
 
+        const financialsBoxHtml = isRedacted
+          ? `<div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-xs text-slate-500 font-semibold flex items-center gap-2">
+               <span>🔒</span>
+               <span>Buyer opted not to share financial figures (redacted at submission — Contact &amp; Home Wish-List only).</span>
+             </div>`
+          : `<div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
+               <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
+               <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
+               <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
+             </div>`;
+
         return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-4">
             <div class="flex flex-wrap justify-between items-start gap-3">
               <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-2">
                   <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline">${escapeHtml(r.buyer_mobile)}</a></h3>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
-                    ★ Opted In
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-600'}">
+                    ${r.broker_opt_in ? '★ Shared Financials' : 'Contact Only'}
                   </span>
                   <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${lvrPillClass}">
-                    ${escapeHtml(lvrTag)}
+                    ${escapeHtml(lvrDisplayLabel)}
                   </span>
                 </div>
                 <p class="text-xs text-slate-500 font-medium">
@@ -2741,6 +2881,7 @@ function extractLeadStatus(r) {
                 </p>
               </div>
 
+              <!-- Lead Status Pills (New -> Called -> Booked) -->
               <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80 shrink-0">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1.5">Status:</span>
                 ${statusBtn('New')}
@@ -2749,11 +2890,7 @@ function extractLeadStatus(r) {
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
-              <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
-            </div>
+            ${financialsBoxHtml}
 
             <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
               <span class="text-[11px] text-slate-500 font-medium">
@@ -2763,7 +2900,7 @@ function extractLeadStatus(r) {
                 <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 px-3.5 py-2 rounded-xl transition">
                   📞 Call ${firstName}
                 </a>
-                <button type="button" onclick="sendBrokerLeadSms('${safeName}', '${safeMobile}', '${safePropAddr}')"
+                <button type="button" onclick="sendBrokerLeadSms('${safeName}', '${safeMobile}', '${safePropAddr}', ${Boolean(r.broker_opt_in)})"
                   class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-4 py-2 rounded-xl shadow-sm transition">
                   💬 Text ${firstName}
                 </button>
