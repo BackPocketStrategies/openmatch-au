@@ -18,36 +18,21 @@
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
 
-    /* Full-Bleed A4 PDF Print Styling (Zero White Border) */
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       html, body {
-        width: 210mm !important;
-        height: 297mm !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-        overflow: hidden !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        width: 210mm !important; height: 297mm !important;
+        margin: 0 !important; padding: 0 !important;
+        background: #ffffff !important; overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
       }
       body * { visibility: hidden; }
       #printable-strut-card, #printable-strut-card * { visibility: visible; }
       #printable-strut-card {
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        transform: none !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        margin: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        overflow: hidden !important;
+        position: fixed !important; left: 0 !important; top: 0 !important; transform: none !important;
+        width: 210mm !important; height: 297mm !important; margin: 0 !important;
+        display: flex !important; flex-direction: column !important; justify-content: space-between !important;
+        border-radius: 0 !important; box-shadow: none !important; border: none !important; overflow: hidden !important;
       }
       #printable-strut-card .print-header { padding: 34px 36px !important; }
       #printable-strut-card .print-title { font-size: 60px !important; line-height: 1.05 !important; }
@@ -58,17 +43,10 @@
       #printable-strut-card #card-suburb { font-size: 16px !important; }
       #printable-strut-card #card-specs-pill { font-size: 16px !important; padding: 9px 16px !important; }
       #printable-strut-card .print-body {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        padding: 36px 40px !important;
+        flex: 1 !important; display: flex !important; flex-direction: column !important;
+        justify-content: space-between !important; padding: 36px 40px !important;
       }
-      #printable-strut-card .print-scan-copy {
-        font-size: 19px !important;
-        max-width: 560px !important;
-        margin-bottom: 18px !important;
-      }
+      #printable-strut-card .print-scan-copy { font-size: 19px !important; max-width: 560px !important; margin-bottom: 18px !important; }
       #printable-strut-card .print-qr-box { padding: 24px !important; }
       #printable-strut-card #qrcode { width: 360px !important; height: 360px !important; }
       #printable-strut-card #qr-caption-address { font-size: 19px !important; max-width: 360px !important; }
@@ -79,8 +57,15 @@
 </head>
 <body class="bg-slate-100/80 text-slate-900 min-h-screen antialiased">
 
+  <!-- CLEAN INITIAL LOADER (PREVENTS ADMIN FLASH ON QR / AGENT LINKS) -->
+  <div id="app-loader" class="min-h-screen flex flex-col items-center justify-center px-4 text-center">
+    <div class="w-14 h-14 rounded-2xl bg-[#006875] text-white flex items-center justify-center font-fun font-extrabold text-2xl shadow-md mb-4 animate-pulse">PM</div>
+    <p class="font-clean-display font-extrabold text-lg text-slate-900">Property Match</p>
+    <p id="loader-subtitle" class="text-xs font-semibold text-slate-500 mt-1">Loading property details...</p>
+  </div>
+
   <!-- TOP ADMIN BAR -->
-  <header id="admin-nav" class="bg-[#0B1120] text-white sticky top-0 z-40 border-b border-slate-800/80">
+  <header id="admin-nav" class="hidden bg-[#0B1120] text-white sticky top-0 z-40 border-b border-slate-800/80">
     <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-[#006875] flex items-center justify-center text-white font-extrabold text-sm">PM</div>
@@ -99,9 +84,8 @@
   <main class="max-w-6xl mx-auto px-4 py-7">
 
     <!-- ==================== VIEW 1: PROPERTY IMPORTER & QR STUDIO ==================== -->
-    <section id="view-admin" class="space-y-6">
+    <section id="view-admin" class="hidden space-y-6">
 
-      <!-- Prominent Saved Properties Switcher Bar -->
       <div class="bg-white rounded-3xl shadow-sm border-2 border-[#006875]/30 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[260px]">
           <div class="flex items-center gap-2 shrink-0">
@@ -131,7 +115,6 @@
         </div>
       </div>
 
-      <!-- Smart Listing URL & Text Scraper -->
       <div class="bg-gradient-to-br from-[#004852] via-[#006875] to-[#0B1120] text-white rounded-3xl p-6 sm:p-7 shadow-lg">
         <div class="mb-4">
           <span class="text-[11px] font-bold uppercase tracking-widest text-teal-200">Instant Listing Importer</span>
@@ -162,10 +145,8 @@
         </div>
       </div>
 
-      <!-- Two-Column Workspace -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- Left Column: Property Details -->
         <div class="lg:col-span-7 bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-extrabold text-base text-slate-900">Property & QR Details</h2>
@@ -236,13 +217,10 @@
           </button>
         </div>
 
-        <!-- Right Column: Centered Property Match QR Card & A4 PDF Export -->
         <div class="lg:col-span-5 space-y-4">
 
-          <!-- Printable / A4 PDF QR Card -->
           <div id="printable-strut-card" class="bg-white rounded-[2rem] shadow-lg border-2 border-[#006875]/30 overflow-hidden text-center">
 
-            <!-- Centered Top Header -->
             <div class="print-header bg-[#006875] px-6 py-5 text-white text-center">
               <h1 class="print-title font-fun text-3xl sm:text-[36px] font-extrabold leading-none text-white tracking-tight">
                 Property Match
@@ -255,7 +233,6 @@
               </p>
             </div>
 
-            <!-- Elevated Architectural Property Address Band -->
             <div class="print-address-band bg-white px-5 py-3.5 border-b border-[#006875]/15 flex items-center justify-between gap-3 text-left">
               <div class="flex items-center gap-3 min-w-0">
                 <div class="w-9 h-9 rounded-xl bg-[#006875]/10 text-[#006875] flex items-center justify-center shrink-0">
@@ -274,13 +251,11 @@
               </span>
             </div>
 
-            <!-- Card Body: Centered Larger QR Code -->
             <div class="print-body p-6 pb-5 bg-gradient-to-br from-white via-[#F5FAFB] to-[#E6F4F6] text-center">
               <p class="print-scan-copy text-xs text-slate-600 font-semibold max-w-[300px] mx-auto mb-4 leading-relaxed">
                 Scan in 30 seconds to check your borrowing power & see how well this home fits your wish list.
               </p>
 
-              <!-- Centered Large QR Code Box -->
               <div class="print-qr-box inline-block mx-auto bg-white p-3.5 rounded-3xl border-2 border-[#006875] shadow-md">
                 <div id="qrcode" class="bg-white w-[235px] sm:w-[250px] h-[235px] sm:h-[250px] mx-auto"></div>
                 <div class="mt-2.5 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px] mx-auto">
@@ -289,7 +264,7 @@
                 </div>
               </div>
 
-              <!-- Privacy Strip -->
+              <!-- Subtle Branding #3: A4 QR Flyer Bottom Strip -->
               <div class="mt-5 pt-3 border-t border-[#006875]/15 flex items-center justify-center gap-2 text-left">
                 <span class="shrink-0 w-5 h-5 rounded-full bg-[#006875]/10 text-[#006875] flex items-center justify-center">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
@@ -297,13 +272,12 @@
                   </svg>
                 </span>
                 <p class="print-privacy-text text-[10.5px] font-semibold text-[#006875] leading-snug">
-                  Independent Mortgage Choice tool — your financial figures stay private and are never shown to the selling agent.
+                  Independent Mortgage Choice tool by Alex Fyfe — your financial figures stay private and are never shown to the selling agent.
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- A4 PDF Export & Share Links -->
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
             <button onclick="printQrFlyer()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
               Save A4 PDF / Print Full-Page QR Flyer
@@ -346,11 +320,12 @@
       <div class="bg-white rounded-[2rem] shadow-xl border border-slate-200/90 overflow-hidden">
         <div class="bg-gradient-to-br from-[#004852] to-[#0B1120] text-white p-6">
           <div class="flex justify-between items-center text-[11px] text-teal-300 font-bold tracking-wider uppercase mb-1.5">
-            <span>30-Sec Property Match</span>
+            <!-- Subtle Branding #1: Top Quiz Header -->
+            <span>30-Sec Property Match <span class="text-teal-100/80 font-semibold normal-case tracking-normal">• By Alex Fyfe</span></span>
             <span id="quiz-step-label" class="bg-white/10 text-white px-2.5 py-0.5 rounded-full">Step 1 of 5</span>
           </div>
-          <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">42 Kensington Road, Norwood SA 5067</h2>
-          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
+          <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">Loading property...</h2>
+          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Checking listing guide...</p>
           <div class="w-full bg-slate-700/70 h-1.5 rounded-full mt-4 overflow-hidden">
             <div id="quiz-progress" class="bg-teal-400 h-full transition-all duration-300 rounded-full" style="width: 20%"></div>
           </div>
@@ -390,7 +365,7 @@
             <button onclick="goQuizStep(2)" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm mt-2">Continue →</button>
           </div>
 
-          <!-- STEP 2: PROPERTY MUST-HAVES (6 Requirements) -->
+          <!-- STEP 2: PROPERTY MUST-HAVES -->
           <div id="q-step-2" class="quiz-step hidden space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-1">Your property must-haves?</h3>
@@ -445,15 +420,14 @@
               <p class="text-xs text-slate-500 mt-0.5">Rough estimates only — no exact numbers needed.</p>
             </div>
 
-            <!-- Noticeable Privacy Assurance Banner -->
+            <!-- Subtle Branding #2: Step 3 Privacy Lock Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
-                100% Private: No financial figures or property price estimations get sent through to the selling agent or broker.
+                100% Agent-Private — Protected by Alex Fyfe, Mortgage Choice. Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
               </p>
             </div>
 
-            <!-- Estimated Purchase Price Slider -->
             <div class="bg-[#F2F9FA] p-4 rounded-2xl border border-[#006875]/25">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-extrabold text-[#006875] uppercase tracking-wider">Est. Purchase Price (Best Guess)</label>
@@ -465,7 +439,6 @@
               </p>
             </div>
 
-            <!-- Cash Deposit Slider -->
             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Cash Deposit (Best Guess)</label>
@@ -475,7 +448,6 @@
               <p class="text-[10.5px] text-slate-500 mt-1">Cash savings used — lowers both your loan size and LVR.</p>
             </div>
 
-            <!-- Usable Equity Slider -->
             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Usable Home Equity (Best Guess)</label>
@@ -498,15 +470,14 @@
               <p class="text-xs text-slate-500 mt-0.5">Only include debts & card limits you plan to <strong>keep open</strong> during the application.</p>
             </div>
 
-            <!-- Noticeable Privacy Assurance Banner -->
+            <!-- Subtle Branding #2: Step 4 Privacy Lock Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
-                100% Private: No financial figures or property price estimations get sent through to the selling agent or broker.
+                100% Agent-Private — Protected by Alex Fyfe, Mortgage Choice. Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
               </p>
             </div>
 
-            <!-- Combined Gross Income -->
             <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Combined Gross Income (Best Guess)</label>
@@ -515,7 +486,6 @@
               <input id="slider-income" type="range" min="60000" max="600000" step="10000" value="180000" oninput="updateSliders()" class="w-full" />
             </div>
 
-            <!-- Monthly Loan Repayments Keeping Open -->
             <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Monthly Loan Repayments (Keeping Open)</label>
@@ -525,7 +495,6 @@
               <p class="text-[10.5px] text-slate-500 mt-1">Car, personal, or HECS repayments not being paid out before settlement.</p>
             </div>
 
-            <!-- Total Credit Card Limits Keeping Open -->
             <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
               <div class="flex justify-between items-baseline mb-1">
                 <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Total Credit Card Limits (Keeping Open)</label>
@@ -535,7 +504,6 @@
               <p class="text-[10.5px] text-slate-500 mt-1">Exclude cards you intend to close or reduce before applying.</p>
             </div>
 
-            <!-- Dependants -->
             <div class="flex items-center justify-between bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200/80">
               <label class="text-xs font-bold text-slate-700">Dependants</label>
               <select id="input-dependants" class="p-2 text-sm font-bold border border-slate-300 rounded-xl bg-white text-slate-800">
@@ -552,7 +520,7 @@
             </div>
           </div>
 
-          <!-- STEP 5: REQUIRED CONTACT DETAILS GATE BEFORE SHOWING RESULTS -->
+          <!-- STEP 5: REQUIRED CONTACT DETAILS & SYNCED OPT-IN -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="text-center space-y-1.5 pt-1">
               <span class="inline-block text-[11px] font-extrabold uppercase tracking-widest text-[#006875] bg-[#F2F9FA] px-3 py-1 rounded-full border border-[#006875]/20">
@@ -580,11 +548,18 @@
               </p>
             </div>
 
-            <div class="flex items-start gap-2.5 bg-teal-50/80 border border-[#006875]/25 p-3 rounded-2xl">
-              <span class="shrink-0 w-5 h-5 rounded-full bg-[#006875] text-white flex items-center justify-center text-[11px] font-bold mt-0.5">🔒</span>
-              <p class="text-[11px] font-semibold text-[#004852] leading-snug">
-                Your income, deposit, and price estimates stay 100% private and are never shown to the selling agent.
-              </p>
+            <!-- Auto-Ticked Opt-In (Synced with Results Screen) -->
+            <div class="bg-amber-50/90 p-3.5 rounded-2xl border-2 border-amber-300 space-y-2 shadow-sm">
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input id="buyer-opt-in-step5" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked, false)"
+                  class="mt-0.5 w-4 h-4 rounded accent-[#006875] shrink-0" />
+                <span class="text-xs text-slate-900 leading-snug">
+                  <strong>Send your details through to Alex Fyfe, Mortgage Broking Specialist</strong>, to assess your finances and check eligibility with government grants, guarantors, bridging loans, etc.
+                  <span class="block text-[11px] text-slate-700 font-normal mt-1">
+                    Agreeing to this will automatically send through your details for Alex to assess (never shared with the selling agent).
+                  </span>
+                </span>
+              </label>
             </div>
 
             <div class="flex gap-2.5 pt-1">
@@ -605,7 +580,6 @@
             </div>
 
             <div class="space-y-3">
-              <!-- Property Match Hero Card (Green + Huge Pink Heart & "Perfect Match" ONLY when >90%) -->
               <div id="res-match-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-5 rounded-3xl text-center flex flex-col items-center">
                 <p id="res-match-heading" class="text-xs font-extrabold uppercase tracking-widest text-[#006875]">Property Match</p>
                 <p id="res-perfect-label" class="hidden font-fun text-3xl sm:text-4xl font-extrabold text-pink-600 leading-tight mt-1">Perfect Match</p>
@@ -619,7 +593,6 @@
                 <p id="res-fit-breakdown" class="text-xs font-semibold text-slate-600 mt-0.5 leading-snug">Wish list • Budget • Space</p>
               </div>
 
-              <!-- Max Borrowing Box (Light Blue/Teal Matching Property Match) -->
               <div id="res-borrow-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl flex flex-col justify-between">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                   <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Est. Max Borrow</p>
@@ -629,10 +602,30 @@
               </div>
             </div>
 
-            <!-- Limiting Factor Insight Callout -->
             <div id="res-limiting-box" class="bg-slate-900 text-white p-3.5 rounded-2xl text-left space-y-1">
               <p id="res-limiting-title" class="text-xs font-extrabold text-teal-300">What's Limiting Your Purchasing Power?</p>
               <p id="res-limiting-desc" class="text-[11.5px] text-slate-200 leading-relaxed"></p>
+            </div>
+
+            <!-- Auto-Ticked Broker Opt-In Box Directly Above "Text Summary to My Phone" -->
+            <div class="space-y-2">
+              <label class="flex items-start gap-3 p-3.5 rounded-2xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer shadow-sm">
+                <input id="buyer-opt-in" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked, true)" class="mt-0.5 w-4 h-4 rounded accent-[#006875] shrink-0" />
+                <span class="text-xs text-slate-900 leading-snug">
+                  <strong>Send your details through to Alex Fyfe, Mortgage Broking Specialist</strong>, to assess your finances and check eligibility with government grants, guarantors, bridging loans, etc.
+                  <span class="block text-[11px] text-slate-700 font-normal mt-1">
+                    Agreeing to this will automatically send through your details for Alex to assess (never shared with the selling agent).
+                  </span>
+                </span>
+              </label>
+
+              <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
+                ✓ Sent to Alex Fyfe! Alex will assess your finances &amp; check eligibility for government grants, guarantors &amp; bridging loans.
+              </div>
+
+              <div id="broker-optin-withheld" class="hidden text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl">
+                🔒 Withheld: Neither your contact details nor your financial figures were sent to Alex Fyfe. Tick the box above anytime to send them through.
+              </div>
             </div>
 
             <!-- Free Zero-Cost Save & Send to Buyer Box -->
@@ -660,23 +653,7 @@
               <strong>Indicative Best-Guess Estimate Only:</strong> Includes ~4% purchase costs (stamp duty, transfer, registration & conveyancing) and a 3.0% APRA serviceability buffer. Not a formal credit assessment.
             </p>
 
-            <!-- Broker Opt-In Toggle (Change #1: Auto-Ticked; Unticking Withholds Both Contact & Financials) -->
             <div class="border-t border-slate-100 pt-3 space-y-2.5">
-              <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer">
-                <input id="buyer-opt-in" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked)" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
-                <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Check your exact borrowing power, eligible government grants and guarantor options</strong> — Contact Alex Fyfe from Mortgage Choice, your mortgage broking specialist.
-                </span>
-              </label>
-
-              <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
-                ✓ Sent to Alex Fyfe! Alex will review your borrowing options and reach out shortly.
-              </div>
-
-              <div id="broker-optin-withheld" class="hidden text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl">
-                🔒 Withheld: Neither your contact details nor your financial figures were sent to Alex Fyfe. Tick the box above anytime to send them through.
-              </div>
-
               <p class="text-[10px] text-slate-400 leading-normal">
                 Independent Mortgage Choice tool: Your income, deposit, and borrowing figures stay private and are never shown to the selling agent. Alex Fyfe — Mortgage Broking Specialist & Owner Manager, Mortgage Choice.
               </p>
@@ -706,7 +683,7 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 3: AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST) ==================== -->
+    <!-- ==================== VIEW 3: AGENT DASHBOARD ==================== -->
     <section id="view-agent" class="hidden space-y-5">
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 space-y-5">
         <div class="flex flex-wrap justify-between items-start gap-4">
@@ -715,10 +692,9 @@
               <span id="agent-view-badge" class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Open Home Buyer Call List</span>
               <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">🔒 Individual buyer finances & price estimates kept private</span>
             </div>
-            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">42 Kensington Road, Norwood SA 5067</h1>
-            <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
+            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">Loading property...</h1>
+            <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Checking listing guide...</p>
 
-            <!-- Property Switcher (Shows ALL for Admin, ONLY That Agent's Listings on Agent Master Link, Hidden on Single-Property Link) -->
             <div id="agent-prop-switcher-wrap" class="pt-2 flex flex-wrap items-center gap-2">
               <label id="agent-prop-select-label" for="agent-prop-select" class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Switch Property:</label>
               <select id="agent-prop-select" onchange="onSelectSavedProperty(this.value)"
@@ -738,7 +714,6 @@
           </div>
         </div>
 
-        <!-- 4-Card Executive Summary Bar -->
         <div id="agent-kpi-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           <div class="bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl">
             <p class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Scanned Buyers</p>
@@ -763,7 +738,6 @@
         </div>
       </div>
 
-      <!-- 1-Click Undo Clear Banner -->
       <div id="agent-undo-bar" class="hidden bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 border border-slate-700">
         <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
           <span class="w-6 h-6 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-extrabold">↺</span>
@@ -773,20 +747,16 @@
           <button id="btn-undo-clear" onclick="undoAgentClear()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl transition">
             Undo Restore
           </button>
-          <button onclick="dismissUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">
-            ✕
-          </button>
+          <button onclick="dismissUndoBar()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1.5" title="Dismiss">✕</button>
         </div>
       </div>
 
-      <!-- Traffic-Light Buyer Call List -->
       <div id="agent-leaderboard-list" class="space-y-3.5"></div>
     </section>
 
-    <!-- ==================== VIEW 4: BROKER LEADS (PROPERTY-FIRST PIPELINE) ==================== -->
+    <!-- ==================== VIEW 4: BROKER LEADS ==================== -->
     <section id="view-leads" class="hidden space-y-5">
 
-      <!-- Property Selector Cards Grid -->
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-3.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -801,7 +771,6 @@
         <div id="broker-property-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
       </div>
 
-      <!-- Selected Property Broker Snapshot & Filter Bar -->
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-4">
         <div class="flex flex-wrap justify-between items-start gap-3">
           <div>
@@ -814,7 +783,6 @@
           </div>
         </div>
 
-        <!-- 3-Card Property-Level Broker Snapshot -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div class="bg-amber-50/80 border border-amber-200 p-3.5 rounded-2xl">
             <p class="text-[10.5px] font-bold uppercase tracking-wider text-amber-800">Opted-In Leads</p>
@@ -834,7 +802,6 @@
         </div>
       </div>
 
-      <!-- Property-Filtered Lead Cards -->
       <div id="broker-leads-list" class="space-y-4"></div>
     </section>
 
@@ -868,7 +835,7 @@
     let undoBackup = JSON.parse(localStorage.getItem('openmatch_undo_backup') || 'null');
     let brokerOptInOnly = true;
     let brokerSelectedPropertyId = null;
-    let lockedAgentName = null; // Set when opened via Agent Master Link (?view=agent&agent=...)
+    let lockedAgentName = null;
 
     let quizState = {
       saved_db_id: null,
@@ -968,7 +935,6 @@
           : 'No saved properties yet — enter details below & click Save';
       }
 
-      // Admin dropdown (all saved properties)
       let adminOptionsHtml = '';
       if (merged.length === 0) {
         adminOptionsHtml = `<option value="">No saved properties yet — save a listing below</option>`;
@@ -978,7 +944,8 @@
         }
         adminOptionsHtml += merged.map(p => {
           const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`;
-          const agentTag = p.agent_name ? ` • Agent: ${p.agent_name}` : ''; const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
+          const agentTag = p.agent_name ? ` • Agent: ${p.agent_name}` : '';
+          const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
           const selected = p.id === activeProperty.id ? 'selected' : '';
           return `<option value="${escapeHtml(p.id)}" ${selected}>${escapeHtml(title + priceTag + agentTag)}</option>`;
         }).join('');
@@ -990,7 +957,6 @@
         if (seen.has(activeProperty.id)) adminSelectEl.value = activeProperty.id;
       }
 
-      // Agent dropdown: strictly filtered to lockedAgentName if in Agent Master Link mode
       const agentVisibleProps = lockedAgentName
         ? merged.filter(p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.trim().toLowerCase())
         : merged;
@@ -1002,55 +968,180 @@
           agentLabelEl.textContent = `${lockedAgentName}'s Open Homes (${agentVisibleProps.length}):`;
         }
         if (agentVisibleProps.length === 0) {
-          agentSelectEl.innerHTML = `<option value="${escapeHtml(activeProperty.id)}">${escapeHtml(activeProperty.address \vert{}\vert{} 'Active Listing')}</option>`; } else { agentSelectEl.innerHTML = agentVisibleProps.map(p => { const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`; const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
+          agentSelectEl.innerHTML = `<option value="${escapeHtml(activeProperty.id)}">${escapeHtml(activeProperty.address || 'Active Listing')}</option>`;
+        } else {
+          agentSelectEl.innerHTML = agentVisibleProps.map(p => {
+            const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`;
+            const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
             const selected = p.id === activeProperty.id ? 'selected' : '';
-            return `<option value="${escapeHtml(p.id)}" ${selected}>${escapeHtml(title + priceTag)}</option>`; }).join(''); if (agentVisibleProps.some(p => p.id === activeProperty.id)) { agentSelectEl.value = activeProperty.id; } } } }  async function refreshSavedProperties() { if (hasSupabase) { let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(80); if (error) { const retry = await sb.from('properties').select('*').limit(80); data = retry.data; } if (Array.isArray(data) && data.length > 0) { const normalized = data.map(normalizePropertyRow); const dbIds = new Set(normalized.map(p => p.id)); localProperties = [...normalized, ...localProperties.filter(p => !dbIds.has(p.id))].slice(0, 80); localStorage.setItem('openmatch_properties', JSON.stringify(localProperties)); } } renderSavedPropertyDropdowns(); }  async function onSelectSavedProperty(propId) { if (!propId) return; if (lockedAgentName) { const target = savedPropertiesList.find(p => p.id === propId); if (!target \vert{}\vert{} (target.agent_name \vert{}\vert{} '').trim().toLowerCase() !== lockedAgentName.trim().toLowerCase()) { return; } } await loadPropertyById(propId); const agentView = document.getElementById('view-agent'); if (agentView && !agentView.classList.contains('hidden')) { renderAgentDashboard(); } }  function startNewListing() { activeProperty = { id: 'new-' + Date.now(), address: '', suburb: '', price_min: 800000, price_max: 860000, bedrooms: 3, bathrooms: 2, is_modern: false, has_garage: false, has_outdoor: false, has_office: false, agent_name: '' }; populateFormFromActiveProperty(); syncUIWithProperty(); renderSavedPropertyDropdowns(); const addrInput = document.getElementById('prop-address'); if (addrInput) addrInput.focus(); }  function printQrFlyer() { const originalTitle = document.title; const slug = (activeProperty.address \vert{}\vert{} 'Flyer').trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-\vert{}-$/g, ''); document.title = `Property-Match-${slug}`;
+            return `<option value="${escapeHtml(p.id)}" ${selected}>${escapeHtml(title + priceTag)}</option>`;
+          }).join('');
+          if (agentVisibleProps.some(p => p.id === activeProperty.id)) {
+            agentSelectEl.value = activeProperty.id;
+          }
+        }
+      }
+    }
+
+    async function refreshSavedProperties() {
+      if (hasSupabase) {
+        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(80);
+        if (error) {
+          const retry = await sb.from('properties').select('*').limit(80);
+          data = retry.data;
+        }
+        if (Array.isArray(data) && data.length > 0) {
+          const normalized = data.map(normalizePropertyRow);
+          const dbIds = new Set(normalized.map(p => p.id));
+          localProperties = [...normalized, ...localProperties.filter(p => !dbIds.has(p.id))].slice(0, 80);
+          localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+        }
+      }
+      renderSavedPropertyDropdowns();
+    }
+
+    async function onSelectSavedProperty(propId) {
+      if (!propId) return;
+      if (lockedAgentName) {
+        const target = savedPropertiesList.find(p => p.id === propId);
+        if (!target || (target.agent_name || '').trim().toLowerCase() !== lockedAgentName.trim().toLowerCase()) {
+          return;
+        }
+      }
+      await loadPropertyById(propId);
+      const agentView = document.getElementById('view-agent');
+      if (agentView && !agentView.classList.contains('hidden')) {
+        renderAgentDashboard();
+      }
+    }
+
+    function startNewListing() {
+      activeProperty = {
+        id: 'new-' + Date.now(),
+        address: '',
+        suburb: '',
+        price_min: 800000,
+        price_max: 860000,
+        bedrooms: 3,
+        bathrooms: 2,
+        is_modern: false,
+        has_garage: false,
+        has_outdoor: false,
+        has_office: false,
+        agent_name: ''
+      };
+      populateFormFromActiveProperty();
+      syncUIWithProperty();
+      renderSavedPropertyDropdowns();
+      const addrInput = document.getElementById('prop-address');
+      if (addrInput) addrInput.focus();
+    }
+
+    function printQrFlyer() {
+      const originalTitle = document.title;
+      const slug = (activeProperty.address || 'Flyer').trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+      document.title = `Property-Match-${slug}`;
       window.print();
       setTimeout(() => { document.title = originalTitle; }, 1000);
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
-      const statusEl = document.getElementById('db-status');
-      statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Offline Mode';
-      statusEl.className = hasSupabase
-        ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30'
-        : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
+      const loaderEl = document.getElementById('app-loader');
+      const loaderSubEl = document.getElementById('loader-subtitle');
 
-      const params = new URLSearchParams(window.location.search);
-      const viewParam = params.get('view');
-      const propParam = params.get('prop');
-      const addrParam = params.get('addr');
-      const agentParam = params.get('agent');
+      try {
+        const statusEl = document.getElementById('db-status');
+        statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Offline Mode';
+        statusEl.className = hasSupabase
+          ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30'
+          : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
 
-      if (viewParam === 'agent' && agentParam && agentParam.trim()) {
-        lockedAgentName = agentParam.trim();
-      }
+        const params = new URLSearchParams(window.location.search);
+        const viewParam = params.get('view');
+        const propParam = params.get('prop');
+        const addrParam = params.get('addr');
+        const agentParam = params.get('agent');
 
-      await refreshSavedProperties();
+        if (viewParam === 'scan' && loaderSubEl) {
+          loaderSubEl.textContent = 'Loading 30-sec home fit check...';
+        } else if (viewParam === 'agent' && loaderSubEl) {
+          loaderSubEl.textContent = 'Loading open home buyer call list...';
+        }
 
-      if (lockedAgentName) {
-        const agentProps = savedPropertiesList.filter(
-          p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.toLowerCase()
-        );
-        const preferredProp = propParam ? agentProps.find(p => p.id === propParam) : null;
-        const initialProp = preferredProp || agentProps[0] || null;
+        if (addrParam) {
+          applyFallbackAddress(addrParam);
+          const preTitle = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
+          const quizTitleEl = document.getElementById('quiz-prop-title');
+          const agentTitleEl = document.getElementById('agent-prop-title');
+          if (quizTitleEl) quizTitleEl.textContent = preTitle;
+          if (agentTitleEl) agentTitleEl.textContent = preTitle;
+        }
 
-        if (initialProp) {
-          activeProperty = normalizePropertyRow(initialProp);
+        if (viewParam === 'agent' && agentParam && agentParam.trim()) {
+          lockedAgentName = agentParam.trim();
+        }
+
+        await refreshSavedProperties();
+
+        if (lockedAgentName) {
+          const agentProps = savedPropertiesList.filter(
+            p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.toLowerCase()
+          );
+          const preferredProp = propParam ? agentProps.find(p => p.id === propParam) : null;
+          const initialProp = preferredProp || agentProps[0] || null;
+
+          if (initialProp) {
+            activeProperty = normalizePropertyRow(initialProp);
+            populateFormFromActiveProperty();
+            syncUIWithProperty();
+            renderSavedPropertyDropdowns();
+          } else {
+            activeProperty = {
+              ...DEFAULT_PROPERTY,
+              id: 'unassigned-' + Date.now(),
+              address: `No active listings found for ${lockedAgentName}`,
+              suburb: '',
+              agent_name: lockedAgentName
+            };
+            populateFormFromActiveProperty();
+            syncUIWithProperty();
+            renderSavedPropertyDropdowns();
+          }
+        } else if (propParam) {
+          await loadPropertyById(propParam, addrParam);
+        } else if (addrParam) {
+          applyFallbackAddress(addrParam);
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+        } else if (localProperties.length > 0) {
+          activeProperty = normalizePropertyRow(localProperties[0]);
           populateFormFromActiveProperty();
           syncUIWithProperty();
           renderSavedPropertyDropdowns();
         } else {
-          activeProperty = {
-            ...DEFAULT_PROPERTY,
-            id: 'unassigned-' + Date.now(),
-            address: `No active listings found for ${lockedAgentName}`, suburb: '', agent_name: lockedAgentName }; populateFormFromActiveProperty(); syncUIWithProperty(); renderSavedPropertyDropdowns(); } } else if (propParam) { await loadPropertyById(propParam, addrParam); } else if (addrParam) { applyFallbackAddress(addrParam); populateFormFromActiveProperty(); syncUIWithProperty(); } else if (localProperties.length > 0) { activeProperty = normalizePropertyRow(localProperties[0]); populateFormFromActiveProperty(); syncUIWithProperty(); renderSavedPropertyDropdowns(); } else { populateFormFromActiveProperty(); syncUIWithProperty(); renderSavedPropertyDropdowns(); }  if (viewParam === 'scan') { document.getElementById('admin-nav').classList.add('hidden'); switchTab('scan'); } else if (viewParam === 'agent') { document.getElementById('admin-nav').classList.add('hidden'); const switcherWrap = document.getElementById('agent-prop-switcher-wrap'); const badgeEl = document.getElementById('agent-view-badge'); if (lockedAgentName) { if (switcherWrap) switcherWrap.classList.remove('hidden'); if (badgeEl) badgeEl.textContent = `${lockedAgentName} • Open Home Call Lists`;
-        } else {
-          if (switcherWrap) switcherWrap.classList.add('hidden');
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+          renderSavedPropertyDropdowns();
         }
-        switchTab('agent');
-      } else {
-        switchTab('admin');
+
+        if (viewParam === 'scan') {
+          switchTab('scan');
+        } else if (viewParam === 'agent') {
+          const switcherWrap = document.getElementById('agent-prop-switcher-wrap');
+          const badgeEl = document.getElementById('agent-view-badge');
+          if (lockedAgentName) {
+            if (switcherWrap) switcherWrap.classList.remove('hidden');
+            if (badgeEl) badgeEl.textContent = `${lockedAgentName} • Open Home Call Lists`;
+          } else {
+            if (switcherWrap) switcherWrap.classList.add('hidden');
+          }
+          switchTab('agent');
+        } else {
+          document.getElementById('admin-nav').classList.remove('hidden');
+          switchTab('admin');
+        }
+      } finally {
+        if (loaderEl) loaderEl.classList.add('hidden');
       }
     });
 
@@ -1085,7 +1176,7 @@
         if (slugMatch) {
           let street = slugMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/^(\d+[A-Z]?)\s+(\d+[A-Z]?\s+)/, '$1/$2');
           const suburb = slugMatch[2].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          return { street, suburbLine: `${suburb} ${slugMatch[3].toUpperCase()}${slugMatch[4]}` };
+          return { street, suburbLine: `${suburb} ${slugMatch[3].toUpperCase()} ${slugMatch[4]}` };
         }
         const simpleSlug = path.match(/((?:\d+[a-z]?-)??\d+[a-z]?-[a-z0-9-]+?-(?:street|st|road|rd|avenue|ave|parade|pde|drive|dr|crescent|cres|court|ct|place|pl|terrace|tce|lane|ln|way|circuit|cct|boulevard|blvd|grove|gr|close|cl|esplanade|esp))-([a-z-]{3,25})(?:\/|$)/);
         if (simpleSlug) {
@@ -1099,7 +1190,27 @@
     function extractAddressFromText(txt) {
       const fullRegex = /\b((?:\d+[a-zA-Z]?\/)?\d+[a-zA-Z]?(?:-\d+[a-zA-Z]?)?\s+[A-Z][a-zA-Z0-9\s'-]{1,30}?\s+(?:Street|St|Road|Rd|Avenue|Ave|Parade|Pde|Drive|Dr|Crescent|Cres|Cr|Court|Ct|Place|Pl|Terrace|Tce|Lane|Ln|Way|Circuit|Cct|Boulevard|Blvd|Grove|Gr|Close|Cl|Esplanade|Esp|Highway|Hwy))[\s,]+([A-Z][a-zA-Z\s'-]{2,25})[\s,]+(SA|NSW|VIC|QLD|WA|TAS|ACT|NT)\s+(\d{4})\b/i;
       const m = txt.match(fullRegex);
-      if (m) return { street: m[1].trim(), suburbLine: `${m[2].trim()}${m[3].toUpperCase()} ${m[4]}` }; return null; }  async function scrapeFromUrl() { const urlInput = document.getElementById('scrape-url-input').value.trim(); if (!urlInput) return alert('Paste a property listing URL first.');  const btn = document.getElementById('btn-scrape-url'); btn.disabled = true; btn.textContent = 'Importing...';  const slugData = extractAddressFromUrlSlug(urlInput); if (slugData) { if (slugData.street) document.getElementById('prop-address').value = slugData.street; if (slugData.suburbLine) document.getElementById('prop-suburb').value = slugData.suburbLine; }  let fetchedSuccess = false; try { const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(urlInput)}`);
+      if (m) return { street: m[1].trim(), suburbLine: `${m[2].trim()} ${m[3].toUpperCase()} ${m[4]}` };
+      return null;
+    }
+
+    async function scrapeFromUrl() {
+      const urlInput = document.getElementById('scrape-url-input').value.trim();
+      if (!urlInput) return alert('Paste a property listing URL first.');
+
+      const btn = document.getElementById('btn-scrape-url');
+      btn.disabled = true;
+      btn.textContent = 'Importing...';
+
+      const slugData = extractAddressFromUrlSlug(urlInput);
+      if (slugData) {
+        if (slugData.street) document.getElementById('prop-address').value = slugData.street;
+        if (slugData.suburbLine) document.getElementById('prop-suburb').value = slugData.suburbLine;
+      }
+
+      let fetchedSuccess = false;
+      try {
+        const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(urlInput)}`);
         if (resp.ok) {
           const json = await resp.json();
           const html = json.contents || '';
@@ -1126,28 +1237,524 @@
 
             const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || doc.title || '';
             const ogDesc = doc.querySelector('meta[property="og:description"]')?.content || '';
-            const combinedText = `${ogTitle}\n${ogDesc}\n${(doc.body?.innerText \vert{}\vert{} '').slice(0, 8000)}`; if (!fetchedSuccess) { const addrFromMeta = extractAddressFromText(ogTitle) \vert{}\vert{} extractAddressFromText(combinedText); if (addrFromMeta) { if (addrFromMeta.street) document.getElementById('prop-address').value = addrFromMeta.street; if (addrFromMeta.suburbLine) document.getElementById('prop-suburb').value = addrFromMeta.suburbLine; fetchedSuccess = true; } } applyTextParsingRules(combinedText); if (ogTitle \vert{}\vert{} ogDesc) fetchedSuccess = true; } } } catch (err) {}  btn.disabled = false; btn.textContent = 'Auto-Fill From URL'; syncUIWithProperty();  if (fetchedSuccess) { showScrapeFeedback('✓ Imported property address, details & updated A4 QR flyer!'); await saveProperty(true); } else if (slugData && (slugData.street \vert{}\vert{} slugData.suburbLine)) { document.getElementById('paste-fallback-box').classList.remove('hidden'); showScrapeFeedback('Address extracted onto QR flyer! Because this portal blocks automated scrapers, paste the listing text below to auto-fill price & features.', true); } else { document.getElementById('paste-fallback-box').classList.remove('hidden'); showScrapeFeedback('Portal blocked direct fetch. Copy the listing page (Ctrl+A then Ctrl+C) and paste below to auto-fill.', true); } }  function applyTextParsingRules(txt) { if (!txt \vert{}\vert{} !txt.trim()) return; const addrMatch = extractAddressFromText(txt); if (addrMatch) { if (addrMatch.street) document.getElementById('prop-address').value = addrMatch.street; if (addrMatch.suburbLine) document.getElementById('prop-suburb').value = addrMatch.suburbLine; } const fullPrices = [...txt.matchAll(/\$\s?(\d{3})[,\s](\d{3})/g)].map(m => parseInt(m[1] + m[2], 10)); const kPrices = [...txt.matchAll(/\$\s?(\d{3,4})\s?k\b/gi)].map(m => parseInt(m[1], 10) * 1000); const allPrices = [...fullPrices, ...kPrices].filter(p => p >= 250000 && p <= 15000000); if (allPrices.length >= 1) { document.getElementById('prop-min').value = Math.min(...allPrices); document.getElementById('prop-max').value = Math.max(...allPrices); } const bedMatch = txt.match(/(\d)\s*(?:bed\vert{}bedroom\vert{}br\b)/i); if (bedMatch) document.getElementById('prop-beds').value = bedMatch[1]; const bathMatch = txt.match(/(\d)\s*(?:bath\vert{}bathroom\vert{}ba\b)/i); if (bathMatch) document.getElementById('prop-baths').value = bathMatch[1];  document.getElementById('tag-modern').checked = /modern\vert{}updated\vert{}renovated\vert{}contemporary\vert{}new kitchen\vert{}stylish\vert{}immaculate\vert{}nothing to spend/i.test(txt); document.getElementById('tag-garage').checked = /garage\vert{}carport\vert{}lock-up\vert{}parking\vert{}car space\vert{}off-street/i.test(txt); document.getElementById('tag-outdoor').checked = /yard\vert{}garden\vert{}alfresco\vert{}entertaining\vert{}pergola\vert{}deck\vert{}courtyard\vert{}patio\vert{}outdoor/i.test(txt); document.getElementById('tag-office').checked = /home office\vert{}study\vert{}second living\vert{}2nd living\vert{}rumpus\vert{}retreat\vert{}family room\vert{}theatre\vert{}media room/i.test(txt); }  async function parseListingText(autoSave = false) { const txt = document.getElementById('raw-listing-text').value; if (!txt.trim()) return; applyTextParsingRules(txt); syncUIWithProperty(); showScrapeFeedback('✓ Extracted address, beds/baths, price guide & features onto the QR flyer!'); if (autoSave) await saveProperty(true); }  function cachePropertyLocally(prop) { const normalized = normalizePropertyRow(prop); localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 80); localStorage.setItem('openmatch_properties', JSON.stringify(localProperties)); renderSavedPropertyDropdowns(); }  async function saveProperty(silent = false) { const isModern = document.getElementById('tag-modern').checked; const hasGarage = document.getElementById('tag-garage').checked; const hasOutdoor = document.getElementById('tag-outdoor').checked; const hasOffice = document.getElementById('tag-office').checked; const beds = Number(document.getElementById('prop-beds').value) \vert{}\vert{} 3; const baths = Number(document.getElementById('prop-baths').value) \vert{}\vert{} 2;  const dbPayload = { address: document.getElementById('prop-address').value.trim() \vert{}\vert{} '42 Kensington Road', suburb: document.getElementById('prop-suburb').value.trim(), price_min: Number(document.getElementById('prop-min').value) \vert{}\vert{} 850000, price_max: Number(document.getElementById('prop-max').value) \vert{}\vert{} 910000, bedrooms: beds, bathrooms: baths, agent_name: document.getElementById('prop-agent').value.trim(), move_in_ready: isModern, has_wfh: hasGarage, has_yard: hasOutdoor, has_office: hasOffice };  const btn = document.getElementById('btn-save-prop'); btn.textContent = 'Saving...';  if (hasSupabase) { let { data, error } = await sb.from('properties').insert([dbPayload]).select().single(); if (error && /bathrooms\vert{}has_office/i.test(error.message)) { const { bathrooms, has_office, ...fallbackPayload } = dbPayload; const retry = await sb.from('properties').insert([fallbackPayload]).select().single(); data = retry.data; error = retry.error; } if (!error && data) { activeProperty = { ...data, bathrooms: data.bathrooms ?? baths, is_modern: data.move_in_ready ?? isModern, has_garage: data.has_wfh ?? hasGarage, has_outdoor: data.has_yard ?? hasOutdoor, has_office: data.has_office ?? hasOffice }; cachePropertyLocally(activeProperty); } else { btn.textContent = 'Save Listing to Cloud & Lock QR Code'; if (!silent) alert('Supabase error: ' + (error?.message \vert{}\vert{} 'Check permissions')); return; } } else { activeProperty = { id: 'local-' + Date.now(), ...dbPayload, is_modern: isModern, has_garage: hasGarage, has_outdoor: hasOutdoor, has_office: hasOffice }; cachePropertyLocally(activeProperty); }  btn.textContent = 'Save Listing to Cloud & Lock QR Code'; populateFormFromActiveProperty(); syncUIWithProperty(); renderSavedPropertyDropdowns(); if (!silent) alert('Listing saved & A4 QR flyer updated!'); }  async function loadPropertyById(id, fallbackAddr = '') { let loaded = false;  if (hasSupabase && isValidUuid(id)) { const { data } = await sb.from('properties').select('*').eq('id', id).maybeSingle(); if (data) { activeProperty = normalizePropertyRow(data); cachePropertyLocally(activeProperty); loaded = true; } }  if (!loaded) { const fromLocal = localProperties.find(p => p.id === id); if (fromLocal) { activeProperty = normalizePropertyRow(fromLocal); loaded = true; } }  if (!loaded) { activeProperty.id = id; if (fallbackAddr) applyFallbackAddress(fallbackAddr); }  populateFormFromActiveProperty(); syncUIWithProperty(); renderSavedPropertyDropdowns(); }  function syncUIWithProperty() { const streetInput = document.getElementById('prop-address'); const suburbInput = document.getElementById('prop-suburb'); const agentInput = document.getElementById('prop-agent'); const street = (streetInput ? streetInput.value.trim() : '') \vert{}\vert{} activeProperty.address \vert{}\vert{} 'New Property Listing'; const suburb = (suburbInput ? suburbInput.value.trim() : '') \vert{}\vert{} activeProperty.suburb \vert{}\vert{} ''; const agentName = (agentInput ? agentInput.value.trim() : '') \vert{}\vert{} activeProperty.agent_name \vert{}\vert{} ''; const minP = Number(document.getElementById('prop-min')?.value) \vert{}\vert{} activeProperty.price_min; const maxP = Number(document.getElementById('prop-max')?.value) \vert{}\vert{} activeProperty.price_max; const beds = Number(document.getElementById('prop-beds')?.value) \vert{}\vert{} activeProperty.bedrooms; const baths = Number(document.getElementById('prop-baths')?.value) \vert{}\vert{} activeProperty.bathrooms \vert{}\vert{} 2;  activeProperty.address = streetInput ? streetInput.value.trim() : street; activeProperty.suburb = suburbInput ? suburbInput.value.trim() : suburb; activeProperty.agent_name = agentInput ? agentInput.value.trim() : agentName; activeProperty.price_min = minP; activeProperty.price_max = maxP; activeProperty.bedrooms = beds; activeProperty.bathrooms = baths;  if (document.getElementById('tag-modern')) { activeProperty.is_modern = document.getElementById('tag-modern').checked; activeProperty.has_garage = document.getElementById('tag-garage').checked; activeProperty.has_outdoor = document.getElementById('tag-outdoor').checked; activeProperty.has_office = document.getElementById('tag-office').checked; }  const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`; const guideString = `Guide: $${minP.toLocaleString()} –$${maxP.toLocaleString()} •${beds} Bed • ${baths} Bath`; document.getElementById('card-address').textContent = street; document.getElementById('card-suburb').textContent = suburb \vert{}\vert{} 'Open Home Inspection'; document.getElementById('card-specs-pill').textContent = `${beds} Bed • ${baths} Bath`; document.getElementById('qr-caption-address').textContent = street; document.getElementById('qr-caption-suburb').textContent = suburb \vert{}\vert{} ''; document.getElementById('quiz-prop-title').textContent = fullTitle; document.getElementById('agent-prop-title').textContent = fullTitle; document.getElementById('agent-prop-subtitle').textContent = guideString; document.getElementById('quiz-prop-guide').textContent = guideString;  const midPrice = Math.round(((minP + maxP) / 2) / 20000) * 20000; const sliderMin = Math.max(200000, Math.floor((minP * 0.75) / 20000) * 20000); const sliderMax = Math.max(midPrice + 200000, Math.ceil((maxP * 1.35) / 20000) * 20000); const priceSlider = document.getElementById('slider-est-price'); if (priceSlider) { priceSlider.min = sliderMin; priceSlider.max = sliderMax; priceSlider.step = 20000; priceSlider.value = midPrice; updateSliders(); }  const baseUrl = window.location.origin + window.location.pathname; const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
-      const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`; const masterAgentName = agentName \vert{}\vert{} 'Agent'; const agentMasterUrl = `${baseUrl}?view=agent&agent=${encodeURIComponent(masterAgentName)}&prop=${activeProperty.id}`;
+            const combinedText = `${ogTitle}\n${ogDesc}\n${(doc.body?.innerText || '').slice(0, 8000)}`;
+            if (!fetchedSuccess) {
+              const addrFromMeta = extractAddressFromText(ogTitle) || extractAddressFromText(combinedText);
+              if (addrFromMeta) {
+                if (addrFromMeta.street) document.getElementById('prop-address').value = addrFromMeta.street;
+                if (addrFromMeta.suburbLine) document.getElementById('prop-suburb').value = addrFromMeta.suburbLine;
+                fetchedSuccess = true;
+              }
+            }
+            applyTextParsingRules(combinedText);
+            if (ogTitle || ogDesc) fetchedSuccess = true;
+          }
+        }
+      } catch (err) {}
+
+      btn.disabled = false;
+      btn.textContent = 'Auto-Fill From URL';
+      syncUIWithProperty();
+
+      if (fetchedSuccess) {
+        showScrapeFeedback('✓ Imported property address, details & updated A4 QR flyer!');
+        await saveProperty(true);
+      } else if (slugData && (slugData.street || slugData.suburbLine)) {
+        document.getElementById('paste-fallback-box').classList.remove('hidden');
+        showScrapeFeedback('Address extracted onto QR flyer! Because this portal blocks automated scrapers, paste the listing text below to auto-fill price & features.', true);
+      } else {
+        document.getElementById('paste-fallback-box').classList.remove('hidden');
+        showScrapeFeedback('Portal blocked direct fetch. Copy the listing page (Ctrl+A then Ctrl+C) and paste below to auto-fill.', true);
+      }
+    }
+
+    function applyTextParsingRules(txt) {
+      if (!txt || !txt.trim()) return;
+      const addrMatch = extractAddressFromText(txt);
+      if (addrMatch) {
+        if (addrMatch.street) document.getElementById('prop-address').value = addrMatch.street;
+        if (addrMatch.suburbLine) document.getElementById('prop-suburb').value = addrMatch.suburbLine;
+      }
+      const fullPrices = [...txt.matchAll(/\$\s?(\d{3})[,\s](\d{3})/g)].map(m => parseInt(m[1] + m[2], 10));
+      const kPrices = [...txt.matchAll(/\$\s?(\d{3,4})\s?k\b/gi)].map(m => parseInt(m[1], 10) * 1000);
+      const allPrices = [...fullPrices, ...kPrices].filter(p => p >= 250000 && p <= 15000000);
+      if (allPrices.length >= 1) {
+        document.getElementById('prop-min').value = Math.min(...allPrices);
+        document.getElementById('prop-max').value = Math.max(...allPrices);
+      }
+      const bedMatch = txt.match(/(\d)\s*(?:bed|bedroom|br\b)/i);
+      if (bedMatch) document.getElementById('prop-beds').value = bedMatch[1];
+      const bathMatch = txt.match(/(\d)\s*(?:bath|bathroom|ba\b)/i);
+      if (bathMatch) document.getElementById('prop-baths').value = bathMatch[1];
+
+      document.getElementById('tag-modern').checked = /modern|updated|renovated|contemporary|new kitchen|stylish|immaculate|nothing to spend/i.test(txt);
+      document.getElementById('tag-garage').checked = /garage|carport|lock-up|parking|car space|off-street/i.test(txt);
+      document.getElementById('tag-outdoor').checked = /yard|garden|alfresco|entertaining|pergola|deck|courtyard|patio|outdoor/i.test(txt);
+      document.getElementById('tag-office').checked = /home office|study|second living|2nd living|rumpus|retreat|family room|theatre|media room/i.test(txt);
+    }
+
+    async function parseListingText(autoSave = false) {
+      const txt = document.getElementById('raw-listing-text').value;
+      if (!txt.trim()) return;
+      applyTextParsingRules(txt);
+      syncUIWithProperty();
+      showScrapeFeedback('✓ Extracted address, beds/baths, price guide & features onto the QR flyer!');
+      if (autoSave) await saveProperty(true);
+    }
+
+    function cachePropertyLocally(prop) {
+      const normalized = normalizePropertyRow(prop);
+      localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 80);
+      localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
+      renderSavedPropertyDropdowns();
+    }
+
+    async function saveProperty(silent = false) {
+      const isModern = document.getElementById('tag-modern').checked;
+      const hasGarage = document.getElementById('tag-garage').checked;
+      const hasOutdoor = document.getElementById('tag-outdoor').checked;
+      const hasOffice = document.getElementById('tag-office').checked;
+      const beds = Number(document.getElementById('prop-beds').value) || 3;
+      const baths = Number(document.getElementById('prop-baths').value) || 2;
+
+      const dbPayload = {
+        address: document.getElementById('prop-address').value.trim() || '42 Kensington Road',
+        suburb: document.getElementById('prop-suburb').value.trim(),
+        price_min: Number(document.getElementById('prop-min').value) || 850000,
+        price_max: Number(document.getElementById('prop-max').value) || 910000,
+        bedrooms: beds, bathrooms: baths,
+        agent_name: document.getElementById('prop-agent').value.trim(),
+        move_in_ready: isModern, has_wfh: hasGarage, has_yard: hasOutdoor, has_office: hasOffice
+      };
+
+      const btn = document.getElementById('btn-save-prop');
+      btn.textContent = 'Saving...';
+
+      if (hasSupabase) {
+        let { data, error } = await sb.from('properties').insert([dbPayload]).select().single();
+        if (error && /bathrooms|has_office/i.test(error.message)) {
+          const { bathrooms, has_office, ...fallbackPayload } = dbPayload;
+          const retry = await sb.from('properties').insert([fallbackPayload]).select().single();
+          data = retry.data; error = retry.error;
+        }
+        if (!error && data) {
+          activeProperty = {
+            ...data,
+            bathrooms: data.bathrooms ?? baths,
+            is_modern: data.move_in_ready ?? isModern,
+            has_garage: data.has_wfh ?? hasGarage,
+            has_outdoor: data.has_yard ?? hasOutdoor,
+            has_office: data.has_office ?? hasOffice
+          };
+          cachePropertyLocally(activeProperty);
+        } else {
+          btn.textContent = 'Save Listing to Cloud & Lock QR Code';
+          if (!silent) alert('Supabase error: ' + (error?.message || 'Check permissions'));
+          return;
+        }
+      } else {
+        activeProperty = {
+          id: 'local-' + Date.now(),
+          ...dbPayload,
+          is_modern: isModern,
+          has_garage: hasGarage,
+          has_outdoor: hasOutdoor,
+          has_office: hasOffice
+        };
+        cachePropertyLocally(activeProperty);
+      }
+
+      btn.textContent = 'Save Listing to Cloud & Lock QR Code';
+      populateFormFromActiveProperty();
+      syncUIWithProperty();
+      renderSavedPropertyDropdowns();
+      if (!silent) alert('Listing saved & A4 QR flyer updated!');
+    }
+
+    async function loadPropertyById(id, fallbackAddr = '') {
+      let loaded = false;
+
+      if (hasSupabase && isValidUuid(id)) {
+        const { data } = await sb.from('properties').select('*').eq('id', id).maybeSingle();
+        if (data) {
+          activeProperty = normalizePropertyRow(data);
+          cachePropertyLocally(activeProperty);
+          loaded = true;
+        }
+      }
+
+      if (!loaded) {
+        const fromLocal = localProperties.find(p => p.id === id);
+        if (fromLocal) {
+          activeProperty = normalizePropertyRow(fromLocal);
+          loaded = true;
+        }
+      }
+
+      if (!loaded) {
+        activeProperty.id = id;
+        if (fallbackAddr) applyFallbackAddress(fallbackAddr);
+      }
+
+      populateFormFromActiveProperty();
+      syncUIWithProperty();
+      renderSavedPropertyDropdowns();
+    }
+
+    function syncUIWithProperty() {
+      const streetInput = document.getElementById('prop-address');
+      const suburbInput = document.getElementById('prop-suburb');
+      const agentInput = document.getElementById('prop-agent');
+      const street = (streetInput ? streetInput.value.trim() : '') || activeProperty.address || 'New Property Listing';
+      const suburb = (suburbInput ? suburbInput.value.trim() : '') || activeProperty.suburb || '';
+      const agentName = (agentInput ? agentInput.value.trim() : '') || activeProperty.agent_name || '';
+      const minP = Number(document.getElementById('prop-min')?.value) || activeProperty.price_min;
+      const maxP = Number(document.getElementById('prop-max')?.value) || activeProperty.price_max;
+      const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms;
+      const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
+
+      activeProperty.address = streetInput ? streetInput.value.trim() : street;
+      activeProperty.suburb = suburbInput ? suburbInput.value.trim() : suburb;
+      activeProperty.agent_name = agentInput ? agentInput.value.trim() : agentName;
+      activeProperty.price_min = minP;
+      activeProperty.price_max = maxP;
+      activeProperty.bedrooms = beds;
+      activeProperty.bathrooms = baths;
+
+      if (document.getElementById('tag-modern')) {
+        activeProperty.is_modern = document.getElementById('tag-modern').checked;
+        activeProperty.has_garage = document.getElementById('tag-garage').checked;
+        activeProperty.has_outdoor = document.getElementById('tag-outdoor').checked;
+        activeProperty.has_office = document.getElementById('tag-office').checked;
+      }
+
+      const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
+      const guideString = `Guide: $${minP.toLocaleString()} – $${maxP.toLocaleString()} • ${beds} Bed • ${baths} Bath`;
+      document.getElementById('card-address').textContent = street;
+      document.getElementById('card-suburb').textContent = suburb || 'Open Home Inspection';
+      document.getElementById('card-specs-pill').textContent = `${beds} Bed • ${baths} Bath`;
+      document.getElementById('qr-caption-address').textContent = street;
+      document.getElementById('qr-caption-suburb').textContent = suburb || '';
+      document.getElementById('quiz-prop-title').textContent = fullTitle;
+      document.getElementById('agent-prop-title').textContent = fullTitle;
+      document.getElementById('agent-prop-subtitle').textContent = guideString;
+      document.getElementById('quiz-prop-guide').textContent = guideString;
+
+      const midPrice = Math.round(((minP + maxP) / 2) / 20000) * 20000;
+      const sliderMin = Math.max(200000, Math.floor((minP * 0.75) / 20000) * 20000);
+      const sliderMax = Math.max(midPrice + 200000, Math.ceil((maxP * 1.35) / 20000) * 20000);
+      const priceSlider = document.getElementById('slider-est-price');
+      if (priceSlider) {
+        priceSlider.min = sliderMin;
+        priceSlider.max = sliderMax;
+        priceSlider.step = 20000;
+        priceSlider.value = midPrice;
+        updateSliders();
+      }
+
+      const baseUrl = window.location.origin + window.location.pathname;
+      const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
+      const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
+      const masterAgentName = agentName || 'Agent';
+      const agentMasterUrl = `${baseUrl}?view=agent&agent=${encodeURIComponent(masterAgentName)}&prop=${activeProperty.id}`;
 
       document.getElementById('share-buyer-url').value = buyerUrl;
       document.getElementById('share-agent-url').value = agentUrl;
       const masterInput = document.getElementById('share-agent-master-url');
       const masterLabel = document.getElementById('agent-master-link-label');
       if (masterInput) masterInput.value = agentMasterUrl;
-      if (masterLabel) masterLabel.textContent = `Agent Master Link (All Opens for ${masterAgentName})`;  const qrEl = document.getElementById('qrcode'); qrEl.innerHTML = ''; new QRCode(qrEl, { text: buyerUrl, width: 360, height: 360, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); }  // ==================== BUYER QUIZ & REAL WEIGHTED MATCHMAKING ==================== function selectSingle(key, val, btn) { quizState[key] = val; const isCompact = btn.parentElement.id.startsWith('chips-min-'); btn.parentElement.querySelectorAll('.chip-btn').forEach(b => { b.className = isCompact ? 'chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700' : 'chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50'; }); btn.className = isCompact ? 'chip-btn py-2 rounded-lg border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]' : 'chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]'; }  function toggleMulti(tag, btn) { const idx = quizState.must_haves.indexOf(tag); const ind = btn.querySelector('.check-ind'); if (idx === -1) { quizState.must_haves.push(tag); btn.classList.add('border-[#006875]', 'bg-[#F2F9FA]'); ind.className = 'check-ind text-[#006875] font-extrabold text-base'; } else { quizState.must_haves.splice(idx, 1); btn.classList.remove('border-[#006875]', 'bg-[#F2F9FA]'); ind.className = 'check-ind text-slate-300 text-base'; } }  function updateSliders() { const estPrice = Number(document.getElementById('slider-est-price').value); const cashDeposit = Number(document.getElementById('slider-cash-deposit').value); const usableEquity = Number(document.getElementById('slider-usable-equity').value); const income = Number(document.getElementById('slider-income').value); const monthlyLoans = Number(document.getElementById('slider-monthly-loans').value); const ccLimits = Number(document.getElementById('slider-cc-limits').value);  quizState.est_purchase_price = estPrice; quizState.cash_deposit = cashDeposit; quizState.usable_equity = usableEquity; quizState.income = income; quizState.monthly_loans = monthlyLoans; quizState.cc_limits = ccLimits;  const costs = Math.round(estPrice * 0.04); const totalWithCosts = estPrice + costs;  document.getElementById('val-est-price').textContent = `$${estPrice.toLocaleString()}`; document.getElementById('val-total-with-costs').innerHTML = `+ ~4\% purchase costs ($${costs.toLocaleString()} stamp duty, transfer & legal) = <strong>$${totalWithCosts.toLocaleString()} total</strong>`; document.getElementById('val-cash-deposit').textContent = `$${cashDeposit.toLocaleString()}`; document.getElementById('val-usable-equity').textContent = `$${usableEquity.toLocaleString()}`; document.getElementById('val-income').textContent = `$${income.toLocaleString()} / yr`; document.getElementById('val-monthly-loans').textContent = `$${monthlyLoans.toLocaleString()} / mo`; document.getElementById('val-cc-limits').textContent = `$${ccLimits.toLocaleString()}`; }  function syncBrokerOptInBanner(checked) { const box = document.getElementById('buyer-opt-in'); const confirmedBadge = document.getElementById('broker-optin-confirmed'); const withheldBadge = document.getElementById('broker-optin-withheld'); if (box) box.checked = checked; if (confirmedBadge) { if (checked) confirmedBadge.classList.remove('hidden'); else confirmedBadge.classList.add('hidden'); } if (withheldBadge) { if (!checked) withheldBadge.classList.remove('hidden'); else withheldBadge.classList.add('hidden'); } }  function clearContactGateError() { const errEl = document.getElementById('contact-gate-error'); const nameInput = document.getElementById('buyer-name'); const mobileInput = document.getElementById('buyer-mobile'); if (errEl) errEl.classList.add('hidden'); if (nameInput) nameInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200'); if (mobileInput) mobileInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200'); }  function goQuizStep(step) { document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden')); document.getElementById('q-step-' + step).classList.remove('hidden'); document.getElementById('quiz-step-label').textContent = `Step ${step} of 5`;
-      document.getElementById('quiz-progress').style.width = step === 5 ? '95%' : `${step * 20}\%`;  if (step === 5) { clearContactGateError(); const nameInput = document.getElementById('buyer-name'); if (nameInput && !nameInput.value.trim()) { setTimeout(() => nameInput.focus(), 50); } } }  function computeWeightedPropertyMatch(prop, params) { const criteriaScores = []; const propBeds = Number(prop.bedrooms) \vert{}\vert{} 3; const propBaths = Number(prop.bathrooms) \vert{}\vert{} 2;  if (params.min_beds > 0) { if (propBeds >= params.min_beds) criteriaScores.push(1.0); else if (propBeds === params.min_beds - 1) criteriaScores.push(0.4); else criteriaScores.push(0.0); }  if (params.min_baths > 0) { if (propBaths >= params.min_baths) criteriaScores.push(1.0); else if (propBaths === params.min_baths - 1) criteriaScores.push(0.45); else criteriaScores.push(0.0); }  (params.must_haves \vert{}\vert{} []).forEach(tag => { if (tag === 'modern') criteriaScores.push(prop.is_modern ? 1.0 : 0.0); if (tag === 'garage') criteriaScores.push(prop.has_garage ? 1.0 : 0.0); if (tag === 'outdoor') criteriaScores.push(prop.has_outdoor ? 1.0 : 0.0); if (tag === 'office') criteriaScores.push(prop.has_office ? 1.0 : 0.0); });  const wishListRatio = criteriaScores.length > 0 ? criteriaScores.reduce((sum, v) => sum + v, 0) / criteriaScores.length : 0.70; const wishListPts = wishListRatio * 60; const wishListPct = Math.round(wishListRatio * 100);  let budgetRatio = 0.25; let budgetLabel = 'Stretched'; if (params.budget_badge === 'Budget Ready') { budgetRatio = 1.0; budgetLabel = 'Strong'; } else if (params.budget_badge === 'Within Reach') { budgetRatio = 0.70; budgetLabel = 'Close'; } else if (params.budget_badge === 'Subject to Sale') { budgetRatio = 0.65; budgetLabel = 'Subj. Sale'; } else { const powerRatio = prop.price_min > 0 ? Math.min(0.55, (params.total_buying_power / prop.price_min) * 0.5) : 0.2; budgetRatio = Math.max(0.15, powerRatio); } const budgetPts = budgetRatio * 30;  let spaceRatio = 1.0; let spaceLabel = 'Great'; if (params.household === 'Family') { if (propBeds >= 3 && (prop.has_outdoor \vert{}\vert{} prop.has_office)) { spaceRatio = 1.0; spaceLabel = 'Ideal'; } else if (propBeds >= 3) { spaceRatio = 0.75; spaceLabel = 'Good'; } else { spaceRatio = 0.40; spaceLabel = 'Tight'; } } else if (params.household === 'Couple') { spaceRatio = propBeds >= 2 ? 1.0 : 0.6; spaceLabel = propBeds >= 2 ? 'Great' : 'Compact'; } const spacePts = spaceRatio * 10;  const totalMatchPct = Math.min(100, Math.max(15, Math.round(wishListPts + budgetPts + spacePts))); return { totalMatchPct, wishListPct, budgetLabel, spaceLabel, hasCriteria: criteriaScores.length > 0 }; }  async function calculateAndShowResults() { const nameInput = document.getElementById('buyer-name'); const mobileInput = document.getElementById('buyer-mobile'); const errEl = document.getElementById('contact-gate-error'); const name = nameInput.value.trim(); const mobile = mobileInput.value.trim();  if (!name \vert{}\vert{} !mobile) { if (errEl) errEl.classList.remove('hidden'); if (!name) { nameInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200'); nameInput.focus(); } if (!mobile) { mobileInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200'); if (name) mobileInput.focus(); } return; }  clearContactGateError();  const btn = document.getElementById('btn-unlock-results'); btn.disabled = true; btn.textContent = 'Unlocking...';  updateSliders(); quizState.buyer_name = name; quizState.buyer_mobile = mobile; quizState.dependants = Number(document.getElementById('input-dependants').value);  const estPrice = quizState.est_purchase_price; const totalRequired = Math.round(estPrice * 1.04); const loanNeededForPurchase = Math.max(0, totalRequired - quizState.cash_deposit);  const netMonthly = (quizState.income * 0.73) / 12; const livingExpenses = 2400 + (quizState.dependants * 550); const ccMonthlyCommitment = quizState.cc_limits * 0.038; const totalMonthlyCommitments = quizState.monthly_loans + ccMonthlyCommitment; const surplus = Math.max(0, (netMonthly - livingExpenses - totalMonthlyCommitments) * 0.85);  const rawServicingLoan = Math.round((surplus / 0.0084085) / 1000) * 1000; const dtiCapLoan = quizState.income * 6; const servicingMaxLoan = Math.max(0, Math.min(rawServicingLoan, dtiCapLoan));  const lvrMaxLoan = Math.round((estPrice * 0.94 + quizState.usable_equity) / 1000) * 1000; const estMaxLoan = Math.max(0, Math.min(servicingMaxLoan, lvrMaxLoan)); const totalBuyingPower = estMaxLoan + quizState.cash_deposit;  const baseLvrPct = estPrice > 0 ? Math.max(0, ((loanNeededForPurchase - quizState.usable_equity) / estPrice) * 100) : 0; const roundedBaseLvr = Math.round(baseLvrPct * 10) / 10;  const borrowCard = document.getElementById('res-borrow-card'); const maxLoanEl = document.getElementById('res-max-loan'); const lvrLabelEl = document.getElementById('res-lvr-tier-label');  borrowCard.className = 'bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl flex flex-col justify-between'; maxLoanEl.className = 'text-2xl font-extrabold text-[#006875]';  if (baseLvrPct <= 80) { quizState.lvr_tier = 'green'; lvrLabelEl.className = 'text-xs font-bold text-emerald-700 mt-1.5 leading-snug'; lvrLabelEl.textContent = `~${roundedBaseLvr}% Base LVR (≤80%) • Best Rates & Fees`;
+      if (masterLabel) masterLabel.textContent = `Agent Master Link (All Opens for ${masterAgentName})`;
+
+      const qrEl = document.getElementById('qrcode');
+      qrEl.innerHTML = '';
+      new QRCode(qrEl, {
+        text: buyerUrl,
+        width: 360,
+        height: 360,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    // ==================== BUYER QUIZ & MATCHMAKING ====================
+    function selectSingle(key, val, btn) {
+      quizState[key] = val;
+      const isCompact = btn.parentElement.id.startsWith('chips-min-');
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(b => {
+        b.className = isCompact
+          ? 'chip-btn py-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700'
+          : 'chip-btn p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50';
+      });
+      btn.className = isCompact
+        ? 'chip-btn py-2 rounded-lg border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]'
+        : 'chip-btn p-3.5 rounded-xl border-2 text-xs font-bold bg-[#006875] text-white border-[#006875]';
+    }
+
+    function toggleMulti(tag, btn) {
+      const idx = quizState.must_haves.indexOf(tag);
+      const ind = btn.querySelector('.check-ind');
+      if (idx === -1) {
+        quizState.must_haves.push(tag);
+        btn.classList.add('border-[#006875]', 'bg-[#F2F9FA]');
+        ind.className = 'check-ind text-[#006875] font-extrabold text-base';
+      } else {
+        quizState.must_haves.splice(idx, 1);
+        btn.classList.remove('border-[#006875]', 'bg-[#F2F9FA]');
+        ind.className = 'check-ind text-slate-300 text-base';
+      }
+    }
+
+    function updateSliders() {
+      const estPrice = Number(document.getElementById('slider-est-price').value);
+      const cashDeposit = Number(document.getElementById('slider-cash-deposit').value);
+      const usableEquity = Number(document.getElementById('slider-usable-equity').value);
+      const income = Number(document.getElementById('slider-income').value);
+      const monthlyLoans = Number(document.getElementById('slider-monthly-loans').value);
+      const ccLimits = Number(document.getElementById('slider-cc-limits').value);
+
+      quizState.est_purchase_price = estPrice;
+      quizState.cash_deposit = cashDeposit;
+      quizState.usable_equity = usableEquity;
+      quizState.income = income;
+      quizState.monthly_loans = monthlyLoans;
+      quizState.cc_limits = ccLimits;
+
+      const costs = Math.round(estPrice * 0.04);
+      const totalWithCosts = estPrice + costs;
+
+      document.getElementById('val-est-price').textContent = `$${estPrice.toLocaleString()}`;
+      document.getElementById('val-total-with-costs').innerHTML =
+        `+ ~4% purchase costs ($${costs.toLocaleString()} stamp duty, transfer & legal) = <strong>$${totalWithCosts.toLocaleString()} total</strong>`;
+      document.getElementById('val-cash-deposit').textContent = `$${cashDeposit.toLocaleString()}`;
+      document.getElementById('val-usable-equity').textContent = `$${usableEquity.toLocaleString()}`;
+      document.getElementById('val-income').textContent = `$${income.toLocaleString()} / yr`;
+      document.getElementById('val-monthly-loans').textContent = `$${monthlyLoans.toLocaleString()} / mo`;
+      document.getElementById('val-cc-limits').textContent = `$${ccLimits.toLocaleString()}`;
+    }
+
+    function syncBrokerOptInUI(checked) {
+      const step5Box = document.getElementById('buyer-opt-in-step5');
+      const resBox = document.getElementById('buyer-opt-in');
+      const confirmedBadge = document.getElementById('broker-optin-confirmed');
+      const withheldBadge = document.getElementById('broker-optin-withheld');
+
+      if (step5Box) step5Box.checked = checked;
+      if (resBox) resBox.checked = checked;
+      if (confirmedBadge) confirmedBadge.classList.toggle('hidden', !checked);
+      if (withheldBadge) withheldBadge.classList.toggle('hidden', checked);
+    }
+
+    function clearContactGateError() {
+      const errEl = document.getElementById('contact-gate-error');
+      const nameInput = document.getElementById('buyer-name');
+      const mobileInput = document.getElementById('buyer-mobile');
+      if (errEl) errEl.classList.add('hidden');
+      if (nameInput) nameInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200');
+      if (mobileInput) mobileInput.classList.remove('border-rose-500', 'ring-2', 'ring-rose-200');
+    }
+
+    function goQuizStep(step) {
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+      document.getElementById('q-step-' + step).classList.remove('hidden');
+      document.getElementById('quiz-step-label').textContent = `Step ${step} of 5`;
+      document.getElementById('quiz-progress').style.width = step === 5 ? '95%' : `${step * 20}%`;
+
+      if (step === 5) {
+        clearContactGateError();
+        const nameInput = document.getElementById('buyer-name');
+        if (nameInput && !nameInput.value.trim()) {
+          setTimeout(() => nameInput.focus(), 50);
+        }
+      }
+    }
+
+    function computeWeightedPropertyMatch(prop, params) {
+      const criteriaScores = [];
+      const propBeds = Number(prop.bedrooms) || 3;
+      const propBaths = Number(prop.bathrooms) || 2;
+
+      if (params.min_beds > 0) {
+        if (propBeds >= params.min_beds) criteriaScores.push(1.0);
+        else if (propBeds === params.min_beds - 1) criteriaScores.push(0.4);
+        else criteriaScores.push(0.0);
+      }
+
+      if (params.min_baths > 0) {
+        if (propBaths >= params.min_baths) criteriaScores.push(1.0);
+        else if (propBaths === params.min_baths - 1) criteriaScores.push(0.45);
+        else criteriaScores.push(0.0);
+      }
+
+      (params.must_haves || []).forEach(tag => {
+        if (tag === 'modern') criteriaScores.push(prop.is_modern ? 1.0 : 0.0);
+        if (tag === 'garage') criteriaScores.push(prop.has_garage ? 1.0 : 0.0);
+        if (tag === 'outdoor') criteriaScores.push(prop.has_outdoor ? 1.0 : 0.0);
+        if (tag === 'office') criteriaScores.push(prop.has_office ? 1.0 : 0.0);
+      });
+
+      const wishListRatio = criteriaScores.length > 0
+        ? criteriaScores.reduce((sum, v) => sum + v, 0) / criteriaScores.length
+        : 0.70;
+      const wishListPts = wishListRatio * 60;
+      const wishListPct = Math.round(wishListRatio * 100);
+
+      let budgetRatio = 0.25;
+      let budgetLabel = 'Stretched';
+      if (params.budget_badge === 'Budget Ready') {
+        budgetRatio = 1.0;
+        budgetLabel = 'Strong';
+      } else if (params.budget_badge === 'Within Reach') {
+        budgetRatio = 0.70;
+        budgetLabel = 'Close';
+      } else if (params.budget_badge === 'Subject to Sale') {
+        budgetRatio = 0.65;
+        budgetLabel = 'Subj. Sale';
+      } else {
+        const powerRatio = prop.price_min > 0 ? Math.min(0.55, (params.total_buying_power / prop.price_min) * 0.5) : 0.2;
+        budgetRatio = Math.max(0.15, powerRatio);
+      }
+      const budgetPts = budgetRatio * 30;
+
+      let spaceRatio = 1.0;
+      let spaceLabel = 'Great';
+      if (params.household === 'Family') {
+        if (propBeds >= 3 && (prop.has_outdoor || prop.has_office)) {
+          spaceRatio = 1.0;
+          spaceLabel = 'Ideal';
+        } else if (propBeds >= 3) {
+          spaceRatio = 0.75;
+          spaceLabel = 'Good';
+        } else {
+          spaceRatio = 0.40;
+          spaceLabel = 'Tight';
+        }
+      } else if (params.household === 'Couple') {
+        spaceRatio = propBeds >= 2 ? 1.0 : 0.6;
+        spaceLabel = propBeds >= 2 ? 'Great' : 'Compact';
+      }
+      const spacePts = spaceRatio * 10;
+
+      const totalMatchPct = Math.min(100, Math.max(15, Math.round(wishListPts + budgetPts + spacePts)));
+      return {
+        totalMatchPct,
+        wishListPct,
+        budgetLabel,
+        spaceLabel,
+        hasCriteria: criteriaScores.length > 0
+      };
+    }
+
+    async function calculateAndShowResults() {
+      const nameInput = document.getElementById('buyer-name');
+      const mobileInput = document.getElementById('buyer-mobile');
+      const errEl = document.getElementById('contact-gate-error');
+      const name = nameInput.value.trim();
+      const mobile = mobileInput.value.trim();
+
+      if (!name || !mobile) {
+        if (errEl) errEl.classList.remove('hidden');
+        if (!name) {
+          nameInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200');
+          nameInput.focus();
+        }
+        if (!mobile) {
+          mobileInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200');
+          if (name) mobileInput.focus();
+        }
+        return;
+      }
+
+      clearContactGateError();
+
+      const btn = document.getElementById('btn-unlock-results');
+      btn.disabled = true;
+      btn.textContent = 'Unlocking...';
+
+      updateSliders();
+      quizState.buyer_name = name;
+      quizState.buyer_mobile = mobile;
+      quizState.broker_opt_in = Boolean(document.getElementById('buyer-opt-in-step5')?.checked);
+      quizState.dependants = Number(document.getElementById('input-dependants').value);
+
+      const estPrice = quizState.est_purchase_price;
+      const totalRequired = Math.round(estPrice * 1.04);
+      const loanNeededForPurchase = Math.max(0, totalRequired - quizState.cash_deposit);
+
+      const netMonthly = (quizState.income * 0.73) / 12;
+      const livingExpenses = 2400 + (quizState.dependants * 550);
+      const ccMonthlyCommitment = quizState.cc_limits * 0.038;
+      const totalMonthlyCommitments = quizState.monthly_loans + ccMonthlyCommitment;
+      const surplus = Math.max(0, (netMonthly - livingExpenses - totalMonthlyCommitments) * 0.85);
+
+      const rawServicingLoan = Math.round((surplus / 0.0084085) / 1000) * 1000;
+      const dtiCapLoan = quizState.income * 6;
+      const servicingMaxLoan = Math.max(0, Math.min(rawServicingLoan, dtiCapLoan));
+
+      const lvrMaxLoan = Math.round((estPrice * 0.94 + quizState.usable_equity) / 1000) * 1000;
+      const estMaxLoan = Math.max(0, Math.min(servicingMaxLoan, lvrMaxLoan));
+      const totalBuyingPower = estMaxLoan + quizState.cash_deposit;
+
+      const baseLvrPct = estPrice > 0
+        ? Math.max(0, ((loanNeededForPurchase - quizState.usable_equity) / estPrice) * 100)
+        : 0;
+      const roundedBaseLvr = Math.round(baseLvrPct * 10) / 10;
+
+      const borrowCard = document.getElementById('res-borrow-card');
+      const maxLoanEl = document.getElementById('res-max-loan');
+      const lvrLabelEl = document.getElementById('res-lvr-tier-label');
+
+      borrowCard.className = 'bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl flex flex-col justify-between';
+      maxLoanEl.className = 'text-2xl font-extrabold text-[#006875]';
+
+      if (baseLvrPct <= 80) {
+        quizState.lvr_tier = 'green';
+        lvrLabelEl.className = 'text-xs font-bold text-emerald-700 mt-1.5 leading-snug';
+        lvrLabelEl.textContent = `~${roundedBaseLvr}% Base LVR (≤80%) • Best Rates & Fees`;
       } else if (baseLvrPct <= 90) {
         quizState.lvr_tier = 'orange';
         lvrLabelEl.className = 'text-xs font-bold text-orange-600 mt-1.5 leading-snug';
-        lvrLabelEl.textContent = `~${roundedBaseLvr}\% LVR (80–90\%) • Higher rates and fees could be included (LMI)`; } else { quizState.lvr_tier = 'red'; lvrLabelEl.className = 'text-xs font-bold text-rose-500 mt-1.5 leading-snug'; lvrLabelEl.textContent = `90–94\% Base LVR (90–98\% incl. LMI) • Higher rates and fees could be included`; }  const canCoverLoan = estMaxLoan >= loanNeededForPurchase; const within94Lvr = baseLvrPct <= 94; let budgetBadge = 'Stretch', finPts = 5;  if (canCoverLoan && within94Lvr) { budgetBadge = 'Budget Ready'; finPts = 40; } else if (estMaxLoan >= loanNeededForPurchase * 0.92 && baseLvrPct <= 96) { budgetBadge = 'Within Reach'; finPts = 25; } else if (quizState.stage === 'Need to Sell') { budgetBadge = 'Subject to Sale'; finPts = 15; }  const limitingTitleEl = document.getElementById('res-limiting-title'); const limitingDescEl = document.getElementById('res-limiting-desc');  if (!within94Lvr && servicingMaxLoan >= loanNeededForPurchase) { quizState.limiting_factor = 'Deposit / LVR'; limitingTitleEl.textContent = 'Limiting Factor: Deposit / LVR (~' + roundedBaseLvr + '\% Base LVR)'; limitingDescEl.textContent = `Your income supports up to $${servicingMaxLoan.toLocaleString()}, so your current deposit/equity is what's capping this purchase (above the 94% base LVR limit). Using a family guarantor or adding extra savings could unlock this property and sharper rates.`;
+        lvrLabelEl.textContent = `~${roundedBaseLvr}% LVR (80–90%) • Higher rates and fees could be included (LMI)`;
+      } else {
+        quizState.lvr_tier = 'red';
+        lvrLabelEl.className = 'text-xs font-bold text-rose-500 mt-1.5 leading-snug';
+        lvrLabelEl.textContent = `90–94% Base LVR (90–98% incl. LMI) • Higher rates and fees could be included`;
+      }
+
+      const canCoverLoan = estMaxLoan >= loanNeededForPurchase;
+      const within94Lvr = baseLvrPct <= 94;
+      let budgetBadge = 'Stretch', finPts = 5;
+
+      if (canCoverLoan && within94Lvr) {
+        budgetBadge = 'Budget Ready';
+        finPts = 40;
+      } else if (estMaxLoan >= loanNeededForPurchase * 0.92 && baseLvrPct <= 96) {
+        budgetBadge = 'Within Reach';
+        finPts = 25;
+      } else if (quizState.stage === 'Need to Sell') {
+        budgetBadge = 'Subject to Sale';
+        finPts = 15;
+      }
+
+      const limitingTitleEl = document.getElementById('res-limiting-title');
+      const limitingDescEl = document.getElementById('res-limiting-desc');
+
+      if (!within94Lvr && servicingMaxLoan >= loanNeededForPurchase) {
+        quizState.limiting_factor = 'Deposit / LVR';
+        limitingTitleEl.textContent = 'Limiting Factor: Deposit / LVR (~' + roundedBaseLvr + '% Base LVR)';
+        limitingDescEl.textContent = `Your income supports up to $${servicingMaxLoan.toLocaleString()}, so your current deposit/equity is what's capping this purchase (above the 94% base LVR limit). Using a family guarantor or adding extra savings could unlock this property and sharper rates.`;
       } else if (servicingMaxLoan < loanNeededForPurchase && within94Lvr) {
         quizState.limiting_factor = 'Income / Commitments';
         limitingTitleEl.textContent = 'Limiting Factor: Income & Open Commitments';
-        limitingDescEl.textContent = `Your deposit/equity position sits in a healthy LVR range, so income vs. expenses and open commitments is the limiting factor (capping borrowing at $${servicingMaxLoan.toLocaleString()} vs.$${loanNeededForPurchase.toLocaleString()} needed). Lowering credit card limits or closing an open loan before applying could lift your max borrow.`;
+        limitingDescEl.textContent = `Your deposit/equity position sits in a healthy LVR range, so income vs. expenses and open commitments is the limiting factor (capping borrowing at $${servicingMaxLoan.toLocaleString()} vs. $${loanNeededForPurchase.toLocaleString()} needed). Lowering credit card limits or closing an open loan before applying could lift your max borrow.`;
       } else if (!within94Lvr && servicingMaxLoan < loanNeededForPurchase) {
         quizState.limiting_factor = 'Both Serviceability & LVR';
         limitingTitleEl.textContent = 'Limiting Factor: Both Serviceability & Deposit/LVR';
-        limitingDescEl.textContent = `At $${estPrice.toLocaleString()} (+4\% costs), both borrowing capacity ($${servicingMaxLoan.toLocaleString()}) and deposit/LVR (~${roundedBaseLvr}\%) are stretched. Chat with Alex to explore family guarantor options, debt restructuring, or properties in a sharper price bracket.`; } else { quizState.limiting_factor = 'Strong Position'; limitingTitleEl.textContent = 'Purchasing Power: Strong Position'; limitingDescEl.textContent = `Both your income ($${servicingMaxLoan.toLocaleString()} servicing capacity) and deposit/equity (~${roundedBaseLvr}\% base LVR) comfortably cover your$${estPrice.toLocaleString()} estimate plus 4% purchase costs.`;
+        limitingDescEl.textContent = `At $${estPrice.toLocaleString()} (+4% costs), both borrowing capacity ($${servicingMaxLoan.toLocaleString()}) and deposit/LVR (~${roundedBaseLvr}%) are stretched. Chat with Alex to explore family guarantor options, debt restructuring, or properties in a sharper price bracket.`;
+      } else {
+        quizState.limiting_factor = 'Strong Position';
+        limitingTitleEl.textContent = 'Purchasing Power: Strong Position';
+        limitingDescEl.textContent = `Both your income ($${servicingMaxLoan.toLocaleString()} servicing capacity) and deposit/equity (~${roundedBaseLvr}% base LVR) comfortably cover your $${estPrice.toLocaleString()} estimate plus 4% purchase costs.`;
       }
 
       const matchResult = computeWeightedPropertyMatch(activeProperty, {
@@ -1171,16 +1778,64 @@
       quizState.budget_badge = budgetBadge;
       quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
 
-      syncBrokerOptInBanner(quizState.broker_opt_in);
+      syncBrokerOptInUI(quizState.broker_opt_in);
       await persistBuyerScanRecord();
 
       const firstName = name.split(/\s+/)[0];
-      document.getElementById('res-buyer-greeting').textContent = `Prepared for ${firstName}`; maxLoanEl.textContent = `$${estMaxLoan.toLocaleString()}`; document.getElementById('res-fit-score').textContent = `${fitPct}%`;
+      document.getElementById('res-buyer-greeting').textContent = `Prepared for ${firstName}`;
+      maxLoanEl.textContent = `$${estMaxLoan.toLocaleString()}`;
+      document.getElementById('res-fit-score').textContent = `${fitPct}%`;
       document.getElementById('res-budget-label').textContent = budgetBadge;
       document.getElementById('res-fit-breakdown').textContent = matchResult.hasCriteria
         ? `Wish List ${matchResult.wishListPct}% • Budget ${matchResult.budgetLabel} • Space ${matchResult.spaceLabel}`
-        : `No must-haves picked • Budget ${matchResult.budgetLabel} • Space ${matchResult.spaceLabel}`;  const matchCard = document.getElementById('res-match-card'); const matchHeading = document.getElementById('res-match-heading'); const perfectLabel = document.getElementById('res-perfect-label'); const scoreWrapper = document.getElementById('res-score-wrapper'); const heartSvg = document.getElementById('res-heart-svg'); const fitScoreEl = document.getElementById('res-fit-score'); const budgetLabelEl = document.getElementById('res-budget-label');  if (fitPct > 90) { matchCard.className = 'bg-emerald-50 border-2 border-emerald-500 p-5 rounded-3xl text-center flex flex-col items-center'; matchHeading.className = 'text-xs font-extrabold uppercase tracking-widest text-emerald-800'; perfectLabel.classList.remove('hidden'); scoreWrapper.className = 'relative w-full max-w-[330px] h-[300px] mx-auto my-1 flex items-center justify-center'; heartSvg.classList.remove('hidden'); fitScoreEl.className = 'relative z-10 text-white font-extrabold text-5xl sm:text-6xl tracking-tight -mt-5 drop-shadow-sm'; budgetLabelEl.className = 'text-sm font-extrabold text-emerald-700'; } else { matchCard.className = 'bg-[#F2F9FA] border border-[#006875]/30 p-5 rounded-3xl text-center flex flex-col items-center'; matchHeading.className = 'text-xs font-extrabold uppercase tracking-widest text-[#006875]'; perfectLabel.classList.add('hidden'); scoreWrapper.className = 'py-3 flex items-center justify-center'; heartSvg.classList.add('hidden'); fitScoreEl.className = 'text-[#006875] font-extrabold text-5xl tracking-tight'; budgetLabelEl.className = 'text-sm font-extrabold text-[#006875]'; }  btn.disabled = false; btn.textContent = 'Unlock My Results →';  document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden')); document.getElementById('q-step-results').classList.remove('hidden'); document.getElementById('quiz-step-label').textContent = 'Your Results'; document.getElementById('quiz-progress').style.width = '100\%'; }  async function persistBuyerScanRecord() { const combinedMustHaves = [...quizState.must_haves]; if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
-      if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);  const optInChecked = Boolean(quizState.broker_opt_in); const existingStatus = extractLeadStatus({ id: quizState.saved_db_id \vert{}\vert{} quizState.saved_local_id });  // Literal opt-in: If unticked, wipe BOTH contact details & financial figures so nothing personal/financial goes to Broker Leads const encodedPets = optInChecked ? `status:${existingStatus}|est_price:${Math.round(quizState.est_purchase_price)}\vert{}${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}\%)` : `status:${existingStatus}|WITHHELD_FROM_BROKER`;
+        : `No must-haves picked • Budget ${matchResult.budgetLabel} • Space ${matchResult.spaceLabel}`;
+
+      const matchCard = document.getElementById('res-match-card');
+      const matchHeading = document.getElementById('res-match-heading');
+      const perfectLabel = document.getElementById('res-perfect-label');
+      const scoreWrapper = document.getElementById('res-score-wrapper');
+      const heartSvg = document.getElementById('res-heart-svg');
+      const fitScoreEl = document.getElementById('res-fit-score');
+      const budgetLabelEl = document.getElementById('res-budget-label');
+
+      if (fitPct > 90) {
+        matchCard.className = 'bg-emerald-50 border-2 border-emerald-500 p-5 rounded-3xl text-center flex flex-col items-center';
+        matchHeading.className = 'text-xs font-extrabold uppercase tracking-widest text-emerald-800';
+        perfectLabel.classList.remove('hidden');
+        scoreWrapper.className = 'relative w-full max-w-[330px] h-[300px] mx-auto my-1 flex items-center justify-center';
+        heartSvg.classList.remove('hidden');
+        fitScoreEl.className = 'relative z-10 text-white font-extrabold text-5xl sm:text-6xl tracking-tight -mt-5 drop-shadow-sm';
+        budgetLabelEl.className = 'text-sm font-extrabold text-emerald-700';
+      } else {
+        matchCard.className = 'bg-[#F2F9FA] border border-[#006875]/30 p-5 rounded-3xl text-center flex flex-col items-center';
+        matchHeading.className = 'text-xs font-extrabold uppercase tracking-widest text-[#006875]';
+        perfectLabel.classList.add('hidden');
+        scoreWrapper.className = 'py-3 flex items-center justify-center';
+        heartSvg.classList.add('hidden');
+        fitScoreEl.className = 'text-[#006875] font-extrabold text-5xl tracking-tight';
+        budgetLabelEl.className = 'text-sm font-extrabold text-[#006875]';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Unlock My Results →';
+
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+      document.getElementById('q-step-results').classList.remove('hidden');
+      document.getElementById('quiz-step-label').textContent = 'Your Results';
+      document.getElementById('quiz-progress').style.width = '100%';
+    }
+
+    async function persistBuyerScanRecord() {
+      const combinedMustHaves = [...quizState.must_haves];
+      if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
+      if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
+
+      const optInChecked = Boolean(quizState.broker_opt_in);
+      const existingStatus = extractLeadStatus({ id: quizState.saved_db_id || quizState.saved_local_id });
+
+      const encodedPets = optInChecked
+        ? `status:${existingStatus}|est_price:${Math.round(quizState.est_purchase_price)}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`
+        : `status:${existingStatus}|WITHHELD_FROM_BROKER`;
 
       const dbRecord = {
         property_id: activeProperty.id,
@@ -1214,7 +1869,7 @@
           if (!upErr && updated) {
             quizState.saved_db_id = updated.id;
           } else if (upErr) {
-            console.warn('Supabase update blocked by RLS policy. Run: CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);');
+            console.warn('Supabase update error:', upErr.message);
           }
         } else {
           const { data: inserted, error: insErr } = await sb
@@ -1255,10 +1910,12 @@
       localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
     }
 
-    async function toggleBrokerOptIn(checked) {
+    async function toggleBrokerOptIn(checked, shouldPersist = true) {
       quizState.broker_opt_in = checked;
-      syncBrokerOptInBanner(checked);
-      await persistBuyerScanRecord();
+      syncBrokerOptInUI(checked);
+      if (shouldPersist && (quizState.saved_db_id || quizState.saved_local_id)) {
+        await persistBuyerScanRecord();
+      }
     }
 
     function finishBuyerSession() {
@@ -1270,11 +1927,14 @@
     function buildBuyerResultsSummaryText() {
       const propTitle = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
       const lvrText = quizState.base_lvr_pct <= 80
-        ? `~${quizState.base_lvr_pct}\% LVR (Best Rates)` : `~${quizState.base_lvr_pct}% LVR (Higher rates/fees may apply)`;
+        ? `~${quizState.base_lvr_pct}% LVR (Best Rates)`
+        : `~${quizState.base_lvr_pct}% LVR (Higher rates/fees may apply)`;
 
       return [
         `Property Match Summary - ${propTitle}`,
-        `Match Score: ${quizState.fit_percentage}% (${quizState.budget_badge})`, `Est. Max Borrow: $${Number(quizState.est_max_loan).toLocaleString()} (${lvrText})`, `Est. Purchase Price: $${Number(quizState.est_purchase_price).toLocaleString()} (+4% costs)`,
+        `Match Score: ${quizState.fit_percentage}% (${quizState.budget_badge})`,
+        `Est. Max Borrow: $${Number(quizState.est_max_loan).toLocaleString()} (${lvrText})`,
+        `Est. Purchase Price: $${Number(quizState.est_purchase_price).toLocaleString()} (+4% costs)`,
         `Indicative estimate via Mortgage Choice (Alex Fyfe).`
       ].join('\n');
     }
@@ -1285,8 +1945,7 @@
       const ua = navigator.userAgent.toLowerCase();
       const isIOS = /iphone|ipad|ipod/.test(ua);
       const separator = isIOS ? '&' : '?';
-      const smsUri = `sms:${cleanPhone}${separator}body=${encodeURIComponent(summary)}`;
-      window.location.href = smsUri;
+      window.location.href = `sms:${cleanPhone}${separator}body=${encodeURIComponent(summary)}`;
     }
 
     async function shareResultsSummary() {
@@ -1295,77 +1954,76 @@
 
       if (navigator.share) {
         try {
-          await navigator.share({
-            title: `Property Match - ${propTitle}`,
-            text: summary
-          });
+          await navigator.share({ title: `Property Match - ${propTitle}`, text: summary });
           return;
         } catch (e) {
           if (e.name === 'AbortError') return;
         }
       }
 
-      try {
-        await navigator.clipboard.writeText(summary);
-      } catch (e) {}
-      const subject = encodeURIComponent(`My Property Match - ${propTitle}`);
-      const body = encodeURIComponent(summary);
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      try { await navigator.clipboard.writeText(summary); } catch (e) {}
+      window.location.href = `mailto:?subject=${encodeURIComponent(`My Property Match - ${propTitle}`)}&body=${encodeURIComponent(summary)}`;
     }
 
     function downloadResultsCardImage() {
       const canvas = document.createElement('canvas');
-      canvas.width = 800;
-      canvas.height = 960;
+      canvas.width = 800; canvas.height = 960;
       const ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = '#F8FAFC';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#F8FAFC'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#006875'; ctx.fillRect(0, 0, canvas.width, 210);
 
-      ctx.fillStyle = '#006875';
-      ctx.fillRect(0, 0, canvas.width, 210);
-
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = '800 46px sans-serif';
-      ctx.textAlign = 'center';
+      ctx.fillStyle = '#FFFFFF'; ctx.font = '800 46px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText('Property Match', 400, 82);
-
-      ctx.fillStyle = '#CCFBF1';
-      ctx.font = '700 24px sans-serif';
+      ctx.fillStyle = '#CCFBF1'; ctx.font = '700 24px sans-serif';
       ctx.fillText(activeProperty.address || 'Open Home Inspection', 400, 132);
-
-      ctx.fillStyle = '#99F6E4';
-      ctx.font = '600 18px sans-serif';
+      ctx.fillStyle = '#99F6E4'; ctx.font = '600 18px sans-serif';
       ctx.fillText(activeProperty.suburb || '', 400, 166);
 
       const isPerfect = quizState.fit_percentage > 90;
       ctx.fillStyle = isPerfect ? '#ECFDF5' : '#F2F9FA';
       ctx.strokeStyle = isPerfect ? '#10B981' : '#006875';
       ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.roundRect(60, 245, 680, 310, 28);
-      ctx.fill();
-      ctx.stroke();
+      ctx.beginPath(); ctx.roundRect(60, 245, 680, 310, 28); ctx.fill(); ctx.stroke();
 
-      ctx.fillStyle = isPerfect ? '#065F46' : '#006875';
-      ctx.font = '800 18px sans-serif';
+      ctx.fillStyle = isPerfect ? '#065F46' : '#006875'; ctx.font = '800 18px sans-serif';
       ctx.fillText('PROPERTY MATCH SCORE', 400, 295);
 
       if (isPerfect) {
-        ctx.fillStyle = '#DB2777';
-        ctx.font = '800 34px sans-serif';
+        ctx.fillStyle = '#DB2777'; ctx.font = '800 34px sans-serif';
         ctx.fillText('Perfect Match!', 400, 345);
       }
 
-      ctx.fillStyle = isPerfect ? '#DB2777' : '#006875';
-      ctx.font = '800 96px sans-serif';
-      ctx.fillText(`${quizState.fit_percentage}\%`, 400, isPerfect ? 455 : 425);  ctx.fillStyle = isPerfect ? '#047857' : '#006875'; ctx.font = '700 24px sans-serif'; ctx.fillText(quizState.budget_badge, 400, 515);  ctx.fillStyle = '#FFFFFF'; ctx.strokeStyle = '#CBD5E1'; ctx.lineWidth = 3; ctx.beginPath(); ctx.roundRect(60, 585, 680, 195, 28); ctx.fill(); ctx.stroke();  ctx.fillStyle = '#64748B'; ctx.font = '800 17px sans-serif'; ctx.fillText('ESTIMATED MAX BORROWING POWER', 400, 635);  ctx.fillStyle = '#006875'; ctx.font = '800 54px sans-serif'; ctx.fillText(`$${Number(quizState.est_max_loan).toLocaleString()}`, 400, 702);  ctx.fillStyle = quizState.base_lvr_pct <= 80 ? '#047857' : (quizState.base_lvr_pct <= 90 ? '#EA580C' : '#E11D48'); ctx.font = '700 19px sans-serif'; const lvrNote = quizState.base_lvr_pct <= 80 ? `~${quizState.base_lvr_pct}% Base LVR (<=80%) - Best Rates & Fees`
+      ctx.fillStyle = isPerfect ? '#DB2777' : '#006875'; ctx.font = '800 96px sans-serif';
+      ctx.fillText(`${quizState.fit_percentage}%`, 400, isPerfect ? 455 : 425);
+
+      ctx.fillStyle = isPerfect ? '#047857' : '#006875'; ctx.font = '700 24px sans-serif';
+      ctx.fillText(quizState.budget_badge, 400, 515);
+
+      ctx.fillStyle = '#FFFFFF'; ctx.strokeStyle = '#CBD5E1'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.roundRect(60, 585, 680, 195, 28); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#64748B'; ctx.font = '800 17px sans-serif';
+      ctx.fillText('ESTIMATED MAX BORROWING POWER', 400, 635);
+      ctx.fillStyle = '#006875'; ctx.font = '800 54px sans-serif';
+      ctx.fillText(`$${Number(quizState.est_max_loan).toLocaleString()}`, 400, 702);
+
+      ctx.fillStyle = quizState.base_lvr_pct <= 80 ? '#047857' : (quizState.base_lvr_pct <= 90 ? '#EA580C' : '#E11D48');
+      ctx.font = '700 19px sans-serif';
+      const lvrNote = quizState.base_lvr_pct <= 80
+        ? `~${quizState.base_lvr_pct}% Base LVR (<=80%) - Best Rates & Fees`
         : `~${quizState.base_lvr_pct}% Base LVR - Higher rates and fees could be included`;
       ctx.fillText(lvrNote, 400, 748);
 
-      ctx.fillStyle = '#475569';
-      ctx.font = '600 16px sans-serif';
-      ctx.fillText(`Prepared for ${quizState.buyer_name} • Est. Price $${Number(quizState.est_purchase_price).toLocaleString()}`, 400, 835);  ctx.fillStyle = '#94A3B8'; ctx.font = '500 14px sans-serif'; ctx.fillText('Indicative estimate only (includes ~4\% purchase costs & 3\% buffer).', 400, 872); ctx.fillText('Alex Fyfe — Mortgage Broking Specialist, Mortgage Choice', 400, 900);  const safeSlug = (activeProperty.address \vert{}\vert{} 'Property').replace(/[^a-z0-9]+/gi, '-'); const link = document.createElement('a'); link.download = `Property-Match-${safeSlug}.png`;
+      ctx.fillStyle = '#475569'; ctx.font = '600 16px sans-serif';
+      ctx.fillText(`Prepared for ${quizState.buyer_name} • Est. Price $${Number(quizState.est_purchase_price).toLocaleString()}`, 400, 835);
+      ctx.fillStyle = '#94A3B8'; ctx.font = '500 14px sans-serif';
+      ctx.fillText('Indicative estimate only (includes ~4% purchase costs & 3% buffer).', 400, 872);
+      ctx.fillText('Alex Fyfe — Mortgage Broking Specialist, Mortgage Choice', 400, 900);
+
+      const safeSlug = (activeProperty.address || 'Property').replace(/[^a-z0-9]+/gi, '-');
+      const link = document.createElement('a');
+      link.download = `Property-Match-${safeSlug}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
@@ -1378,12 +2036,12 @@
       quizState.broker_opt_in = true;
       document.getElementById('buyer-name').value = '';
       document.getElementById('buyer-mobile').value = '';
-      syncBrokerOptInBanner(true);
+      syncBrokerOptInUI(true);
       clearContactGateError();
       goQuizStep(1);
     }
 
-    // ==================== AGENT DASHBOARD (TRAFFIC-LIGHT CALL LIST + CLEAR & UNDO) ====================
+    // ==================== AGENT DASHBOARD ====================
     function extractBuyerEstPrice(r) {
       if (r.est_purchase_price && Number(r.est_purchase_price) > 0) return Number(r.est_purchase_price);
       if (r.pets && typeof r.pets === 'string') {
@@ -1393,14 +2051,11 @@
       return null;
     }
 
-    function extractLeadStatus(r) {
+function extractLeadStatus(r) {
       if (r.lead_status && ['New', 'Called', 'Booked'].includes(r.lead_status)) return r.lead_status;
       if (r.pets && typeof r.pets === 'string') {
         const m = r.pets.match(/status:(New|Called|Booked)/i);
-        if (m) {
-          const norm = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
-          return norm;
-        }
+        if (m) return m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
       }
       return 'New';
     }
@@ -1426,10 +2081,7 @@
 
     function setUndoBackup(rows) {
       if (!rows || rows.length === 0) return;
-      undoBackup = {
-        property_id: activeProperty.id,
-        rows: rows
-      };
+      undoBackup = { property_id: activeProperty.id, rows };
       localStorage.setItem('openmatch_undo_backup', JSON.stringify(undoBackup));
       updateUndoBannerUI();
     }
@@ -1443,9 +2095,7 @@
     function showSupabaseDeleteHelp() {
       alert(
         'Supabase blocked deleting buyers because Row Level Security (RLS) has no DELETE policy yet.\n\n' +
-        'To fix this in 10 seconds:\n' +
-        '1. Open Supabase → SQL Editor\n' +
-        '2. Run:\n' +
+        'Run once in Supabase SQL Editor:\n' +
         'CREATE POLICY "Allow anon delete" ON buyer_scans FOR DELETE USING (true);'
       );
     }
@@ -1465,7 +2115,7 @@
         return alert('The buyer list for this property is already empty.');
       }
 
-      const ok = confirm(`Clear all ${fullRowsToBackup.length} buyer${fullRowsToBackup.length === 1 ? '' : 's'} from${activeProperty.address}?\n\nYou can click "Undo Restore" right after if you need them back.`);
+      const ok = confirm(`Clear all ${fullRowsToBackup.length} buyer${fullRowsToBackup.length === 1 ? '' : 's'} from ${activeProperty.address}?\n\nYou can click "Undo Restore" right after if you need them back.`);
       if (!ok) return;
 
       const btn = document.getElementById('btn-clear-list');
@@ -1542,10 +2192,7 @@
       if (!undoBackup || !Array.isArray(undoBackup.rows) || undoBackup.rows.length === 0) return;
 
       const btn = document.getElementById('btn-undo-clear');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Restoring...';
-      }
+      if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
 
       const rowsToRestore = undoBackup.rows.map(row => {
         const { id, created_at, ...cleanRow } = row;
@@ -1555,10 +2202,7 @@
       if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
         if (error) {
-          if (btn) {
-            btn.disabled = false;
-            btn.textContent = 'Undo Restore';
-          }
+          if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
           return alert('Could not restore buyers to Supabase: ' + error.message);
         }
       } else {
@@ -1568,11 +2212,7 @@
         localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
       }
 
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = 'Undo Restore';
-      }
-
+      if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
       dismissUndoBar();
       renderAgentDashboard();
     }
@@ -1680,8 +2320,31 @@
       let rows = [];
       if (hasSupabase && isValidUuid(activeProperty.id)) {
         const { data, error } = await sb.from('agent_leaderboard_view').select('*').eq('property_id', activeProperty.id).order('leaderboard_score', { ascending: false });
-        if (error) return document.getElementById('agent-leaderboard-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`; rows = data \vert{}\vert{} []; } else { rows = localScans.filter(s => s.property_id === activeProperty.id).sort((a, b) => b.leaderboard_score - a.leaderboard_score); }  const totalCount = rows.length; const greenCount = rows.filter(r => r.budget_badge === 'Budget Ready').length; const orangeCount = rows.filter(r => r.budget_badge === 'Within Reach' \vert{}\vert{} r.budget_badge === 'Subject to Sale').length; const priceEstimates = rows.map(extractBuyerEstPrice).filter(p => p && p > 0);  document.getElementById('kpi-total').textContent = totalCount; document.getElementById('kpi-green').textContent = greenCount; document.getElementById('kpi-orange').textContent = orangeCount;  if (priceEstimates.length > 0) { const avgPrice = Math.round(priceEstimates.reduce((a, b) => a + b, 0) / priceEstimates.length); const minEst = Math.min(...priceEstimates); const maxEst = Math.max(...priceEstimates); const guideMid = (Number(activeProperty.price_min) + Number(activeProperty.price_max)) / 2; const diff = avgPrice - guideMid; const diffText = diff >= 0 ? `+$${Math.round(diff / 1000)}k vs guide`
-          : `-$${Math.round(Math.abs(diff) / 1000)}k vs guide`; const rangeText = priceEstimates.length > 1 && minEst !== maxEst ? ` • $${Math.round(minEst / 1000)}k–$${Math.round(maxEst / 1000)}k` : '';  document.getElementById('kpi-avg-price').textContent = `$${avgPrice.toLocaleString()}`;
+        if (error) return document.getElementById('agent-leaderboard-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+        rows = data || [];
+      } else {
+        rows = localScans.filter(s => s.property_id === activeProperty.id).sort((a, b) => b.leaderboard_score - a.leaderboard_score);
+      }
+
+      const totalCount = rows.length;
+      const greenCount = rows.filter(r => r.budget_badge === 'Budget Ready').length;
+      const orangeCount = rows.filter(r => r.budget_badge === 'Within Reach' || r.budget_badge === 'Subject to Sale').length;
+      const priceEstimates = rows.map(extractBuyerEstPrice).filter(p => p && p > 0);
+
+      document.getElementById('kpi-total').textContent = totalCount;
+      document.getElementById('kpi-green').textContent = greenCount;
+      document.getElementById('kpi-orange').textContent = orangeCount;
+
+      if (priceEstimates.length > 0) {
+        const avgPrice = Math.round(priceEstimates.reduce((a, b) => a + b, 0) / priceEstimates.length);
+        const minEst = Math.min(...priceEstimates);
+        const maxEst = Math.max(...priceEstimates);
+        const guideMid = (Number(activeProperty.price_min) + Number(activeProperty.price_max)) / 2;
+        const diff = avgPrice - guideMid;
+        const diffText = diff >= 0 ? `+$${Math.round(diff / 1000)}k vs guide` : `-$${Math.round(Math.abs(diff) / 1000)}k vs guide`;
+        const rangeText = priceEstimates.length > 1 && minEst !== maxEst ? ` • $${Math.round(minEst / 1000)}k–$${Math.round(maxEst / 1000)}k` : '';
+
+        document.getElementById('kpi-avg-price').textContent = `$${avgPrice.toLocaleString()}`;
         document.getElementById('kpi-price-vs-guide').textContent = `${diffText}${rangeText}`;
       } else {
         document.getElementById('kpi-avg-price').textContent = '—';
@@ -1714,9 +2377,7 @@
           cardBorderClass = 'border-l-8 border-l-amber-500 border-amber-200/90';
           statusPillClass = 'bg-amber-100 text-amber-900 border border-amber-300';
           statusDotClass = 'bg-amber-500';
-          statusHeadline = r.budget_badge === 'Subject to Sale'
-            ? 'ORANGE • SUBJECT TO SALE'
-            : 'ORANGE • CLOSE / WITHIN REACH';
+          statusHeadline = r.budget_badge === 'Subject to Sale' ? 'ORANGE • SUBJECT TO SALE' : 'ORANGE • CLOSE / WITHIN REACH';
           actionPrompt = r.budget_badge === 'Subject to Sale'
             ? 'Appraisal Opportunity — Needs to sell current home first'
             : 'Strong Contender — Close to guide; worth discussing terms';
@@ -1730,14 +2391,16 @@
         if (bedTag) {
           const reqBeds = Number(bedTag.split(':')[1]);
           const met = Number(activeProperty.bedrooms) >= reqBeds;
-          if (!met) missing.push(`${reqBeds}+ Beds`); reqPills.push({ label: `${reqBeds}+ Beds`, met });
+          if (!met) missing.push(`${reqBeds}+ Beds`);
+          reqPills.push({ label: `${reqBeds}+ Beds`, met });
         }
 
         const bathTag = tags.find(t => t.startsWith('baths:'));
         if (bathTag) {
           const reqBaths = Number(bathTag.split(':')[1]);
           const met = Number(activeProperty.bathrooms) >= reqBaths;
-          if (!met) missing.push(`${reqBaths}+ Baths`); reqPills.push({ label: `${reqBaths}+ Baths`, met });
+          if (!met) missing.push(`${reqBaths}+ Baths`);
+          reqPills.push({ label: `${reqBaths}+ Baths`, met });
         }
 
         if (tags.includes('modern')) {
@@ -1784,11 +2447,6 @@
           : `<a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline font-extrabold">${escapeHtml(r.buyer_mobile)}</a>`;
 
         return `
-          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border ${cardBorderClass} space-y-4">
-            <div class="flex flex-wrap justify-between items-start gap-3">
-              <div class="space
-
-              return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border ${cardBorderClass} space-y-4">
             <div class="flex flex-wrap justify-between items-start gap-3">
               <div class="space-y-1">
@@ -1843,7 +2501,7 @@
       alert('Post-open SMS summary copied!');
     }
 
-    // ==================== BROKER LEADS (PROPERTY-FIRST PIPELINE) ====================
+    // ==================== BROKER LEADS ====================
     function selectBrokerProperty(propId) {
       brokerSelectedPropertyId = propId;
       renderBrokerLeads();
@@ -1860,7 +2518,7 @@
       const firstName = (buyerName || 'there').trim().split(/\s+/)[0];
       const cleanPhone = (buyerMobile || '').replace(/[^\d+]/g, '');
       const cleanProp = propAddress || 'the property';
-      const bodyText = `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and ticked to look at your exact borrowing power, grants, and guarantor options. Free for a quick 5-min chat?`;
+      const bodyText = `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and sent your details through to assess your borrowing power, grants, guarantors, and bridging options. Free for a quick 5-min chat?`;
 
       const ua = navigator.userAgent.toLowerCase();
       const isIOS = /iphone|ipad|ipod/.test(ua);
@@ -1895,7 +2553,7 @@
           if (error || !updatedRows || updatedRows.length === 0) {
             alert(
               'Status updated locally, but Supabase blocked saving it because Row Level Security (RLS) has no UPDATE policy yet.\n\n' +
-              'To save statuses in the cloud, run once in Supabase SQL Editor:\n' +
+              'Run once in Supabase SQL Editor:\n' +
               'CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);'
             );
           }
@@ -1922,21 +2580,14 @@
       }
       allRows.forEach(r => {
         if (r.property_id && !propMap.has(r.property_id)) {
-          propMap.set(r.property_id, {
-            id: r.property_id,
-            address: 'Property Listing',
-            suburb: '',
-            agent_name: ''
-          });
+          propMap.set(r.property_id, { id: r.property_id, address: 'Property Listing', suburb: '', agent_name: '' });
         }
       });
 
       const propertiesForCards = Array.from(propMap.values());
 
       if (!brokerSelectedPropertyId || !propMap.has(brokerSelectedPropertyId)) {
-        const propWithOptIn = propertiesForCards.find(p =>
-          allRows.some(r => r.property_id === p.id && r.broker_opt_in)
-        );
+        const propWithOptIn = propertiesForCards.find(p => allRows.some(r => r.property_id === p.id && r.broker_opt_in));
         brokerSelectedPropertyId = propWithOptIn
           ? propWithOptIn.id
           : (propMap.has(activeProperty.id) ? activeProperty.id : (propertiesForCards[0]?.id || null));
@@ -2090,7 +2741,6 @@
                 </p>
               </div>
 
-              <!-- Lead Status Pills (New -> Called -> Booked) -->
               <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80 shrink-0">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1.5">Status:</span>
                 ${statusBtn('New')}
