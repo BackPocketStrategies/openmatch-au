@@ -481,7 +481,7 @@
             </div>
           </div>
 
-          <!-- STEP 4: BEST-GUESS INCOME & OPEN LIABILITIES -->
+          <!-- STEP 4: BEST-GUESS INCOME, COMMITMENTS & CONTACT GATE -->
           <div id="q-step-4" class="quiz-step hidden space-y-4">
             <div>
               <h3 class="font-bold text-base text-slate-900">Best-guess income & commitments</h3>
@@ -536,9 +536,19 @@
               </select>
             </div>
 
+            <!-- Required Contact Gate Before Showing Results -->
+            <div class="bg-[#F2F9FA] p-4 rounded-2xl border-2 border-[#006875]/35 space-y-2.5">
+              <div>
+                <p class="text-xs font-extrabold text-[#004852]">Where should we unlock your Property Match?</p>
+                <p class="text-[11px] text-slate-600 mt-0.5">Enter your name and mobile to view your instant match score & max borrow.</p>
+              </div>
+              <input id="buyer-name" type="text" placeholder="Your Full Name *" class="w-full p-3 text-sm font-semibold bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
+              <input id="buyer-mobile" type="tel" placeholder="Mobile Number *" class="w-full p-3 text-sm font-semibold bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
+            </div>
+
             <div class="flex gap-2.5 pt-1">
               <button onclick="goQuizStep(3)" class="w-1/3 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl text-sm">← Back</button>
-              <button onclick="calculateAndShowResults()" class="w-2/3 bg-[#006875] text-white font-bold py-3.5 rounded-xl shadow-md">See My Results →</button>
+              <button id="btn-unlock-results" onclick="calculateAndShowResults()" class="w-2/3 bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-md">Unlock My Results →</button>
             </div>
           </div>
 
@@ -548,7 +558,7 @@
               <button type="button" onclick="goQuizStep(4)" class="inline-flex items-center gap-1 text-xs font-bold text-[#006875] hover:text-[#004852] bg-[#F2F9FA] hover:bg-teal-100/70 px-3 py-1.5 rounded-xl border border-[#006875]/20 transition">
                 ← Change Figures
               </button>
-              <span class="text-[11px] font-semibold text-slate-400">Adjust sliders to compare</span>
+              <span id="res-buyer-greeting" class="text-[11px] font-bold text-slate-500">Prepared for you</span>
             </div>
 
             <div class="space-y-3">
@@ -582,21 +592,43 @@
               <p id="res-limiting-desc" class="text-[11.5px] text-slate-200 leading-relaxed"></p>
             </div>
 
+            <!-- Free Zero-Cost Save & Send to Buyer Box -->
+            <div class="bg-white border-2 border-[#006875]/25 p-4 rounded-2xl space-y-2.5 shadow-sm">
+              <div>
+                <p class="text-xs font-extrabold text-slate-900">Keep a copy of your Property Match</p>
+                <p class="text-[11px] text-slate-500">Send these numbers straight to your phone or save a summary card.</p>
+              </div>
+
+              <button type="button" onclick="sendResultsViaSms()" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-extrabold text-xs py-3 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition">
+                <span>💬 Text Summary to My Phone</span>
+              </button>
+
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="downloadResultsCardImage()" class="bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/25 font-extrabold text-xs py-2.5 px-3 rounded-xl transition">
+                  🖼️ Save Image Card
+                </button>
+                <button type="button" onclick="shareResultsSummary()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs py-2.5 px-3 rounded-xl transition">
+                  📤 Share / Email
+                </button>
+              </div>
+            </div>
+
             <p class="text-[10.5px] leading-relaxed text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
               <strong>Indicative Best-Guess Estimate Only:</strong> Includes ~4% purchase costs (stamp duty, transfer, registration & conveyancing) and a 3.0% APRA serviceability buffer. Not a formal credit assessment.
             </p>
 
+            <!-- Optional Broker Opt-In Toggle -->
             <div class="border-t border-slate-100 pt-3 space-y-2.5">
-              <p class="text-xs font-extrabold text-slate-800">Save your Property Match results:</p>
-              <input id="buyer-name" type="text" placeholder="Your Full Name *" class="w-full p-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
-              <input id="buyer-mobile" type="tel" placeholder="Mobile Number *" class="w-full p-3 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
-
               <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer">
-                <input id="buyer-opt-in" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
+                <input id="buyer-opt-in" type="checkbox" onchange="toggleBrokerOptIn(this.checked)" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
                 <span class="text-xs text-slate-900 leading-snug">
                   <strong>Send to Alex Fyfe — Mortgage Broking Specialist (Optional):</strong> Tick here to have Alex, your mortgage broking specialist, double-check your exact borrowing power, guarantor options, or LVR tiers across 30+ lenders.
                 </span>
               </label>
+
+              <div id="broker-optin-confirmed" class="hidden text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
+                ✓ Sent to Alex Fyfe! Alex will review your borrowing options and reach out shortly.
+              </div>
 
               <p class="text-[10px] text-slate-400 leading-normal">
                 Independent Mortgage Choice tool: Your income, deposit, and borrowing figures stay private and are never shown to the selling agent. Alex Fyfe — Mortgage Broking Specialist & Owner Manager, Mortgage Choice.
@@ -604,8 +636,8 @@
 
               <div class="flex gap-2.5 pt-1">
                 <button type="button" onclick="goQuizStep(4)" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl text-sm transition">← Back</button>
-                <button id="btn-submit-scan" onclick="submitBuyerScan()" class="w-2/3 bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm transition">
-                  Save My Property Match
+                <button type="button" onclick="finishBuyerSession()" class="w-2/3 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-sm transition">
+                  Done ✓
                 </button>
               </div>
             </div>
@@ -616,7 +648,12 @@
             <div class="w-14 h-14 bg-[#006875]/10 text-[#006875] rounded-2xl flex items-center justify-center mx-auto text-2xl font-extrabold">✓</div>
             <h3 class="text-xl font-extrabold text-slate-900">Property Match Saved!</h3>
             <p class="text-sm text-slate-600 max-w-xs mx-auto">Enjoy inspecting the home. Your financial figures stay private with Mortgage Choice.</p>
-            <button onclick="resetQuiz()" class="text-xs text-[#006875] font-bold underline pt-3">Run another test scan</button>
+            <div class="pt-2 flex flex-col gap-2 max-w-xs mx-auto">
+              <button type="button" onclick="sendResultsViaSms()" class="w-full bg-[#006875] text-white text-xs font-extrabold py-3 px-4 rounded-xl">
+                💬 Text Summary to My Phone
+              </button>
+              <button onclick="resetQuiz()" class="text-xs text-[#006875] font-bold underline pt-2">Run another test scan</button>
+            </div>
           </div>
         </div>
       </div>
@@ -742,6 +779,10 @@
     let brokerOptInOnly = true;
 
     let quizState = {
+      saved_db_id: null,
+      saved_local_id: null,
+      buyer_name: '',
+      buyer_mobile: '',
       household: 'Solo',
       stage: 'Pre-Approved',
       timeline: 'ASAP',
@@ -1243,7 +1284,6 @@
       document.getElementById('agent-prop-subtitle').textContent = guideString;
       document.getElementById('quiz-prop-guide').textContent = guideString;
 
-      // Configure buyer's Estimated Purchase Price slider to start at the guide midpoint in $20k increments
       const midPrice = Math.round(((minP + maxP) / 2) / 20000) * 20000;
       const sliderMin = Math.max(200000, Math.floor((minP * 0.75) / 20000) * 20000);
       const sliderMax = Math.max(midPrice + 200000, Math.ceil((maxP * 1.35) / 20000) * 20000);
@@ -1339,7 +1379,6 @@
     }
 
     function computeWeightedPropertyMatch(prop, params) {
-      // 1. Wish List & Specs Score (out of 60 pts)
       const criteriaScores = [];
       const propBeds = Number(prop.bedrooms) || 3;
       const propBaths = Number(prop.bathrooms) || 2;
@@ -1369,7 +1408,6 @@
       const wishListPts = wishListRatio * 60;
       const wishListPct = Math.round(wishListRatio * 100);
 
-      // 2. Budget & Price Fit Score (out of 30 pts)
       let budgetRatio = 0.25;
       let budgetLabel = 'Stretched';
       if (params.budget_badge === 'Budget Ready') {
@@ -1387,7 +1425,6 @@
       }
       const budgetPts = budgetRatio * 30;
 
-      // 3. Household & Space Fit Score (out of 10 pts)
       let spaceRatio = 1.0;
       let spaceLabel = 'Great';
       if (params.household === 'Family') {
@@ -1417,8 +1454,26 @@
       };
     }
 
-    function calculateAndShowResults() {
+    async function calculateAndShowResults() {
+      const nameInput = document.getElementById('buyer-name');
+      const mobileInput = document.getElementById('buyer-mobile');
+      const name = nameInput.value.trim();
+      const mobile = mobileInput.value.trim();
+
+      if (!name || !mobile) {
+        alert('Please enter your full name and mobile number to unlock your Property Match and borrowing results.');
+        if (!name) nameInput.focus();
+        else mobileInput.focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-unlock-results');
+      btn.disabled = true;
+      btn.textContent = 'Calculating...';
+
       updateSliders();
+      quizState.buyer_name = name;
+      quizState.buyer_mobile = mobile;
       quizState.dependants = Number(document.getElementById('input-dependants').value);
 
       const estPrice = quizState.est_purchase_price;
@@ -1522,6 +1577,11 @@
       quizState.budget_badge = budgetBadge;
       quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
 
+      // Persist scan immediately upon unlocking results (updating if they went back & recalculated)
+      await persistBuyerScanRecord();
+
+      const firstName = name.split(/\s+/)[0];
+      document.getElementById('res-buyer-greeting').textContent = `Prepared for ${firstName}`;
       maxLoanEl.textContent = `$${estMaxLoan.toLocaleString()}`;
       document.getElementById('res-fit-score').textContent = `${fitPct}%`;
       document.getElementById('res-budget-label').textContent = budgetBadge;
@@ -1555,27 +1615,25 @@
         budgetLabelEl.className = 'text-sm font-extrabold text-[#006875]';
       }
 
+      btn.disabled = false;
+      btn.textContent = 'Unlock My Results →';
+
       goQuizStep(5);
       document.getElementById('quiz-step-label').textContent = 'Your Results';
       document.getElementById('quiz-progress').style.width = '100%';
     }
 
-    async function submitBuyerScan() {
-      const name = document.getElementById('buyer-name').value.trim();
-      const mobile = document.getElementById('buyer-mobile').value.trim();
-      if (!name || !mobile) return alert('Please enter your name and mobile number.');
-
-      const btn = document.getElementById('btn-submit-scan');
-      btn.disabled = true; btn.textContent = 'Saving...';
-
+    async function persistBuyerScanRecord() {
       const combinedMustHaves = [...quizState.must_haves];
       if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
       if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
 
+      const optInChecked = Boolean(document.getElementById('buyer-opt-in')?.checked);
+
       const dbRecord = {
         property_id: activeProperty.id,
-        buyer_name: name,
-        buyer_mobile: mobile,
+        buyer_name: quizState.buyer_name,
+        buyer_mobile: quizState.buyer_mobile,
         household: quizState.household,
         pets: `${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`,
         must_haves: combinedMustHaves,
@@ -1589,11 +1647,41 @@
         fit_percentage: quizState.fit_percentage,
         budget_badge: quizState.budget_badge,
         leaderboard_score: quizState.leaderboard_score,
-        broker_opt_in: document.getElementById('buyer-opt-in').checked
+        broker_opt_in: optInChecked
       };
 
+      if (hasSupabase && isValidUuid(activeProperty.id)) {
+        if (quizState.saved_db_id && isValidUuid(quizState.saved_db_id)) {
+          const { data: updated, error: upErr } = await sb
+            .from('buyer_scans')
+            .update(dbRecord)
+            .eq('id', quizState.saved_db_id)
+            .select()
+            .maybeSingle();
+
+          if (!upErr && updated) {
+            quizState.saved_db_id = updated.id;
+          }
+        } else {
+          const { data: inserted, error: insErr } = await sb
+            .from('buyer_scans')
+            .insert([dbRecord])
+            .select()
+            .maybeSingle();
+
+          if (!insErr && inserted) {
+            quizState.saved_db_id = inserted.id;
+          } else if (insErr) {
+            console.warn('Supabase insert error:', insErr.message);
+          }
+        }
+      }
+
+      const localId = quizState.saved_local_id || ('s-' + Date.now());
+      quizState.saved_local_id = localId;
+
       const fullLocalRecord = {
-        id: 's-' + Date.now(),
+        id: quizState.saved_db_id || localId,
         ...dbRecord,
         est_purchase_price: quizState.est_purchase_price,
         cash_deposit: quizState.cash_deposit,
@@ -1605,22 +1693,205 @@
         limiting_factor: quizState.limiting_factor
       };
 
-      if (hasSupabase && isValidUuid(activeProperty.id)) {
-        const { error } = await sb.from('buyer_scans').insert([dbRecord]);
-        if (error) { btn.disabled = false; btn.textContent = 'Save My Property Match'; return alert('Supabase error: ' + error.message); }
+      localScans = [
+        fullLocalRecord,
+        ...localScans.filter(s => s.id !== localId && (!quizState.saved_db_id || s.id !== quizState.saved_db_id))
+      ];
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+    }
+
+    async function toggleBrokerOptIn(checked) {
+      const badge = document.getElementById('broker-optin-confirmed');
+      if (badge) {
+        if (checked) badge.classList.remove('hidden');
+        else badge.classList.add('hidden');
       }
-      localScans.unshift(fullLocalRecord);
+
+      // Update local record immediately
+      localScans = localScans.map(s => {
+        if (s.id === quizState.saved_local_id || (quizState.saved_db_id && s.id === quizState.saved_db_id)) {
+          return { ...s, broker_opt_in: checked };
+        }
+        return s;
+      });
       localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
 
-      btn.disabled = false; btn.textContent = 'Save My Property Match';
+      // Update Supabase row
+      if (hasSupabase && isValidUuid(activeProperty.id) && quizState.saved_db_id && isValidUuid(quizState.saved_db_id)) {
+        const { data: updatedRows, error } = await sb
+          .from('buyer_scans')
+          .update({ broker_opt_in: checked })
+          .eq('id', quizState.saved_db_id)
+          .select();
+
+        if (error || !updatedRows || updatedRows.length === 0) {
+          console.warn('Supabase update blocked by RLS policy. Run: CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);');
+        }
+      }
+    }
+
+    function finishBuyerSession() {
       document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
       document.getElementById('q-step-done').classList.remove('hidden');
     }
 
+    // ==================== ZERO-COST BUYER SAVE & SEND HELPERS ====================
+    function buildBuyerResultsSummaryText() {
+      const propTitle = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
+      const lvrText = quizState.base_lvr_pct <= 80
+        ? `~${quizState.base_lvr_pct}% LVR (Best Rates)`
+        : `~${quizState.base_lvr_pct}% LVR (Higher rates/fees may apply)`;
+
+      return [
+        `Property Match Summary - ${propTitle}`,
+        `Match Score: ${quizState.fit_percentage}% (${quizState.budget_badge})`,
+        `Est. Max Borrow: $${Number(quizState.est_max_loan).toLocaleString()} (${lvrText})`,
+        `Est. Purchase Price: $${Number(quizState.est_purchase_price).toLocaleString()} (+4% costs)`,
+        `Indicative estimate via Mortgage Choice (Alex Fyfe).`
+      ].join('\n');
+    }
+
+    function sendResultsViaSms() {
+      const cleanPhone = (quizState.buyer_mobile || '').replace(/[^\d+]/g, '');
+      const summary = buildBuyerResultsSummaryText();
+      const ua = navigator.userAgent.toLowerCase();
+      const isIOS = /iphone|ipad|ipod/.test(ua);
+      const separator = isIOS ? '&' : '?';
+      const smsUri = `sms:${cleanPhone}${separator}body=${encodeURIComponent(summary)}`;
+      window.location.href = smsUri;
+    }
+
+    async function shareResultsSummary() {
+      const propTitle = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
+      const summary = buildBuyerResultsSummaryText();
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `Property Match - ${propTitle}`,
+            text: summary
+          });
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') return;
+        }
+      }
+
+      // Fallback on desktop/unsupported browsers: copy to clipboard & offer email draft
+      try {
+        await navigator.clipboard.writeText(summary);
+      } catch (e) {}
+      const subject = encodeURIComponent(`My Property Match - ${propTitle}`);
+      const body = encodeURIComponent(summary);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+
+    function downloadResultsCardImage() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 960;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#F8FAFC';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Top Teal Header
+      ctx.fillStyle = '#006875';
+      ctx.fillRect(0, 0, canvas.width, 210);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 46px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Property Match', 400, 82);
+
+      ctx.fillStyle = '#CCFBF1';
+      ctx.font = '700 24px sans-serif';
+      ctx.fillText(activeProperty.address || 'Open Home Inspection', 400, 132);
+
+      ctx.fillStyle = '#99F6E4';
+      ctx.font = '600 18px sans-serif';
+      ctx.fillText(activeProperty.suburb || '', 400, 166);
+
+      // Match Card Box
+      const isPerfect = quizState.fit_percentage > 90;
+      ctx.fillStyle = isPerfect ? '#ECFDF5' : '#F2F9FA';
+      ctx.strokeStyle = isPerfect ? '#10B981' : '#006875';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.roundRect(60, 245, 680, 310, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = isPerfect ? '#065F46' : '#006875';
+      ctx.font = '800 18px sans-serif';
+      ctx.fillText('PROPERTY MATCH SCORE', 400, 295);
+
+      if (isPerfect) {
+        ctx.fillStyle = '#DB2777';
+        ctx.font = '800 34px sans-serif';
+        ctx.fillText('Perfect Match!', 400, 345);
+      }
+
+      ctx.fillStyle = isPerfect ? '#DB2777' : '#006875';
+      ctx.font = '800 96px sans-serif';
+      ctx.fillText(`${quizState.fit_percentage}%`, 400, isPerfect ? 455 : 425);
+
+      ctx.fillStyle = isPerfect ? '#047857' : '#006875';
+      ctx.font = '700 24px sans-serif';
+      ctx.fillText(quizState.budget_badge, 400, 515);
+
+      // Max Borrowing Box
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(60, 585, 680, 195, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#64748B';
+      ctx.font = '800 17px sans-serif';
+      ctx.fillText('ESTIMATED MAX BORROWING POWER', 400, 635);
+
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 54px sans-serif';
+      ctx.fillText(`$${Number(quizState.est_max_loan).toLocaleString()}`, 400, 702);
+
+      ctx.fillStyle = quizState.base_lvr_pct <= 80 ? '#047857' : (quizState.base_lvr_pct <= 90 ? '#EA580C' : '#E11D48');
+      ctx.font = '700 19px sans-serif';
+      const lvrNote = quizState.base_lvr_pct <= 80
+        ? `~${quizState.base_lvr_pct}% Base LVR (<=80%) - Best Rates & Fees`
+        : `~${quizState.base_lvr_pct}% Base LVR - Higher rates and fees could be included`;
+      ctx.fillText(lvrNote, 400, 748);
+
+      // Footer
+      ctx.fillStyle = '#475569';
+      ctx.font = '600 16px sans-serif';
+      ctx.fillText(`Prepared for ${quizState.buyer_name} • Est. Price $${Number(quizState.est_purchase_price).toLocaleString()}`, 400, 835);
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '500 14px sans-serif';
+      ctx.fillText('Indicative estimate only (includes ~4% purchase costs & 3% buffer).', 400, 872);
+      ctx.fillText('Alex Fyfe — Mortgage Broking Specialist, Mortgage Choice', 400, 900);
+
+      const safeSlug = (activeProperty.address || 'Property').replace(/[^a-z0-9]+/gi, '-');
+      const link = document.createElement('a');
+      link.download = `Property-Match-${safeSlug}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
     function resetQuiz() {
+      quizState.saved_db_id = null;
+      quizState.saved_local_id = null;
+      quizState.buyer_name = '';
+      quizState.buyer_mobile = '';
       document.getElementById('buyer-name').value = '';
       document.getElementById('buyer-mobile').value = '';
       document.getElementById('buyer-opt-in').checked = false;
+      const badge = document.getElementById('broker-optin-confirmed');
+      if (badge) badge.classList.add('hidden');
       goQuizStep(1);
     }
 
