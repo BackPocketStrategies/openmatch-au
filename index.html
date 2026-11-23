@@ -699,7 +699,7 @@
           <div class="space-y-1.5">
             <div class="flex flex-wrap items-center gap-2">
               <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Open Home Buyer Call List</span>
-              <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">🔒 Financial figures & price estimates kept private</span>
+              <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">🔒 Individual buyer finances & price estimates kept private</span>
             </div>
             <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">42 Kensington Road, Norwood SA 5067</h1>
             <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
@@ -724,8 +724,8 @@
           </div>
         </div>
 
-        <!-- 3-Card Executive Summary Bar -->
-        <div id="agent-kpi-bar" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <!-- 4-Card Executive Summary Bar -->
+        <div id="agent-kpi-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           <div class="bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl">
             <p class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Scanned Buyers</p>
             <p id="kpi-total" class="text-2xl font-extrabold text-slate-900 mt-0.5">0</p>
@@ -740,6 +740,11 @@
             <p class="text-[10.5px] font-bold uppercase tracking-wider text-amber-700">Orange • Close / Sale</p>
             <p id="kpi-orange" class="text-2xl font-extrabold text-amber-800 mt-0.5">0</p>
             <p class="text-[11px] text-amber-700 font-medium mt-0.5">Within reach / sell first</p>
+          </div>
+          <div class="bg-[#F2F9FA] border border-[#006875]/25 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-[#006875]">Overall Price Est.</p>
+            <p id="kpi-avg-price" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">—</p>
+            <p id="kpi-price-vs-guide" class="text-[11px] text-[#006875] font-semibold mt-0.5">Awaiting buyer scans</p>
           </div>
         </div>
       </div>
@@ -1689,13 +1694,14 @@
       if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
 
       const optInChecked = Boolean(document.getElementById('buyer-opt-in')?.checked);
+      const encodedPets = `est_price:${Math.round(quizState.est_purchase_price)}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`;
 
       const dbRecord = {
         property_id: activeProperty.id,
         buyer_name: quizState.buyer_name,
         buyer_mobile: quizState.buyer_mobile,
         household: quizState.household,
-        pets: `${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`,
+        pets: encodedPets,
         must_haves: combinedMustHaves,
         buying_stage: quizState.stage,
         timeline: quizState.timeline,
@@ -2242,10 +2248,31 @@
       const totalCount = rows.length;
       const greenCount = rows.filter(r => r.budget_badge === 'Budget Ready').length;
       const orangeCount = rows.filter(r => r.budget_badge === 'Within Reach' || r.budget_badge === 'Subject to Sale').length;
+      const priceEstimates = rows.map(extractBuyerEstPrice).filter(p => p && p > 0);
 
       document.getElementById('kpi-total').textContent = totalCount;
       document.getElementById('kpi-green').textContent = greenCount;
       document.getElementById('kpi-orange').textContent = orangeCount;
+
+      if (priceEstimates.length > 0) {
+        const avgPrice = Math.round(priceEstimates.reduce((a, b) => a + b, 0) / priceEstimates.length);
+        const minEst = Math.min(...priceEstimates);
+        const maxEst = Math.max(...priceEstimates);
+        const guideMid = (Number(activeProperty.price_min) + Number(activeProperty.price_max)) / 2;
+        const diff = avgPrice - guideMid;
+        const diffText = diff >= 0
+          ? `+$${Math.round(diff / 1000)}k vs guide`
+          : `-$${Math.round(Math.abs(diff) / 1000)}k vs guide`;
+        const rangeText = priceEstimates.length > 1 && minEst !== maxEst
+          ? ` • $${Math.round(minEst / 1000)}k–$${Math.round(maxEst / 1000)}k`
+          : '';
+
+        document.getElementById('kpi-avg-price').textContent = `$${avgPrice.toLocaleString()}`;
+        document.getElementById('kpi-price-vs-guide').textContent = `${diffText}${rangeText}`;
+      } else {
+        document.getElementById('kpi-avg-price').textContent = '—';
+        document.getElementById('kpi-price-vs-guide').textContent = 'Awaiting buyer scans';
+      }
 
       const container = document.getElementById('agent-leaderboard-list');
       if (rows.length === 0) {
