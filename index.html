@@ -79,8 +79,15 @@
 </head>
 <body class="bg-slate-100/80 text-slate-900 min-h-screen antialiased">
 
-  <!-- TOP ADMIN BAR -->
-  <header id="admin-nav" class="bg-[#0B1120] text-white sticky top-0 z-40 border-b border-slate-800/80">
+  <!-- INITIAL CLEAN LOADING SCREEN (PREVENTS ADMIN FLASH ON QR / AGENT LINKS) -->
+  <div id="app-loader" class="min-h-screen flex flex-col items-center justify-center px-4 text-center">
+    <div class="w-14 h-14 rounded-2xl bg-[#006875] text-white flex items-center justify-center font-fun font-extrabold text-2xl shadow-md mb-4 animate-pulse">PM</div>
+    <p class="font-clean-display font-extrabold text-lg text-slate-900">Property Match</p>
+    <p id="loader-subtitle" class="text-xs font-semibold text-slate-500 mt-1">Loading property details...</p>
+  </div>
+
+  <!-- TOP ADMIN BAR (HIDDEN UNTIL ADMIN VIEW CONFIRMED) -->
+  <header id="admin-nav" class="hidden bg-[#0B1120] text-white sticky top-0 z-40 border-b border-slate-800/80">
     <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-[#006875] flex items-center justify-center text-white font-extrabold text-sm">PM</div>
@@ -99,7 +106,7 @@
   <main class="max-w-6xl mx-auto px-4 py-7">
 
     <!-- ==================== VIEW 1: PROPERTY IMPORTER & QR STUDIO ==================== -->
-    <section id="view-admin" class="space-y-6">
+    <section id="view-admin" class="hidden space-y-6">
 
       <!-- Prominent Saved Properties Switcher Bar -->
       <div class="bg-white rounded-3xl shadow-sm border-2 border-[#006875]/30 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
@@ -349,8 +356,8 @@
             <span>30-Sec Property Match</span>
             <span id="quiz-step-label" class="bg-white/10 text-white px-2.5 py-0.5 rounded-full">Step 1 of 5</span>
           </div>
-          <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">42 Kensington Road, Norwood SA 5067</h2>
-          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
+          <h2 id="quiz-prop-title" class="font-extrabold text-xl leading-snug tracking-tight">Loading property...</h2>
+          <p id="quiz-prop-guide" class="text-xs text-slate-300 mt-1">Checking listing guide...</p>
           <div class="w-full bg-slate-700/70 h-1.5 rounded-full mt-4 overflow-hidden">
             <div id="quiz-progress" class="bg-teal-400 h-full transition-all duration-300 rounded-full" style="width: 20%"></div>
           </div>
@@ -390,7 +397,7 @@
             <button onclick="goQuizStep(2)" class="w-full bg-[#006875] hover:bg-[#005560] text-white font-bold py-3.5 rounded-xl shadow-sm mt-2">Continue →</button>
           </div>
 
-          <!-- STEP 2: PROPERTY MUST-HAVES (6 Requirements) -->
+          <!-- STEP 2: PROPERTY MUST-HAVES -->
           <div id="q-step-2" class="quiz-step hidden space-y-5">
             <div>
               <h3 class="font-bold text-base text-slate-900 mb-1">Your property must-haves?</h3>
@@ -445,11 +452,11 @@
               <p class="text-xs text-slate-500 mt-0.5">Rough estimates only — no exact numbers needed.</p>
             </div>
 
-            <!-- Noticeable Privacy Assurance Banner -->
+            <!-- Agent-Private Assurance Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
-                100% Private: No financial figures or property price estimations get sent through to the selling agent or broker.
+                100% Agent-Private: Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
               </p>
             </div>
 
@@ -498,11 +505,11 @@
               <p class="text-xs text-slate-500 mt-0.5">Only include debts & card limits you plan to <strong>keep open</strong> during the application.</p>
             </div>
 
-            <!-- Noticeable Privacy Assurance Banner -->
+            <!-- Agent-Private Assurance Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
-                100% Private: No financial figures or property price estimations get sent through to the selling agent or broker.
+                100% Agent-Private: Your income, deposit &amp; price estimate are NEVER shown to the selling agent.
               </p>
             </div>
 
@@ -552,7 +559,7 @@
             </div>
           </div>
 
-          <!-- STEP 5: REQUIRED CONTACT DETAILS GATE BEFORE SHOWING RESULTS -->
+          <!-- STEP 5: REQUIRED CONTACT DETAILS & UPFRONT BROKER CONSENT (OPTION 2) -->
           <div id="q-step-5" class="quiz-step hidden space-y-4">
             <div class="text-center space-y-1.5 pt-1">
               <span class="inline-block text-[11px] font-extrabold uppercase tracking-widest text-[#006875] bg-[#F2F9FA] px-3 py-1 rounded-full border border-[#006875]/20">
@@ -560,7 +567,7 @@
               </span>
               <h3 class="font-extrabold text-xl text-slate-900">Your Property Match is Ready!</h3>
               <p class="text-xs text-slate-600 max-w-xs mx-auto leading-relaxed">
-                Enter your name and mobile number below to unlock your <strong>Property Match %</strong> and <strong>Est. Max Borrowing Power</strong>.
+                Enter your details below to unlock your <strong>Property Match %</strong> and <strong>Est. Max Borrowing Power</strong>.
               </p>
             </div>
 
@@ -580,10 +587,20 @@
               </p>
             </div>
 
-            <div class="flex items-start gap-2.5 bg-teal-50/80 border border-[#006875]/25 p-3 rounded-2xl">
-              <span class="shrink-0 w-5 h-5 rounded-full bg-[#006875] text-white flex items-center justify-center text-[11px] font-bold mt-0.5">🔒</span>
-              <p class="text-[11px] font-semibold text-[#004852] leading-snug">
-                Your income, deposit, and price estimates stay 100% private and are never shown to the selling agent.
+            <!-- Upfront Financial Sharing Consent Toggle -->
+            <div class="bg-white p-3.5 rounded-2xl border-2 border-[#006875]/30 space-y-2.5 shadow-sm">
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input id="buyer-share-finances" type="checkbox" checked onchange="onStep5ConsentChange(this.checked)"
+                  class="mt-0.5 w-4 h-4 rounded accent-[#006875] shrink-0" />
+                <span class="text-xs text-slate-900 leading-snug">
+                  <strong>Share my financial estimates with Alex Fyfe (Mortgage Choice)</strong>
+                  <span class="block text-[11px] text-slate-500 font-normal mt-0.5">
+                    So Alex can check your exact borrowing power, eligible government grants &amp; guarantor options. <strong>Never shared with the selling agent.</strong>
+                  </span>
+                </span>
+              </label>
+              <p id="step5-consent-status" class="text-[11px] font-bold text-[#006875] bg-[#F2F9FA] px-3 py-1.5 rounded-xl border border-[#006875]/20 leading-snug">
+                ✓ Included: Your indicative income, deposit &amp; LVR breakdown will be sent confidentially to Alex Fyfe.
               </p>
             </div>
 
@@ -605,7 +622,7 @@
             </div>
 
             <div class="space-y-3">
-              <!-- Property Match Hero Card (Green + Huge Pink Heart & "Perfect Match" ONLY when >90%) -->
+              <!-- Property Match Hero Card -->
               <div id="res-match-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-5 rounded-3xl text-center flex flex-col items-center">
                 <p id="res-match-heading" class="text-xs font-extrabold uppercase tracking-widest text-[#006875]">Property Match</p>
                 <p id="res-perfect-label" class="hidden font-fun text-3xl sm:text-4xl font-extrabold text-pink-600 leading-tight mt-1">Perfect Match</p>
@@ -619,7 +636,7 @@
                 <p id="res-fit-breakdown" class="text-xs font-semibold text-slate-600 mt-0.5 leading-snug">Wish list • Budget • Space</p>
               </div>
 
-              <!-- Max Borrowing Box (Light Blue/Teal Matching Property Match) -->
+              <!-- Max Borrowing Box -->
               <div id="res-borrow-card" class="bg-[#F2F9FA] border border-[#006875]/30 p-4 rounded-2xl flex flex-col justify-between">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                   <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Est. Max Borrow</p>
@@ -660,17 +677,21 @@
               <strong>Indicative Best-Guess Estimate Only:</strong> Includes ~4% purchase costs (stamp duty, transfer, registration & conveyancing) and a 3.0% APRA serviceability buffer. Not a formal credit assessment.
             </p>
 
-            <!-- Optional Broker Opt-In Toggle -->
+            <!-- Broker Sharing Status / Opt-In Toggle (Synced with Step 5) -->
             <div class="border-t border-slate-100 pt-3 space-y-2.5">
               <label class="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/90 border-2 border-amber-300 cursor-pointer">
-                <input id="buyer-opt-in" type="checkbox" onchange="toggleBrokerOptIn(this.checked)" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
+                <input id="buyer-opt-in" type="checkbox" checked onchange="toggleBrokerOptIn(this.checked)" class="mt-0.5 w-4 h-4 rounded accent-amber-600" />
                 <span class="text-xs text-slate-900 leading-snug">
-                  <strong>Check your exact borrowing power, eligible government grants and guarantor options</strong> — Contact Alex Fyfe from Mortgage Choice, your mortgage broking specialist.
+                  <strong>Share my financial figures with Alex Fyfe (Mortgage Choice)</strong> to check exact borrowing power, eligible government grants &amp; guarantor options.
                 </span>
               </label>
 
-              <div id="broker-optin-confirmed" class="hidden text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
-                ✓ Sent to Alex Fyfe! Alex will review your borrowing options and reach out shortly.
+              <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl">
+                ✓ Shared confidentially with Alex Fyfe! Alex will review your borrowing options and reach out shortly.
+              </div>
+
+              <div id="broker-optin-redacted" class="hidden text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl">
+                🔒 Financial figures redacted ($0 saved). Tick the box above anytime if you'd like Alex Fyfe to review your numbers.
               </div>
 
               <p class="text-[10px] text-slate-400 leading-normal">
@@ -690,7 +711,7 @@
           <div id="q-step-done" class="quiz-step hidden text-center py-8 space-y-3">
             <div class="w-14 h-14 bg-[#006875]/10 text-[#006875] rounded-2xl flex items-center justify-center mx-auto text-2xl font-extrabold">✓</div>
             <h3 class="text-xl font-extrabold text-slate-900">Property Match Saved!</h3>
-            <p class="text-sm text-slate-600 max-w-xs mx-auto">Enjoy inspecting the home. Your financial figures stay private with Mortgage Choice.</p>
+            <p class="text-sm text-slate-600 max-w-xs mx-auto">Enjoy inspecting the home. Your financial figures are never shared with the selling agent.</p>
             <div class="pt-2 flex flex-col gap-2 max-w-xs mx-auto">
               <button type="button" onclick="sendResultsViaSms()" class="w-full bg-[#006875] text-white text-xs font-extrabold py-3 px-4 rounded-xl">
                 💬 Text Summary to My Phone
@@ -711,10 +732,10 @@
               <span id="agent-view-badge" class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Open Home Buyer Call List</span>
               <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">🔒 Individual buyer finances & price estimates kept private</span>
             </div>
-            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">42 Kensington Road, Norwood SA 5067</h1>
-            <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
+            <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">Loading property...</h1>
+            <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Checking listing guide...</p>
 
-            <!-- Property Switcher (Shows ALL for Admin, ONLY That Agent's Listings on Agent Master Link, Hidden on Single-Property Link) -->
+            <!-- Property Switcher -->
             <div id="agent-prop-switcher-wrap" class="pt-2 flex flex-wrap items-center gap-2">
               <label id="agent-prop-select-label" for="agent-prop-select" class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Switch Property:</label>
               <select id="agent-prop-select" onchange="onSelectSavedProperty(this.value)"
@@ -864,13 +885,14 @@
     let undoBackup = JSON.parse(localStorage.getItem('openmatch_undo_backup') || 'null');
     let brokerOptInOnly = true;
     let brokerSelectedPropertyId = null;
-    let lockedAgentName = null; // Set when opened via Agent Master Link (?view=agent&agent=...)
+    let lockedAgentName = null;
 
     let quizState = {
       saved_db_id: null,
       saved_local_id: null,
       buyer_name: '',
       buyer_mobile: '',
+      share_finances: true,
       household: 'Solo',
       stage: 'Pre-Approved',
       timeline: 'ASAP',
@@ -963,7 +985,6 @@
           : 'No saved properties yet — enter details below & click Save';
       }
 
-      // Admin dropdown (all saved properties)
       let adminOptionsHtml = '';
       if (merged.length === 0) {
         adminOptionsHtml = `<option value="">No saved properties yet — save a listing below</option>`;
@@ -986,7 +1007,6 @@
         if (seen.has(activeProperty.id)) adminSelectEl.value = activeProperty.id;
       }
 
-      // Agent dropdown: strictly filtered to lockedAgentName if in Agent Master Link mode
       const agentVisibleProps = lockedAgentName
         ? merged.filter(p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.trim().toLowerCase())
         : merged;
@@ -1032,7 +1052,6 @@
 
     async function onSelectSavedProperty(propId) {
       if (!propId) return;
-      // If in locked Agent Master Link mode, ensure property belongs to that agent
       if (lockedAgentName) {
         const target = savedPropertiesList.find(p => p.id === propId);
         if (!target || (target.agent_name || '').trim().toLowerCase() !== lockedAgentName.trim().toLowerCase()) {
@@ -1077,84 +1096,103 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
-      const statusEl = document.getElementById('db-status');
-      statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Offline Mode';
-      statusEl.className = hasSupabase
-        ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30'
-        : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
+      const loaderEl = document.getElementById('app-loader');
+      const loaderSubEl = document.getElementById('loader-subtitle');
 
-      const params = new URLSearchParams(window.location.search);
-      const viewParam = params.get('view');
-      const propParam = params.get('prop');
-      const addrParam = params.get('addr');
-      const agentParam = params.get('agent');
+      try {
+        const statusEl = document.getElementById('db-status');
+        statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Offline Mode';
+        statusEl.className = hasSupabase
+          ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30'
+          : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30';
 
-      if (viewParam === 'agent' && agentParam && agentParam.trim()) {
-        lockedAgentName = agentParam.trim();
-      }
+        const params = new URLSearchParams(window.location.search);
+        const viewParam = params.get('view');
+        const propParam = params.get('prop');
+        const addrParam = params.get('addr');
+        const agentParam = params.get('agent');
 
-      await refreshSavedProperties();
-
-      if (lockedAgentName) {
-        // Agent Master Link mode: restrict strictly to properties belonging to lockedAgentName
-        const agentProps = savedPropertiesList.filter(
-          p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.toLowerCase()
-        );
-        const preferredProp = propParam ? agentProps.find(p => p.id === propParam) : null;
-        const initialProp = preferredProp || agentProps[0] || null;
-
-        if (initialProp) {
-          activeProperty = normalizePropertyRow(initialProp);
-          populateFormFromActiveProperty();
-          syncUIWithProperty();
-          renderSavedPropertyDropdowns();
-        } else {
-          activeProperty = {
-            ...DEFAULT_PROPERTY,
-            id: 'unassigned-' + Date.now(),
-            address: `No active listings found for ${lockedAgentName}`,
-            suburb: '',
-            agent_name: lockedAgentName
-          };
-          populateFormFromActiveProperty();
-          syncUIWithProperty();
-          renderSavedPropertyDropdowns();
+        if (viewParam === 'scan' && loaderSubEl) {
+          loaderSubEl.textContent = 'Loading 30-sec home fit check...';
+        } else if (viewParam === 'agent' && loaderSubEl) {
+          loaderSubEl.textContent = 'Loading open home buyer call list...';
         }
-      } else if (propParam) {
-        await loadPropertyById(propParam, addrParam);
-      } else if (addrParam) {
-        applyFallbackAddress(addrParam);
-        populateFormFromActiveProperty();
-        syncUIWithProperty();
-      } else if (localProperties.length > 0) {
-        activeProperty = normalizePropertyRow(localProperties[0]);
-        populateFormFromActiveProperty();
-        syncUIWithProperty();
-        renderSavedPropertyDropdowns();
-      } else {
-        populateFormFromActiveProperty();
-        syncUIWithProperty();
-        renderSavedPropertyDropdowns();
-      }
 
-      if (viewParam === 'scan') {
-        document.getElementById('admin-nav').classList.add('hidden');
-        switchTab('scan');
-      } else if (viewParam === 'agent') {
-        document.getElementById('admin-nav').classList.add('hidden');
-        const switcherWrap = document.getElementById('agent-prop-switcher-wrap');
-        const badgeEl = document.getElementById('agent-view-badge');
+        // Pre-fill URL address immediately before Supabase call so there is zero flash of default text
+        if (addrParam) {
+          applyFallbackAddress(addrParam);
+          const preTitle = `${activeProperty.address}${activeProperty.suburb ? ', ' + activeProperty.suburb : ''}`;
+          const quizTitleEl = document.getElementById('quiz-prop-title');
+          const agentTitleEl = document.getElementById('agent-prop-title');
+          if (quizTitleEl) quizTitleEl.textContent = preTitle;
+          if (agentTitleEl) agentTitleEl.textContent = preTitle;
+        }
+
+        if (viewParam === 'agent' && agentParam && agentParam.trim()) {
+          lockedAgentName = agentParam.trim();
+        }
+
+        await refreshSavedProperties();
+
         if (lockedAgentName) {
-          // Keep property switcher visible, filtered strictly to this agent's listings
-          if (switcherWrap) switcherWrap.classList.remove('hidden');
-          if (badgeEl) badgeEl.textContent = `${lockedAgentName} • Open Home Call Lists`;
+          const agentProps = savedPropertiesList.filter(
+            p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.toLowerCase()
+          );
+          const preferredProp = propParam ? agentProps.find(p => p.id === propParam) : null;
+          const initialProp = preferredProp || agentProps[0] || null;
+
+          if (initialProp) {
+            activeProperty = normalizePropertyRow(initialProp);
+            populateFormFromActiveProperty();
+            syncUIWithProperty();
+            renderSavedPropertyDropdowns();
+          } else {
+            activeProperty = {
+              ...DEFAULT_PROPERTY,
+              id: 'unassigned-' + Date.now(),
+              address: `No active listings found for ${lockedAgentName}`,
+              suburb: '',
+              agent_name: lockedAgentName
+            };
+            populateFormFromActiveProperty();
+            syncUIWithProperty();
+            renderSavedPropertyDropdowns();
+          }
+        } else if (propParam) {
+          await loadPropertyById(propParam, addrParam);
+        } else if (addrParam) {
+          applyFallbackAddress(addrParam);
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+        } else if (localProperties.length > 0) {
+          activeProperty = normalizePropertyRow(localProperties[0]);
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+          renderSavedPropertyDropdowns();
         } else {
-          // Single-property link: hide switcher so agent only sees this one home
-          if (switcherWrap) switcherWrap.classList.add('hidden');
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+          renderSavedPropertyDropdowns();
         }
-        switchTab('agent');
-      } else {
-        switchTab('admin');
+
+        if (viewParam === 'scan') {
+          switchTab('scan');
+        } else if (viewParam === 'agent') {
+          const switcherWrap = document.getElementById('agent-prop-switcher-wrap');
+          const badgeEl = document.getElementById('agent-view-badge');
+          if (lockedAgentName) {
+            if (switcherWrap) switcherWrap.classList.remove('hidden');
+            if (badgeEl) badgeEl.textContent = `${lockedAgentName} • Open Home Call Lists`;
+          } else {
+            if (switcherWrap) switcherWrap.classList.add('hidden');
+          }
+          switchTab('agent');
+        } else {
+          document.getElementById('admin-nav').classList.remove('hidden');
+          switchTab('admin');
+        }
+      } finally {
+        if (loaderEl) loaderEl.classList.add('hidden');
       }
     });
 
@@ -1490,7 +1528,7 @@
       });
     }
 
-    // ==================== BUYER QUIZ & REAL WEIGHTED MATCHMAKING ====================
+    // ==================== BUYER QUIZ & WEIGHTED MATCHMAKING ====================
     function selectSingle(key, val, btn) {
       quizState[key] = val;
       const isCompact = btn.parentElement.id.startsWith('chips-min-');
@@ -1544,6 +1582,36 @@
       document.getElementById('val-income').textContent = `$${income.toLocaleString()} / yr`;
       document.getElementById('val-monthly-loans').textContent = `$${monthlyLoans.toLocaleString()} / mo`;
       document.getElementById('val-cc-limits').textContent = `$${ccLimits.toLocaleString()}`;
+    }
+
+    function onStep5ConsentChange(checked) {
+      quizState.share_finances = checked;
+      const statusEl = document.getElementById('step5-consent-status');
+      if (!statusEl) return;
+
+      if (checked) {
+        statusEl.className = 'text-[11px] font-bold text-[#006875] bg-[#F2F9FA] px-3 py-1.5 rounded-xl border border-[#006875]/20 leading-snug';
+        statusEl.textContent = '✓ Included: Your indicative income, deposit & LVR breakdown will be sent confidentially to Alex Fyfe.';
+      } else {
+        statusEl.className = 'text-[11px] font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 leading-snug';
+        statusEl.textContent = '🔒 Redacted: Only your name, mobile & home wish-list are saved — all income, deposit & price figures are wiped ($0) and never sent.';
+      }
+    }
+
+    function syncResultsConsentUI(checked) {
+      const optInBox = document.getElementById('buyer-opt-in');
+      const confirmedBadge = document.getElementById('broker-optin-confirmed');
+      const redactedBadge = document.getElementById('broker-optin-redacted');
+
+      if (optInBox) optInBox.checked = checked;
+      if (confirmedBadge) {
+        if (checked) confirmedBadge.classList.remove('hidden');
+        else confirmedBadge.classList.add('hidden');
+      }
+      if (redactedBadge) {
+        if (!checked) redactedBadge.classList.remove('hidden');
+        else redactedBadge.classList.add('hidden');
+      }
     }
 
     function clearContactGateError() {
@@ -1673,8 +1741,10 @@
       btn.textContent = 'Unlocking...';
 
       updateSliders();
+      const shareFinances = Boolean(document.getElementById('buyer-share-finances')?.checked);
       quizState.buyer_name = name;
       quizState.buyer_mobile = mobile;
+      quizState.share_finances = shareFinances;
       quizState.dependants = Number(document.getElementById('input-dependants').value);
 
       const estPrice = quizState.est_purchase_price;
@@ -1778,6 +1848,7 @@
       quizState.budget_badge = budgetBadge;
       quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
 
+      syncResultsConsentUI(shareFinances);
       await persistBuyerScanRecord();
 
       const firstName = name.split(/\s+/)[0];
@@ -1829,9 +1900,13 @@
       if (quizState.min_beds > 0) combinedMustHaves.push(`beds:${quizState.min_beds}`);
       if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
 
-      const optInChecked = Boolean(document.getElementById('buyer-opt-in')?.checked);
+      const shareFinances = Boolean(quizState.share_finances);
       const existingStatus = extractLeadStatus({ id: quizState.saved_db_id || quizState.saved_local_id });
-      const encodedPets = `status:${existingStatus}|est_price:${Math.round(quizState.est_purchase_price)}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`;
+
+      // True Redaction: If buyer unticked sharing on Step 5, wipe financial numbers ($0 / REDACTED) before saving
+      const encodedPets = shareFinances
+        ? `status:${existingStatus}|est_price:${Math.round(quizState.est_purchase_price)}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`
+        : `status:${existingStatus}|REDACTED`;
 
       const dbRecord = {
         property_id: activeProperty.id,
@@ -1842,15 +1917,15 @@
         must_haves: combinedMustHaves,
         buying_stage: quizState.stage,
         timeline: quizState.timeline,
-        income: quizState.income,
-        deposit: quizState.cash_deposit + quizState.usable_equity,
+        income: shareFinances ? quizState.income : 0,
+        deposit: shareFinances ? (quizState.cash_deposit + quizState.usable_equity) : 0,
         dependants: quizState.dependants,
-        existing_debts: quizState.cc_limits + (quizState.monthly_loans * 12),
-        est_max_loan: quizState.est_max_loan,
+        existing_debts: shareFinances ? (quizState.cc_limits + (quizState.monthly_loans * 12)) : 0,
+        est_max_loan: shareFinances ? quizState.est_max_loan : 0,
         fit_percentage: quizState.fit_percentage,
         budget_badge: quizState.budget_badge,
         leaderboard_score: quizState.leaderboard_score,
-        broker_opt_in: optInChecked
+        broker_opt_in: shareFinances
       };
 
       if (hasSupabase && isValidUuid(activeProperty.id)) {
@@ -1864,6 +1939,8 @@
 
           if (!upErr && updated) {
             quizState.saved_db_id = updated.id;
+          } else if (upErr) {
+            console.warn('Supabase update blocked by RLS policy. Run: CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);');
           }
         } else {
           const { data: inserted, error: insErr } = await sb
@@ -1887,13 +1964,13 @@
         id: quizState.saved_db_id || localId,
         ...dbRecord,
         lead_status: existingStatus,
-        est_purchase_price: quizState.est_purchase_price,
-        cash_deposit: quizState.cash_deposit,
-        usable_equity: quizState.usable_equity,
-        monthly_loans: quizState.monthly_loans,
-        cc_limits: quizState.cc_limits,
-        base_lvr_pct: quizState.base_lvr_pct,
-        lvr_tier: quizState.lvr_tier,
+        est_purchase_price: shareFinances ? quizState.est_purchase_price : 0,
+        cash_deposit: shareFinances ? quizState.cash_deposit : 0,
+        usable_equity: shareFinances ? quizState.usable_equity : 0,
+        monthly_loans: shareFinances ? quizState.monthly_loans : 0,
+        cc_limits: shareFinances ? quizState.cc_limits : 0,
+        base_lvr_pct: shareFinances ? quizState.base_lvr_pct : 0,
+        lvr_tier: shareFinances ? quizState.lvr_tier : 'redacted',
         limiting_factor: quizState.limiting_factor
       };
 
@@ -1905,31 +1982,14 @@
     }
 
     async function toggleBrokerOptIn(checked) {
-      const badge = document.getElementById('broker-optin-confirmed');
-      if (badge) {
-        if (checked) badge.classList.remove('hidden');
-        else badge.classList.add('hidden');
-      }
+      quizState.share_finances = checked;
+      const step5Box = document.getElementById('buyer-share-finances');
+      if (step5Box) step5Box.checked = checked;
+      onStep5ConsentChange(checked);
+      syncResultsConsentUI(checked);
 
-      localScans = localScans.map(s => {
-        if (s.id === quizState.saved_local_id || (quizState.saved_db_id && s.id === quizState.saved_db_id)) {
-          return { ...s, broker_opt_in: checked };
-        }
-        return s;
-      });
-      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
-
-      if (hasSupabase && isValidUuid(activeProperty.id) && quizState.saved_db_id && isValidUuid(quizState.saved_db_id)) {
-        const { data: updatedRows, error } = await sb
-          .from('buyer_scans')
-          .update({ broker_opt_in: checked })
-          .eq('id', quizState.saved_db_id)
-          .select();
-
-        if (error || !updatedRows || updatedRows.length === 0) {
-          console.warn('Supabase update blocked by RLS policy. Run: CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);');
-        }
-      }
+      // Re-persist immediately so ticking un-redacts & unticking redacts in Supabase
+      await persistBuyerScanRecord();
     }
 
     function finishBuyerSession() {
@@ -2083,12 +2143,14 @@
       quizState.saved_local_id = null;
       quizState.buyer_name = '';
       quizState.buyer_mobile = '';
+      quizState.share_finances = true;
       document.getElementById('buyer-name').value = '';
       document.getElementById('buyer-mobile').value = '';
-      document.getElementById('buyer-opt-in').checked = false;
+      const step5Box = document.getElementById('buyer-share-finances');
+      if (step5Box) step5Box.checked = true;
+      onStep5ConsentChange(true);
+      syncResultsConsentUI(true);
       clearContactGateError();
-      const badge = document.getElementById('broker-optin-confirmed');
-      if (badge) badge.classList.add('hidden');
       goQuizStep(1);
     }
 
@@ -2350,15 +2412,15 @@
           buyer_name: 'Casey Morgan',
           buyer_mobile: '0401 772 630',
           household: 'Solo',
-          pets: `status:New|est_price:${Math.max(400000, midPrice - 120000)}|RED LVR (94.0%)`,
+          pets: `status:New|REDACTED`,
           must_haves: ['beds:2', 'modern'],
           buying_stage: 'Still Looking',
           timeline: '3+ Months',
-          income: 110000,
-          deposit: 60000,
+          income: 0,
+          deposit: 0,
           dependants: 0,
-          existing_debts: 10000,
-          est_max_loan: 540000,
+          existing_debts: 0,
+          est_max_loan: 0,
           fit_percentage: caseyMatch.totalMatchPct,
           budget_badge: 'Stretch',
           leaderboard_score: 5 + 10 + Math.round(caseyMatch.totalMatchPct * 0.3),
@@ -2590,7 +2652,7 @@
       const cleanPhone = (buyerMobile || '').replace(/[^\d+]/g, '');
       const cleanProp = propAddress || 'the property';
       const bodyText = isOptedIn
-        ? `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and ticked to look at your exact borrowing power, grants, and guarantor options. Free for a quick 5-min chat?`
+        ? `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and shared your estimates to look at your exact borrowing power, grants, and guarantor options. Free for a quick 5-min chat?`
         : `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today. Happy to run a quick obligation-free check on your borrowing power or grants if you're looking in the area!`;
 
       const ua = navigator.userAgent.toLowerCase();
@@ -2605,7 +2667,6 @@
         return `status:${newStatus}|${cleanBase}`;
       };
 
-      // Update localScans immediately
       localScans = localScans.map(s => {
         if ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile && s.property_id === brokerSelectedPropertyId)) {
           return { ...s, lead_status: newStatus, pets: updatePetsStatus(s.pets) };
@@ -2614,7 +2675,6 @@
       });
       localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
 
-      // Update Supabase if valid UUID
       if (hasSupabase && scanId && isValidUuid(scanId)) {
         const { data: existingRow } = await sb.from('buyer_scans').select('id, pets').eq('id', scanId).maybeSingle();
         if (existingRow) {
@@ -2648,7 +2708,6 @@
         allRows = [...localScans];
       }
 
-      // Build list of properties (savedPropertiesList + any property_ids present in scans)
       const propMap = new Map();
       savedPropertiesList.forEach(p => propMap.set(p.id, normalizePropertyRow(p)));
       if (activeProperty && activeProperty.id && !String(activeProperty.id).startsWith('new-') && !propMap.has(activeProperty.id)) {
@@ -2667,7 +2726,6 @@
 
       const propertiesForCards = Array.from(propMap.values());
 
-      // Default selected property: keep current if valid, otherwise pick first property with opt-ins or activeProperty
       if (!brokerSelectedPropertyId || !propMap.has(brokerSelectedPropertyId)) {
         const propWithOptIn = propertiesForCards.find(p =>
           allRows.some(r => r.property_id === p.id && r.broker_opt_in)
@@ -2677,7 +2735,6 @@
           : (propMap.has(activeProperty.id) ? activeProperty.id : (propertiesForCards[0]?.id || null));
       }
 
-      // Render Property Selector Cards at Top of Tab 4
       const cardsContainer = document.getElementById('broker-property-cards');
       if (propertiesForCards.length === 0) {
         cardsContainer.innerHTML = `<div class="col-span-full text-xs text-slate-500 p-4 bg-slate-50 rounded-2xl">No saved properties yet. Create a property in Tab 1 first.</div>`;
@@ -2711,7 +2768,6 @@
         }).join('');
       }
 
-      // Filter leads strictly to the selected property
       const selectedProp = propMap.get(brokerSelectedPropertyId) || activeProperty;
       const propTitleEl = document.getElementById('broker-selected-prop-title');
       const propMetaEl = document.getElementById('broker-selected-prop-meta');
@@ -2730,11 +2786,10 @@
       const optedInRows = propertyScans.filter(r => r.broker_opt_in);
       const displayedRows = brokerOptInOnly ? optedInRows : propertyScans;
 
-      // Update 3-Card Property-Level Broker Snapshot
       document.getElementById('broker-kpi-optins').textContent = optedInRows.length;
       document.getElementById('broker-kpi-total-scans').textContent = `${propertyScans.length} total scan${propertyScans.length === 1 ? '' : 's'} at this open`;
 
-      const kpiSourceRows = optedInRows.length > 0 ? optedInRows : propertyScans;
+      const kpiSourceRows = optedInRows.filter(r => Number(r.est_max_loan) > 0);
       if (kpiSourceRows.length > 0) {
         const avgBorrow = Math.round(
           kpiSourceRows.reduce((sum, r) => sum + (Number(r.est_max_loan) || 0), 0) / kpiSourceRows.length
@@ -2744,13 +2799,12 @@
         document.getElementById('broker-kpi-avg-borrow').textContent = '—';
       }
 
-      const oppCount = kpiSourceRows.filter(r => {
+      const oppCount = optedInRows.filter(r => {
         const lvrStr = cleanLvrLabel(r).toUpperCase();
         return lvrStr.startsWith('ORANGE') || lvrStr.startsWith('RED') || r.budget_badge === 'Subject to Sale' || r.budget_badge === 'Within Reach';
       }).length;
       document.getElementById('broker-kpi-opps').textContent = oppCount;
 
-      // Render Lead Cards for Selected Property
       const container = document.getElementById('broker-leads-list');
       if (displayedRows.length === 0) {
         return container.innerHTML = `
@@ -2760,7 +2814,7 @@
             </p>
             <p class="text-xs text-slate-500">
               ${brokerOptInOnly && propertyScans.length > 0
-                ? `There ${propertyScans.length === 1 ? 'is 1 non-opt-in scan' : 'are ' + propertyScans.length + ' non-opt-in scans'} — click "All Scans (This Home)" above to inspect.`
+                ? `There ${propertyScans.length === 1 ? 'is 1 redacted scan' : 'are ' + propertyScans.length + ' redacted scans'} — click "All Scans (This Home)" above to view contact & wish-list details.`
                 : 'Select another property card above or check back after the open home.'}
             </p>
           </div>`;
@@ -2768,10 +2822,14 @@
 
       container.innerHTML = displayedRows.map(r => {
         const lvrTag = cleanLvrLabel(r);
+        const isRedacted = !r.broker_opt_in && Number(r.income) === 0 && Number(r.est_max_loan) === 0;
         const isRed = lvrTag.startsWith('RED');
         const isOrange = lvrTag.startsWith('ORANGE');
-        const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
-        const estPrice = extractBuyerEstPrice(r);
+        const lvrPillClass = isRedacted
+          ? 'bg-slate-100 text-slate-500 border border-slate-200'
+          : isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+        const lvrDisplayLabel = isRedacted ? '🔒 Financials Redacted' : lvrTag;
+        const estPrice = isRedacted ? null : extractBuyerEstPrice(r);
         const status = extractLeadStatus(r);
 
         const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
@@ -2794,6 +2852,17 @@
 
         const firstName = escapeHtml((r.buyer_name || 'Buyer').trim().split(/\s+/)[0]);
 
+        const financialsBoxHtml = isRedacted
+          ? `<div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-xs text-slate-500 font-semibold flex items-center gap-2">
+               <span>🔒</span>
+               <span>Buyer opted not to share financial figures (redacted at submission — Contact &amp; Home Wish-List only).</span>
+             </div>`
+          : `<div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
+               <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
+               <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
+               <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
+             </div>`;
+
         return `
           <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-4">
             <div class="flex flex-wrap justify-between items-start gap-3">
@@ -2801,10 +2870,10 @@
                 <div class="flex flex-wrap items-center gap-2">
                   <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline">${escapeHtml(r.buyer_mobile)}</a></h3>
                   <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-600'}">
-                    ${r.broker_opt_in ? '★ Opted In' : 'Scan Only'}
+                    ${r.broker_opt_in ? '★ Shared Financials' : 'Contact Only'}
                   </span>
                   <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${lvrPillClass}">
-                    ${escapeHtml(lvrTag)}
+                    ${escapeHtml(lvrDisplayLabel)}
                   </span>
                 </div>
                 <p class="text-xs text-slate-500 font-medium">
@@ -2821,11 +2890,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
-              <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
-            </div>
+            ${financialsBoxHtml}
 
             <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
               <span class="text-[11px] text-slate-500 font-medium">
