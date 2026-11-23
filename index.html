@@ -116,8 +116,11 @@
           </select>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="copyInput('share-agent-master-url')" class="text-xs font-extrabold bg-[#F2F9FA] hover:bg-teal-100/70 text-[#006875] border border-[#006875]/30 px-3.5 py-2.5 rounded-xl">
+            Copy Agent Master Link
+          </button>
           <button type="button" onclick="copyInput('share-agent-url')" class="text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2.5 rounded-xl">
-            Copy Agent Link
+            Copy Property Link
           </button>
           <button type="button" onclick="refreshSavedProperties()" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl">
             Sync Cloud
@@ -181,9 +184,9 @@
                 class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Selling Agent</label>
-              <input id="prop-agent" type="text" value="Sarah Jenkins"
-                class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Selling Agent (Groups Master Link)</label>
+              <input id="prop-agent" type="text" value="Sarah Jenkins" oninput="syncUIWithProperty()"
+                class="w-full px-3.5 py-2.5 text-sm font-semibold border border-slate-300 rounded-xl focus:outline-none focus:border-[#006875]" />
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price Guide Min ($ AUD) *</label>
@@ -302,26 +305,33 @@
 
           <!-- A4 PDF Export & Share Links -->
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
-            <button onclick="window.print()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
+            <button onclick="printQrFlyer()" class="w-full bg-[#006875] hover:bg-[#005560] text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-sm transition">
               Save A4 PDF / Print Full-Page QR Flyer
             </button>
             <p class="text-[11px] text-slate-500 text-center">
               Formatted for a single full-bleed <strong>A4 page</strong> — in your print dialog, ensure margins are set to <em>None</em> for zero white border.
             </p>
 
-            <div class="pt-2 border-t border-slate-100 space-y-2">
+            <div class="pt-2 border-t border-slate-100 space-y-2.5">
+              <div>
+                <label id="agent-master-link-label" class="block text-[11px] font-extrabold text-[#006875] mb-1">Agent Master Link (All Opens for Sarah Jenkins)</label>
+                <div class="flex gap-1.5">
+                  <input id="share-agent-master-url" type="text" readonly class="w-full text-[11px] px-2.5 py-1.5 bg-[#F2F9FA] rounded-lg border border-[#006875]/30 text-slate-700 font-medium" />
+                  <button onclick="copyInput('share-agent-master-url')" class="px-3 py-1.5 bg-[#006875] text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 mb-1">Single-Property Agent Link (This Home Only)</label>
+                <div class="flex gap-1.5">
+                  <input id="share-agent-url" type="text" readonly class="w-full text-[11px] px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-200 text-slate-600" />
+                  <button onclick="copyInput('share-agent-url')" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
+                </div>
+              </div>
               <div>
                 <label class="block text-[11px] font-bold text-slate-500 mb-1">Buyer QR Link (Mobile Quiz)</label>
                 <div class="flex gap-1.5">
                   <input id="share-buyer-url" type="text" readonly class="w-full text-[11px] px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-200 text-slate-600" />
                   <button onclick="copyInput('share-buyer-url')" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
-                </div>
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-slate-500 mb-1">Agent Live Leaderboard Link</label>
-                <div class="flex gap-1.5">
-                  <input id="share-agent-url" type="text" readonly class="w-full text-[11px] px-2.5 py-1.5 bg-slate-50 rounded-lg border border-slate-200 text-slate-600" />
-                  <button onclick="copyInput('share-agent-url')" class="px-3 py-1.5 bg-slate-900 text-white text-[11px] rounded-lg font-bold shrink-0">Copy</button>
                 </div>
               </div>
             </div>
@@ -698,17 +708,17 @@
         <div class="flex flex-wrap justify-between items-start gap-4">
           <div class="space-y-1.5">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Open Home Buyer Call List</span>
+              <span id="agent-view-badge" class="text-[11px] font-extrabold uppercase tracking-widest text-[#006875]">Live Open Home Buyer Call List</span>
               <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">🔒 Individual buyer finances & price estimates kept private</span>
             </div>
             <h1 id="agent-prop-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">42 Kensington Road, Norwood SA 5067</h1>
             <p id="agent-prop-subtitle" class="text-xs text-slate-500 font-medium">Guide: $850,000 – $910,000 • 3 Bed • 2 Bath</p>
 
-            <!-- Admin-Only Property Switcher (Automatically Hidden When Shared With Agents) -->
-            <div id="agent-prop-switcher-wrap" class="pt-1.5 flex flex-wrap items-center gap-2">
-              <label for="agent-prop-select" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Switch Property:</label>
+            <!-- Property Switcher (Shows ALL for Admin, ONLY That Agent's Listings on Agent Master Link, Hidden on Single-Property Link) -->
+            <div id="agent-prop-switcher-wrap" class="pt-2 flex flex-wrap items-center gap-2">
+              <label id="agent-prop-select-label" for="agent-prop-select" class="text-[11px] font-extrabold uppercase tracking-wider text-[#006875]">Switch Property:</label>
               <select id="agent-prop-select" onchange="onSelectSavedProperty(this.value)"
-                class="text-xs font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 focus:outline-none focus:border-[#006875]">
+                class="text-xs sm:text-sm font-extrabold text-slate-900 bg-[#F2F9FA] border-2 border-[#006875]/30 rounded-xl px-3.5 py-2 focus:outline-none focus:border-[#006875]">
               </select>
             </div>
           </div>
@@ -769,20 +779,58 @@
       <div id="agent-leaderboard-list" class="space-y-3.5"></div>
     </section>
 
-    <!-- ==================== VIEW 4: BROKER LEADS ==================== -->
+    <!-- ==================== VIEW 4: BROKER LEADS (PROPERTY-FIRST PIPELINE) ==================== -->
     <section id="view-leads" class="hidden space-y-5">
-      <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-6 sm:p-7 flex flex-wrap justify-between items-start gap-4">
-        <div>
-          <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-600">Broker Pipeline</span>
-          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">Buyer Finance Leads</h1>
-          <p class="text-xs text-slate-500 mt-1">Full borrowing diagnostics for buyers who ticked the broker callback box (or toggle to inspect all scans).</p>
+
+      <!-- Property Selector Cards Grid -->
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-600">Broker Pipeline • By Property</span>
+            <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">Select a Property to Work Its Leads</h1>
+          </div>
+          <button onclick="renderBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-[#006875] hover:bg-[#005560] text-white shadow-sm">
+            Refresh Leads
+          </button>
         </div>
-        <div class="flex flex-wrap gap-2 items-center">
-          <button id="btn-filter-optin" onclick="setLeadFilter(true)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white">Opt-Ins Only</button>
-          <button id="btn-filter-all" onclick="setLeadFilter(false)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700">All Scans</button>
-          <button onclick="renderBrokerLeads()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-[#006875] text-white">Refresh</button>
+
+        <div id="broker-property-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+      </div>
+
+      <!-- Selected Property Broker Snapshot & Filter Bar -->
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-4">
+        <div class="flex flex-wrap justify-between items-start gap-3">
+          <div>
+            <h2 id="broker-selected-prop-title" class="text-lg sm:text-xl font-extrabold text-slate-900">42 Kensington Road, Norwood SA 5067</h2>
+            <p id="broker-selected-prop-meta" class="text-xs text-slate-500 font-medium mt-0.5">Selling Agent: Sarah Jenkins</p>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <button id="btn-filter-optin" onclick="setLeadFilter(true)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white">Opted-In Leads</button>
+            <button id="btn-filter-all" onclick="setLeadFilter(false)" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700">All Scans (This Home)</button>
+          </div>
+        </div>
+
+        <!-- 3-Card Property-Level Broker Snapshot -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-amber-50/80 border border-amber-200 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-amber-800">Opted-In Leads</p>
+            <p id="broker-kpi-optins" class="text-2xl font-extrabold text-amber-900 mt-0.5">0</p>
+            <p id="broker-kpi-total-scans" class="text-[11px] text-amber-800/80 font-medium mt-0.5">0 total scans at this open</p>
+          </div>
+          <div class="bg-[#F2F9FA] border border-[#006875]/25 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-[#006875]">Avg. Borrowing Capacity</p>
+            <p id="broker-kpi-avg-borrow" class="text-2xl font-extrabold text-slate-900 mt-0.5">—</p>
+            <p class="text-[11px] text-[#006875] font-medium mt-0.5">Across leads on this home</p>
+          </div>
+          <div class="bg-emerald-50/80 border border-emerald-200 p-3.5 rounded-2xl">
+            <p class="text-[10.5px] font-bold uppercase tracking-wider text-emerald-700">LVR / Grant / Guarantor Opps</p>
+            <p id="broker-kpi-opps" class="text-2xl font-extrabold text-emerald-800 mt-0.5">0</p>
+            <p class="text-[11px] text-emerald-700 font-medium mt-0.5">80%+ LVR or Subject to Sale</p>
+          </div>
         </div>
       </div>
+
+      <!-- Property-Filtered Lead Cards -->
       <div id="broker-leads-list" class="space-y-4"></div>
     </section>
 
@@ -815,6 +863,8 @@
     let localScans = JSON.parse(localStorage.getItem('openmatch_scans') || '[]');
     let undoBackup = JSON.parse(localStorage.getItem('openmatch_undo_backup') || 'null');
     let brokerOptInOnly = true;
+    let brokerSelectedPropertyId = null;
+    let lockedAgentName = null; // Set when opened via Agent Master Link (?view=agent&agent=...)
 
     let quizState = {
       saved_db_id: null,
@@ -913,14 +963,15 @@
           : 'No saved properties yet — enter details below & click Save';
       }
 
-      let optionsHtml = '';
+      // Admin dropdown (all saved properties)
+      let adminOptionsHtml = '';
       if (merged.length === 0) {
-        optionsHtml = `<option value="">No saved properties yet — save a listing below</option>`;
+        adminOptionsHtml = `<option value="">No saved properties yet — save a listing below</option>`;
       } else {
         if (String(activeProperty.id).startsWith('new-') || !seen.has(activeProperty.id)) {
-          optionsHtml += `<option value="" selected>— New Unsaved Listing (or choose saved below) —</option>`;
+          adminOptionsHtml += `<option value="" selected>— New Unsaved Listing (or choose saved below) —</option>`;
         }
-        optionsHtml += merged.map(p => {
+        adminOptionsHtml += merged.map(p => {
           const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`;
           const agentTag = p.agent_name ? ` • Agent: ${p.agent_name}` : '';
           const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
@@ -929,26 +980,50 @@
         }).join('');
       }
 
-      ['saved-prop-select', 'agent-prop-select'].forEach(selectId => {
-        const el = document.getElementById(selectId);
-        if (el) {
-          el.innerHTML = optionsHtml;
-          if (seen.has(activeProperty.id)) el.value = activeProperty.id;
+      const adminSelectEl = document.getElementById('saved-prop-select');
+      if (adminSelectEl) {
+        adminSelectEl.innerHTML = adminOptionsHtml;
+        if (seen.has(activeProperty.id)) adminSelectEl.value = activeProperty.id;
+      }
+
+      // Agent dropdown: strictly filtered to lockedAgentName if in Agent Master Link mode
+      const agentVisibleProps = lockedAgentName
+        ? merged.filter(p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.trim().toLowerCase())
+        : merged;
+
+      const agentSelectEl = document.getElementById('agent-prop-select');
+      const agentLabelEl = document.getElementById('agent-prop-select-label');
+      if (agentSelectEl) {
+        if (lockedAgentName && agentLabelEl) {
+          agentLabelEl.textContent = `${lockedAgentName}'s Open Homes (${agentVisibleProps.length}):`;
         }
-      });
+        if (agentVisibleProps.length === 0) {
+          agentSelectEl.innerHTML = `<option value="${escapeHtml(activeProperty.id)}">${escapeHtml(activeProperty.address || 'Active Listing')}</option>`;
+        } else {
+          agentSelectEl.innerHTML = agentVisibleProps.map(p => {
+            const title = `${p.address}${p.suburb ? ', ' + p.suburb : ''}`;
+            const priceTag = p.price_min ? ` ($${Math.round(p.price_min / 1000)}k)` : '';
+            const selected = p.id === activeProperty.id ? 'selected' : '';
+            return `<option value="${escapeHtml(p.id)}" ${selected}>${escapeHtml(title + priceTag)}</option>`;
+          }).join('');
+          if (agentVisibleProps.some(p => p.id === activeProperty.id)) {
+            agentSelectEl.value = activeProperty.id;
+          }
+        }
+      }
     }
 
     async function refreshSavedProperties() {
       if (hasSupabase) {
-        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(60);
+        let { data, error } = await sb.from('properties').select('*').order('created_at', { ascending: false }).limit(80);
         if (error) {
-          const retry = await sb.from('properties').select('*').limit(60);
+          const retry = await sb.from('properties').select('*').limit(80);
           data = retry.data;
         }
         if (Array.isArray(data) && data.length > 0) {
           const normalized = data.map(normalizePropertyRow);
           const dbIds = new Set(normalized.map(p => p.id));
-          localProperties = [...normalized, ...localProperties.filter(p => !dbIds.has(p.id))].slice(0, 60);
+          localProperties = [...normalized, ...localProperties.filter(p => !dbIds.has(p.id))].slice(0, 80);
           localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
         }
       }
@@ -957,6 +1032,13 @@
 
     async function onSelectSavedProperty(propId) {
       if (!propId) return;
+      // If in locked Agent Master Link mode, ensure property belongs to that agent
+      if (lockedAgentName) {
+        const target = savedPropertiesList.find(p => p.id === propId);
+        if (!target || (target.agent_name || '').trim().toLowerCase() !== lockedAgentName.trim().toLowerCase()) {
+          return;
+        }
+      }
       await loadPropertyById(propId);
       const agentView = document.getElementById('view-agent');
       if (agentView && !agentView.classList.contains('hidden')) {
@@ -986,6 +1068,14 @@
       if (addrInput) addrInput.focus();
     }
 
+    function printQrFlyer() {
+      const originalTitle = document.title;
+      const slug = (activeProperty.address || 'Flyer').trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+      document.title = `Property-Match-${slug}`;
+      window.print();
+      setTimeout(() => { document.title = originalTitle; }, 1000);
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
       const statusEl = document.getElementById('db-status');
       statusEl.textContent = hasSupabase ? 'Supabase Live' : 'Offline Mode';
@@ -997,10 +1087,40 @@
       const viewParam = params.get('view');
       const propParam = params.get('prop');
       const addrParam = params.get('addr');
+      const agentParam = params.get('agent');
+
+      if (viewParam === 'agent' && agentParam && agentParam.trim()) {
+        lockedAgentName = agentParam.trim();
+      }
 
       await refreshSavedProperties();
 
-      if (propParam) {
+      if (lockedAgentName) {
+        // Agent Master Link mode: restrict strictly to properties belonging to lockedAgentName
+        const agentProps = savedPropertiesList.filter(
+          p => (p.agent_name || '').trim().toLowerCase() === lockedAgentName.toLowerCase()
+        );
+        const preferredProp = propParam ? agentProps.find(p => p.id === propParam) : null;
+        const initialProp = preferredProp || agentProps[0] || null;
+
+        if (initialProp) {
+          activeProperty = normalizePropertyRow(initialProp);
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+          renderSavedPropertyDropdowns();
+        } else {
+          activeProperty = {
+            ...DEFAULT_PROPERTY,
+            id: 'unassigned-' + Date.now(),
+            address: `No active listings found for ${lockedAgentName}`,
+            suburb: '',
+            agent_name: lockedAgentName
+          };
+          populateFormFromActiveProperty();
+          syncUIWithProperty();
+          renderSavedPropertyDropdowns();
+        }
+      } else if (propParam) {
         await loadPropertyById(propParam, addrParam);
       } else if (addrParam) {
         applyFallbackAddress(addrParam);
@@ -1023,7 +1143,15 @@
       } else if (viewParam === 'agent') {
         document.getElementById('admin-nav').classList.add('hidden');
         const switcherWrap = document.getElementById('agent-prop-switcher-wrap');
-        if (switcherWrap) switcherWrap.classList.add('hidden');
+        const badgeEl = document.getElementById('agent-view-badge');
+        if (lockedAgentName) {
+          // Keep property switcher visible, filtered strictly to this agent's listings
+          if (switcherWrap) switcherWrap.classList.remove('hidden');
+          if (badgeEl) badgeEl.textContent = `${lockedAgentName} • Open Home Call Lists`;
+        } else {
+          // Single-property link: hide switcher so agent only sees this one home
+          if (switcherWrap) switcherWrap.classList.add('hidden');
+        }
         switchTab('agent');
       } else {
         switchTab('admin');
@@ -1189,7 +1317,7 @@
 
     function cachePropertyLocally(prop) {
       const normalized = normalizePropertyRow(prop);
-      localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 60);
+      localProperties = [normalized, ...localProperties.filter(p => p.id !== normalized.id)].slice(0, 80);
       localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
       renderSavedPropertyDropdowns();
     }
@@ -1289,8 +1417,10 @@
     function syncUIWithProperty() {
       const streetInput = document.getElementById('prop-address');
       const suburbInput = document.getElementById('prop-suburb');
+      const agentInput = document.getElementById('prop-agent');
       const street = (streetInput ? streetInput.value.trim() : '') || activeProperty.address || 'New Property Listing';
       const suburb = (suburbInput ? suburbInput.value.trim() : '') || activeProperty.suburb || '';
+      const agentName = (agentInput ? agentInput.value.trim() : '') || activeProperty.agent_name || '';
       const minP = Number(document.getElementById('prop-min')?.value) || activeProperty.price_min;
       const maxP = Number(document.getElementById('prop-max')?.value) || activeProperty.price_max;
       const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms;
@@ -1298,6 +1428,7 @@
 
       activeProperty.address = streetInput ? streetInput.value.trim() : street;
       activeProperty.suburb = suburbInput ? suburbInput.value.trim() : suburb;
+      activeProperty.agent_name = agentInput ? agentInput.value.trim() : agentName;
       activeProperty.price_min = minP;
       activeProperty.price_max = maxP;
       activeProperty.bedrooms = beds;
@@ -1337,9 +1468,15 @@
       const baseUrl = window.location.origin + window.location.pathname;
       const buyerUrl = `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
       const agentUrl = `${baseUrl}?view=agent&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
+      const masterAgentName = agentName || 'Agent';
+      const agentMasterUrl = `${baseUrl}?view=agent&agent=${encodeURIComponent(masterAgentName)}&prop=${activeProperty.id}`;
 
       document.getElementById('share-buyer-url').value = buyerUrl;
       document.getElementById('share-agent-url').value = agentUrl;
+      const masterInput = document.getElementById('share-agent-master-url');
+      const masterLabel = document.getElementById('agent-master-link-label');
+      if (masterInput) masterInput.value = agentMasterUrl;
+      if (masterLabel) masterLabel.textContent = `Agent Master Link (All Opens for ${masterAgentName})`;
 
       const qrEl = document.getElementById('qrcode');
       qrEl.innerHTML = '';
@@ -1641,7 +1778,6 @@
       quizState.budget_badge = budgetBadge;
       quizState.leaderboard_score = finPts + readyPts + Math.round((fitPct / 100) * 30);
 
-      // Persist scan immediately upon unlocking results
       await persistBuyerScanRecord();
 
       const firstName = name.split(/\s+/)[0];
@@ -1694,7 +1830,8 @@
       if (quizState.min_baths > 0) combinedMustHaves.push(`baths:${quizState.min_baths}`);
 
       const optInChecked = Boolean(document.getElementById('buyer-opt-in')?.checked);
-      const encodedPets = `est_price:${Math.round(quizState.est_purchase_price)}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`;
+      const existingStatus = extractLeadStatus({ id: quizState.saved_db_id || quizState.saved_local_id });
+      const encodedPets = `status:${existingStatus}|est_price:${Math.round(quizState.est_purchase_price)}|${quizState.lvr_tier.toUpperCase()} LVR (${quizState.base_lvr_pct}%)`;
 
       const dbRecord = {
         property_id: activeProperty.id,
@@ -1749,6 +1886,7 @@
       const fullLocalRecord = {
         id: quizState.saved_db_id || localId,
         ...dbRecord,
+        lead_status: existingStatus,
         est_purchase_price: quizState.est_purchase_price,
         cash_deposit: quizState.cash_deposit,
         usable_equity: quizState.usable_equity,
@@ -1964,9 +2102,21 @@
       return null;
     }
 
+    function extractLeadStatus(r) {
+      if (r.lead_status && ['New', 'Called', 'Booked'].includes(r.lead_status)) return r.lead_status;
+      if (r.pets && typeof r.pets === 'string') {
+        const m = r.pets.match(/status:(New|Called|Booked)/i);
+        if (m) {
+          const norm = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+          return norm;
+        }
+      }
+      return 'New';
+    }
+
     function cleanLvrLabel(r) {
       if (!r.pets || typeof r.pets !== 'string') return r.budget_badge || '';
-      return r.pets.replace(/^est_price:\d+\|/, '');
+      return r.pets.replace(/^(?:status:[A-Za-z]+\|)?(?:est_price:\d+\|)?/, '');
     }
 
     function updateUndoBannerUI() {
@@ -2162,7 +2312,7 @@
           buyer_name: 'Sam & Taylor Reid',
           buyer_mobile: '0412 884 910',
           household: 'Couple',
-          pets: `est_price:${midPrice + 20000}|GREEN LVR (76.0%)`,
+          pets: `status:New|est_price:${midPrice + 20000}|GREEN LVR (76.0%)`,
           must_haves: ['beds:3', 'baths:2', 'modern', 'garage', 'office'],
           buying_stage: 'Pre-Approved',
           timeline: 'ASAP',
@@ -2181,7 +2331,7 @@
           buyer_name: 'Jordan & Priya Patel',
           buyer_mobile: '0438 219 405',
           household: 'Family',
-          pets: `est_price:${midPrice}|ORANGE LVR (86.5%)`,
+          pets: `status:New|est_price:${midPrice}|ORANGE LVR (86.5%)`,
           must_haves: ['beds:4', 'baths:2', 'outdoor', 'garage'],
           buying_stage: 'Pre-Approved',
           timeline: '1-3 Months',
@@ -2200,7 +2350,7 @@
           buyer_name: 'Casey Morgan',
           buyer_mobile: '0401 772 630',
           household: 'Solo',
-          pets: `est_price:${Math.max(400000, midPrice - 120000)}|RED LVR (94.0%)`,
+          pets: `status:New|est_price:${Math.max(400000, midPrice - 120000)}|RED LVR (94.0%)`,
           must_haves: ['beds:2', 'modern'],
           buying_stage: 'Still Looking',
           timeline: '3+ Months',
@@ -2412,11 +2562,22 @@
     }
 
     function copyAgentWrapUp() {
-      navigator.clipboard.writeText(`Property Match Buyer Wrap-Up — ${activeProperty.address}\nCheck the live ranked call list:\n${document.getElementById('share-agent-url').value}`);
+      const linkToShare = lockedAgentName
+        ? document.getElementById('share-agent-master-url').value
+        : document.getElementById('share-agent-url').value;
+      const subjectLine = lockedAgentName
+        ? `Property Match Buyer Wrap-Up — ${lockedAgentName}'s Open Homes`
+        : `Property Match Buyer Wrap-Up — ${activeProperty.address}`;
+      navigator.clipboard.writeText(`${subjectLine}\nCheck the live ranked call list:\n${linkToShare}`);
       alert('Post-open SMS summary copied!');
     }
 
-    // ==================== BROKER LEADS ====================
+    // ==================== BROKER LEADS (PROPERTY-FIRST PIPELINE) ====================
+    function selectBrokerProperty(propId) {
+      brokerSelectedPropertyId = propId;
+      renderBrokerLeads();
+    }
+
     function setLeadFilter(optInOnly) {
       brokerOptInOnly = optInOnly;
       document.getElementById('btn-filter-optin').className = optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
@@ -2424,51 +2585,261 @@
       renderBrokerLeads();
     }
 
-    async function renderBrokerLeads() {
-      let rows = [];
-      if (hasSupabase) {
-        let query = sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
-        if (brokerOptInOnly) query = query.eq('broker_opt_in', true);
-        const { data, error } = await query;
-        if (error) return document.getElementById('broker-leads-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
-        rows = data || [];
-      } else {
-        rows = brokerOptInOnly ? localScans.filter(s => s.broker_opt_in) : localScans;
+    function sendBrokerLeadSms(buyerName, buyerMobile, propAddress, isOptedIn) {
+      const firstName = (buyerName || 'there').trim().split(/\s+/)[0];
+      const cleanPhone = (buyerMobile || '').replace(/[^\d+]/g, '');
+      const cleanProp = propAddress || 'the property';
+      const bodyText = isOptedIn
+        ? `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and ticked to look at your exact borrowing power, grants, and guarantor options. Free for a quick 5-min chat?`
+        : `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today. Happy to run a quick obligation-free check on your borrowing power or grants if you're looking in the area!`;
+
+      const ua = navigator.userAgent.toLowerCase();
+      const isIOS = /iphone|ipad|ipod/.test(ua);
+      const separator = isIOS ? '&' : '?';
+      window.location.href = `sms:${cleanPhone}${separator}body=${encodeURIComponent(bodyText)}`;
+    }
+
+    async function updateBrokerLeadStatus(scanId, buyerName, buyerMobile, newStatus) {
+      const updatePetsStatus = (petsStr) => {
+        const cleanBase = String(petsStr || '').replace(/^status:[A-Za-z]+\|/, '');
+        return `status:${newStatus}|${cleanBase}`;
+      };
+
+      // Update localScans immediately
+      localScans = localScans.map(s => {
+        if ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile && s.property_id === brokerSelectedPropertyId)) {
+          return { ...s, lead_status: newStatus, pets: updatePetsStatus(s.pets) };
+        }
+        return s;
+      });
+      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
+
+      // Update Supabase if valid UUID
+      if (hasSupabase && scanId && isValidUuid(scanId)) {
+        const { data: existingRow } = await sb.from('buyer_scans').select('id, pets').eq('id', scanId).maybeSingle();
+        if (existingRow) {
+          const newPets = updatePetsStatus(existingRow.pets);
+          const { data: updatedRows, error } = await sb
+            .from('buyer_scans')
+            .update({ pets: newPets })
+            .eq('id', scanId)
+            .select();
+
+          if (error || !updatedRows || updatedRows.length === 0) {
+            alert(
+              'Status updated locally, but Supabase blocked saving it because Row Level Security (RLS) has no UPDATE policy yet.\n\n' +
+              'To save statuses in the cloud, run once in Supabase SQL Editor:\n' +
+              'CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);'
+            );
+          }
+        }
       }
 
-      const container = document.getElementById('broker-leads-list');
-      if (rows.length === 0) return container.innerHTML = `<div class="bg-white p-10 rounded-3xl border text-center text-sm text-slate-500">No leads found for this filter.</div>`;
+      renderBrokerLeads();
+    }
 
-      container.innerHTML = rows.map(r => {
+    async function renderBrokerLeads() {
+      let allRows = [];
+      if (hasSupabase) {
+        const { data, error } = await sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
+        if (error) return document.getElementById('broker-leads-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
+        allRows = data || [];
+      } else {
+        allRows = [...localScans];
+      }
+
+      // Build list of properties (savedPropertiesList + any property_ids present in scans)
+      const propMap = new Map();
+      savedPropertiesList.forEach(p => propMap.set(p.id, normalizePropertyRow(p)));
+      if (activeProperty && activeProperty.id && !String(activeProperty.id).startsWith('new-') && !propMap.has(activeProperty.id)) {
+        propMap.set(activeProperty.id, normalizePropertyRow(activeProperty));
+      }
+      allRows.forEach(r => {
+        if (r.property_id && !propMap.has(r.property_id)) {
+          propMap.set(r.property_id, {
+            id: r.property_id,
+            address: 'Property Listing',
+            suburb: '',
+            agent_name: ''
+          });
+        }
+      });
+
+      const propertiesForCards = Array.from(propMap.values());
+
+      // Default selected property: keep current if valid, otherwise pick first property with opt-ins or activeProperty
+      if (!brokerSelectedPropertyId || !propMap.has(brokerSelectedPropertyId)) {
+        const propWithOptIn = propertiesForCards.find(p =>
+          allRows.some(r => r.property_id === p.id && r.broker_opt_in)
+        );
+        brokerSelectedPropertyId = propWithOptIn
+          ? propWithOptIn.id
+          : (propMap.has(activeProperty.id) ? activeProperty.id : (propertiesForCards[0]?.id || null));
+      }
+
+      // Render Property Selector Cards at Top of Tab 4
+      const cardsContainer = document.getElementById('broker-property-cards');
+      if (propertiesForCards.length === 0) {
+        cardsContainer.innerHTML = `<div class="col-span-full text-xs text-slate-500 p-4 bg-slate-50 rounded-2xl">No saved properties yet. Create a property in Tab 1 first.</div>`;
+      } else {
+        cardsContainer.innerHTML = propertiesForCards.map(p => {
+          const propScans = allRows.filter(r => r.property_id === p.id);
+          const optInCount = propScans.filter(r => r.broker_opt_in).length;
+          const isSelected = p.id === brokerSelectedPropertyId;
+
+          const cardClass = isSelected
+            ? 'bg-[#F2F9FA] border-2 border-[#006875] shadow-sm'
+            : 'bg-slate-50/70 hover:bg-slate-100/80 border border-slate-200/90';
+
+          const badgeClass = optInCount > 0
+            ? 'bg-amber-100 text-amber-900 border border-amber-300'
+            : 'bg-slate-200/70 text-slate-600';
+
+          return `
+            <button type="button" onclick="selectBrokerProperty('${escapeHtml(p.id)}')"
+              class="text-left p-3.5 rounded-2xl transition flex items-center justify-between gap-2.5 ${cardClass}">
+              <div class="min-w-0">
+                <p class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${escapeHtml(p.address)}</p>
+                <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                  ${escapeHtml(p.suburb || 'Open Home')}${p.agent_name ? ' • ' + escapeHtml(p.agent_name) : ''}
+                </p>
+              </div>
+              <span class="shrink-0 text-[11px] font-extrabold px-2.5 py-1 rounded-full ${badgeClass}">
+                ${optInCount} Opt-In${optInCount === 1 ? '' : 's'}
+              </span>
+            </button>`;
+        }).join('');
+      }
+
+      // Filter leads strictly to the selected property
+      const selectedProp = propMap.get(brokerSelectedPropertyId) || activeProperty;
+      const propTitleEl = document.getElementById('broker-selected-prop-title');
+      const propMetaEl = document.getElementById('broker-selected-prop-meta');
+      if (propTitleEl) {
+        propTitleEl.textContent = `${selectedProp.address}${selectedProp.suburb ? ', ' + selectedProp.suburb : ''}`;
+      }
+      if (propMetaEl) {
+        const guidePart = selectedProp.price_min
+          ? `Guide: $${Number(selectedProp.price_min).toLocaleString()} – $${Number(selectedProp.price_max).toLocaleString()}`
+          : '';
+        const agentPart = selectedProp.agent_name ? `Selling Agent: ${selectedProp.agent_name}` : '';
+        propMetaEl.textContent = [agentPart, guidePart].filter(Boolean).join(' • ') || 'Open Home Lead Breakdown';
+      }
+
+      const propertyScans = allRows.filter(r => r.property_id === brokerSelectedPropertyId);
+      const optedInRows = propertyScans.filter(r => r.broker_opt_in);
+      const displayedRows = brokerOptInOnly ? optedInRows : propertyScans;
+
+      // Update 3-Card Property-Level Broker Snapshot
+      document.getElementById('broker-kpi-optins').textContent = optedInRows.length;
+      document.getElementById('broker-kpi-total-scans').textContent = `${propertyScans.length} total scan${propertyScans.length === 1 ? '' : 's'} at this open`;
+
+      const kpiSourceRows = optedInRows.length > 0 ? optedInRows : propertyScans;
+      if (kpiSourceRows.length > 0) {
+        const avgBorrow = Math.round(
+          kpiSourceRows.reduce((sum, r) => sum + (Number(r.est_max_loan) || 0), 0) / kpiSourceRows.length
+        );
+        document.getElementById('broker-kpi-avg-borrow').textContent = `$${avgBorrow.toLocaleString()}`;
+      } else {
+        document.getElementById('broker-kpi-avg-borrow').textContent = '—';
+      }
+
+      const oppCount = kpiSourceRows.filter(r => {
+        const lvrStr = cleanLvrLabel(r).toUpperCase();
+        return lvrStr.startsWith('ORANGE') || lvrStr.startsWith('RED') || r.budget_badge === 'Subject to Sale' || r.budget_badge === 'Within Reach';
+      }).length;
+      document.getElementById('broker-kpi-opps').textContent = oppCount;
+
+      // Render Lead Cards for Selected Property
+      const container = document.getElementById('broker-leads-list');
+      if (displayedRows.length === 0) {
+        return container.innerHTML = `
+          <div class="bg-white p-10 rounded-3xl border border-slate-200/90 text-center space-y-2">
+            <p class="text-sm font-bold text-slate-700">
+              ${brokerOptInOnly ? 'No opted-in broker leads for this property yet.' : 'No buyer scans recorded for this property yet.'}
+            </p>
+            <p class="text-xs text-slate-500">
+              ${brokerOptInOnly && propertyScans.length > 0
+                ? `There ${propertyScans.length === 1 ? 'is 1 non-opt-in scan' : 'are ' + propertyScans.length + ' non-opt-in scans'} — click "All Scans (This Home)" above to inspect.`
+                : 'Select another property card above or check back after the open home.'}
+            </p>
+          </div>`;
+      }
+
+      container.innerHTML = displayedRows.map(r => {
         const lvrTag = cleanLvrLabel(r);
         const isRed = lvrTag.startsWith('RED');
         const isOrange = lvrTag.startsWith('ORANGE');
         const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
         const estPrice = extractBuyerEstPrice(r);
-        const matchedProp = savedPropertiesList.find(p => p.id === r.property_id);
-        const propBadge = matchedProp
-          ? `<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#F2F9FA] text-[#006875] border border-[#006875]/20">📍 ${escapeHtml(matchedProp.address)}</span>`
-          : '';
+        const status = extractLeadStatus(r);
+
+        const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
+        const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
+        const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
+        const safePropAddr = escapeHtml(selectedProp.address || '').replace(/'/g, "\\'");
+
+        const statusBtn = (label) => {
+          const isCurrent = status === label;
+          let activeClass = 'bg-slate-900 text-white border-slate-900';
+          if (isCurrent && label === 'New') activeClass = 'bg-amber-500 text-white border-amber-500';
+          if (isCurrent && label === 'Called') activeClass = 'bg-[#006875] text-white border-[#006875]';
+          if (isCurrent && label === 'Booked') activeClass = 'bg-emerald-600 text-white border-emerald-600';
+          const idleClass = 'bg-white hover:bg-slate-100 text-slate-600 border-slate-200';
+          return `<button type="button" onclick="updateBrokerLeadStatus('${safeId}', '${safeName}', '${safeMobile}', '${label}')"
+            class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border transition ${isCurrent ? activeClass : idleClass}">
+            ${label === 'Booked' && isCurrent ? '✓ Booked' : label}
+          </button>`;
+        };
+
+        const firstName = escapeHtml((r.buyer_name || 'Buyer').trim().split(/\s+/)[0]);
 
         return `
-          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-3.5">
-            <div class="flex flex-wrap justify-between items-start gap-2">
-              <div>
+          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-4">
+            <div class="flex flex-wrap justify-between items-start gap-3">
+              <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <span class="text-[#006875]">${escapeHtml(r.buyer_mobile)}</span></h3>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${r.broker_opt_in ? 'Opted In' : 'Agent Only'}</span>
-                  ${propBadge}
+                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline">${escapeHtml(r.buyer_mobile)}</a></h3>
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${r.broker_opt_in ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-600'}">
+                    ${r.broker_opt_in ? '★ Opted In' : 'Scan Only'}
+                  </span>
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${lvrPillClass}">
+                    ${escapeHtml(lvrTag)}
+                  </span>
                 </div>
-                <p class="text-xs text-slate-500 font-medium mt-1">${escapeHtml(r.buying_stage)} • Timeline: ${escapeHtml(r.timeline)} • ${r.dependants} Dependants${estPrice ? ' • Est. Price: $' + estPrice.toLocaleString() : ''}</p>
+                <p class="text-xs text-slate-500 font-medium">
+                  ${escapeHtml(r.buying_stage)} • Timeline: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)} • ${r.dependants} Dependants${estPrice ? ' • Est. Price: $' + estPrice.toLocaleString() : ''}
+                </p>
               </div>
-              <span class="text-xs font-bold px-3 py-1 rounded-full ${lvrPillClass}">
-                ${escapeHtml(lvrTag)}
-              </span>
+
+              <!-- Lead Status Pills (New -> Called -> Booked) -->
+              <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80 shrink-0">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1.5">Status:</span>
+                ${statusBtn('New')}
+                ${statusBtn('Called')}
+                ${statusBtn('Booked')}
+              </div>
             </div>
+
             <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
               <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
               <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
               <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <span class="text-[11px] text-slate-500 font-medium">
+                Match Score: <strong>${r.fit_percentage}%</strong> (${escapeHtml(r.budget_badge)})
+              </span>
+              <div class="flex items-center gap-2">
+                <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 px-3.5 py-2 rounded-xl transition">
+                  📞 Call ${firstName}
+                </a>
+                <button type="button" onclick="sendBrokerLeadSms('${safeName}', '${safeMobile}', '${safePropAddr}', ${Boolean(r.broker_opt_in)})"
+                  class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-4 py-2 rounded-xl shadow-sm transition">
+                  💬 Text ${firstName}
+                </button>
+              </div>
             </div>
           </div>`;
       }).join('');
