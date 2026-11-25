@@ -18,67 +18,42 @@
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
 
-    /* Full-Bleed A4 PDF Print Styling (Substantial Typography + 440px QR + Full Broker Footer) */
+    #a4-print-image-overlay { display: none; }
+
     @media print {
       @page { size: A4 portrait; margin: 0 !important; }
       html, body {
-        width: 210mm !important; height: 297mm !important;
-        margin: 0 !important; padding: 0 !important;
-        background: #ffffff !important; overflow: hidden !important;
-        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #ffffff !important;
       }
-      body * { visibility: hidden; }
-      #printable-strut-card, #printable-strut-card * { visibility: visible; }
-      #printable-strut-card {
-        position: fixed !important; left: 0 !important; top: 0 !important; transform: none !important;
-        width: 210mm !important; height: 297mm !important; margin: 0 !important;
-        display: flex !important; flex-direction: column !important; justify-content: space-between !important;
-        border-radius: 0 !important; box-shadow: none !important; border: none !important; overflow: hidden !important;
-        box-sizing: border-box !important;
+      body > *:not(#a4-print-image-overlay) {
+        display: none !important;
       }
-      #printable-strut-card .print-header { padding: 22px 28px !important; flex-shrink: 0 !important; }
-      #printable-strut-card .print-title { font-size: 62px !important; line-height: 1.02 !important; }
-      #printable-strut-card .print-subtitle { font-size: 30px !important; margin-top: 8px !important; }
-      #printable-strut-card .print-heart { width: 34px !important; height: 34px !important; }
-      #printable-strut-card .print-address-band { padding: 14px 28px !important; flex-shrink: 0 !important; }
-      #printable-strut-card #card-address { font-size: 28px !important; }
-      #printable-strut-card #card-suburb { font-size: 16px !important; }
-      #printable-strut-card #card-specs-pill { font-size: 16px !important; padding: 7px 14px !important; }
-      #printable-strut-card .print-body {
-        flex: 1 1 auto !important; min-height: 0 !important;
-        display: flex !important; flex-direction: column !important;
-        justify-content: space-between !important; align-items: center !important;
-        padding: 18px 28px 20px !important;
+      #a4-print-image-overlay {
+        display: block !important;
+        position: fixed !important;
+        inset: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
-      #printable-strut-card .print-scan-copy {
-        font-size: 28px !important; line-height: 1.25 !important; font-weight: 700 !important;
-        max-width: 650px !important; margin: 0 auto 8px !important; flex-shrink: 0 !important;
-        color: #1e293b !important;
+      #a4-print-image-overlay img {
+        display: block !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        object-fit: fill !important;
       }
-      #printable-strut-card .print-qr-box {
-        padding: 14px 16px !important; flex-shrink: 0 !important;
-        display: flex !important; flex-direction: column !important; align-items: center !important;
-      }
-      #printable-strut-card #qrcode { width: 440px !important; height: 440px !important; }
-      #printable-strut-card #qr-caption-wrap {
-        margin-top: 8px !important; padding-top: 6px !important;
-        width: 100% !important; max-width: 440px !important;
-      }
-      #printable-strut-card #qr-caption-address { font-size: 20px !important; max-width: 440px !important; }
-      #printable-strut-card #qr-caption-suburb { font-size: 14px !important; max-width: 440px !important; }
-      #printable-strut-card .print-footer-strip {
-        margin-top: 10px !important; padding-top: 10px !important;
-        width: 100% !important; max-width: 680px !important; flex-shrink: 0 !important;
-      }
-      #printable-strut-card .print-footer-icon { width: 26px !important; height: 26px !important; }
-      #printable-strut-card .print-footer-icon svg { width: 15px !important; height: 15px !important; }
-      #printable-strut-card .print-privacy-text { font-size: 15.5px !important; line-height: 1.32 !important; }
     }
   </style>
 </head>
 <body class="bg-slate-100/80 text-slate-900 min-h-screen antialiased">
 
-  <!-- CLEAN INITIAL LOADER (PREVENTS ADMIN FLASH ON QR / AGENT LINKS) -->
+  <!-- CLEAN INITIAL LOADER -->
   <div id="app-loader" class="min-h-screen flex flex-col items-center justify-center px-4 text-center">
     <div class="w-14 h-14 rounded-2xl bg-[#006875] text-white flex items-center justify-center font-fun font-extrabold text-2xl shadow-md mb-4 animate-pulse">PM</div>
     <p class="font-clean-display font-extrabold text-lg text-slate-900">Property Match</p>
@@ -251,7 +226,7 @@
         <!-- Right Column: Centered Property Match QR Card & A4 PDF Export -->
         <div class="lg:col-span-5 space-y-4">
 
-          <!-- Printable / A4 PDF QR Card -->
+          <!-- Live Screen Preview QR Card -->
           <div id="printable-strut-card" class="bg-white rounded-[2rem] shadow-lg border-2 border-[#006875]/30 overflow-hidden text-center">
 
             <div class="print-header bg-[#006875] px-6 py-5 text-white text-center">
@@ -289,16 +264,16 @@
                 Scan in 30 seconds to <span class="text-orange-600 font-extrabold">check your borrowing power</span> &amp; see how well this home fits your wish list.
               </p>
 
-              <div class="print-qr-box inline-block mx-auto bg-white p-3.5 rounded-3xl border-2 border-[#006875] shadow-md">
+              <div class="print-qr-box inline-block mx-auto bg-white p-2.5 rounded-3xl border-2 border-[#006875] shadow-md">
                 <div id="qrcode" class="bg-white w-[235px] sm:w-[250px] h-[235px] sm:h-[250px] mx-auto"></div>
-                <div id="qr-caption-wrap" class="mt-2.5 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px] mx-auto">
-                  <p id="qr-caption-address" class="text-xs font-extrabold text-slate-900 leading-tight truncate">42 Kensington Road</p>
-                  <p id="qr-caption-suburb" class="text-[10px] font-bold uppercase tracking-wider text-[#006875] truncate mt-0.5">Norwood SA 5067</p>
+                <div id="qr-caption-wrap" class="mt-2 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px] mx-auto">
+                  <p id="qr-caption-address" class="text-xs font-extrabold text-slate-900 leading-tight">42 Kensington Road</p>
+                  <p id="qr-caption-suburb" class="text-[10.5px] font-bold uppercase tracking-wider text-[#006875] mt-0.5">Norwood SA 5067</p>
                 </div>
               </div>
 
-              <!-- A4 QR Flyer Bottom Strip -->
-              <div class="print-footer-strip mt-3 pt-2.5 border-t border-[#006875]/15 flex items-center justify-center gap-2.5 text-left">
+              <!-- Bottom Broker Strip -->
+              <div class="print-footer-strip mt-4 pt-3 border-t border-[#006875]/15 flex items-center justify-center gap-2 text-left">
                 <span class="print-footer-icon shrink-0 w-5 h-5 rounded-full bg-[#006875]/10 text-[#006875] flex items-center justify-center">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -348,7 +323,6 @@
 
       </div>
     </section>
-
     <!-- ==================== VIEW 2: MOBILE BUYER QR QUIZ ==================== -->
     <section id="view-scan" class="hidden max-w-md mx-auto">
       <div class="bg-white rounded-[2rem] shadow-xl border border-slate-200/90 overflow-hidden">
@@ -453,7 +427,6 @@
               <p class="text-xs text-slate-500 mt-0.5">Rough estimates only — no exact numbers needed.</p>
             </div>
 
-            <!-- Step 3 Privacy Lock Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
@@ -503,7 +476,6 @@
               <p class="text-xs text-slate-500 mt-0.5">Only include debts & card limits you plan to <strong>keep open</strong> during the application.</p>
             </div>
 
-            <!-- Step 4 Privacy Lock Banner -->
             <div class="flex items-start gap-2.5 bg-teal-50 border-2 border-[#006875]/35 p-3.5 rounded-2xl">
               <span class="shrink-0 w-6 h-6 rounded-full bg-[#006875] text-white flex items-center justify-center text-xs font-bold mt-0.5">🔒</span>
               <p class="text-xs font-bold text-[#004852] leading-snug">
@@ -581,7 +553,6 @@
               </p>
             </div>
 
-            <!-- Single Auto-Ticked Opt-In on Step 5 -->
             <div class="bg-amber-50/90 p-3.5 rounded-2xl border-2 border-amber-300 shadow-sm">
               <label class="flex items-start gap-3 cursor-pointer">
                 <input id="buyer-opt-in-step5" type="checkbox" checked
@@ -603,7 +574,7 @@
             </div>
           </div>
 
-          <!-- RESULTS SCREEN (NO DUPLICATE OPT-IN CHECKBOX) -->
+          <!-- RESULTS SCREEN -->
           <div id="q-step-results" class="quiz-step hidden space-y-4">
             <div class="flex items-center justify-between">
               <button type="button" onclick="goQuizStep(4)" class="inline-flex items-center gap-1 text-xs font-bold text-[#006875] hover:text-[#004852] bg-[#F2F9FA] hover:bg-teal-100/70 px-3 py-1.5 rounded-xl border border-[#006875]/20 transition">
@@ -640,7 +611,6 @@
               <p id="res-limiting-desc" class="text-[11.5px] text-slate-200 leading-relaxed"></p>
             </div>
 
-            <!-- Status Confirmation Pill Directly Above "Text Summary to My Phone" -->
             <div id="broker-optin-confirmed" class="text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-2xl leading-snug">
               ✓ Details sent to Alex Fyfe (Mortgage Broking Specialist) to assess your finances &amp; check eligibility with government grants, guarantors, bridging finance, etc.
             </div>
@@ -649,7 +619,6 @@
               🔒 Withheld: Neither your contact details nor your financial figures were sent to Alex Fyfe.
             </div>
 
-            <!-- Free Zero-Cost Save & Send to Buyer Box -->
             <div class="bg-white border-2 border-[#006875]/25 p-4 rounded-2xl space-y-2.5 shadow-sm">
               <div>
                 <p class="text-xs font-extrabold text-slate-900">Keep a copy of your Property Match</p>
@@ -775,7 +744,7 @@
       <div id="agent-leaderboard-list" class="space-y-3.5"></div>
     </section>
 
-    <!-- ==================== VIEW 4: BROKER LEADS (WITH DELETE & CLEAR CONTROLS) ==================== -->
+    <!-- ==================== VIEW 4: BROKER LEADS ==================== -->
     <section id="view-leads" class="hidden space-y-5">
 
       <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-3.5">
@@ -797,7 +766,6 @@
         <div id="broker-property-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
       </div>
 
-      <!-- 1-Click Undo Clear Banner for Broker Leads -->
       <div id="broker-undo-bar" class="hidden bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 border border-slate-700">
         <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
           <span class="w-6 h-6 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-extrabold">↺</span>
@@ -850,7 +818,9 @@
 
       <div id="broker-leads-list" class="space-y-4"></div>
     </section>
-    <script>
+
+  </main>
+  <script>
     const SUPABASE_URL = 'https://wgpezdkeehghnsnkicfo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_qdGTlIZgGmtKDYmEFIjLiA_JRPi-5qq';
     const hasSupabase = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
@@ -1100,10 +1070,208 @@
 
     function printQrFlyer() {
       const originalTitle = document.title;
-      const slug = (activeProperty.address || 'Flyer').trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+      const street = (document.getElementById('prop-address')?.value.trim()) || activeProperty.address || '42 Kensington Road';
+      const suburb = (document.getElementById('prop-suburb')?.value.trim()) || activeProperty.suburb || 'Norwood SA 5067';
+      const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms || 3;
+      const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
+      const slug = street.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'Flyer';
       document.title = `Property-Match-${slug}`;
-      window.print();
-      setTimeout(() => { document.title = originalTitle; }, 1000);
+
+      // High-res A4 Portrait Canvas (1240 x 1754 px = 150 DPI A4, zero margins)
+      const W = 1240;
+      const H = 1754;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      const roundRectPath = (x, y, w, h, r) => {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      };
+
+      // 1. Soft Teal-Tinted Background
+      const bgGrad = ctx.createLinearGradient(0, 390, 0, H);
+      bgGrad.addColorStop(0, '#FFFFFF');
+      bgGrad.addColorStop(0.5, '#F5FAFB');
+      bgGrad.addColorStop(1, '#E6F4F6');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // 2. Top Teal Banner
+      const headerH = 260;
+      ctx.fillStyle = '#006875';
+      ctx.fillRect(0, 0, W, headerH);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 84px "Playpen Sans", "Outfit", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Property Match', W / 2, 125);
+
+      // Subtitle + Pink Heart
+      const subText = 'Find Your Perfect Match';
+      ctx.font = '800 42px "Outfit", "Plus Jakarta Sans", sans-serif';
+      const subWidth = ctx.measureText(subText).width;
+      const heartSize = 40;
+      const groupStartX = (W - (subWidth + 16 + heartSize)) / 2;
+
+      ctx.fillStyle = '#CCFBF1';
+      ctx.textAlign = 'left';
+      ctx.fillText(subText, groupStartX, 202);
+
+      // Pink Heart
+      const hx = groupStartX + subWidth + 16;
+      const hy = 168;
+      ctx.save();
+      ctx.translate(hx, hy);
+      ctx.scale(heartSize / 24, heartSize / 24);
+      ctx.fillStyle = '#EC4899';
+      const heartPath = new Path2D('M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z');
+      ctx.fill(heartPath);
+      ctx.restore();
+
+      // 3. Property Address Band
+      const bandY = headerH;
+      const bandH = 140;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, bandY, W, bandH);
+      ctx.strokeStyle = 'rgba(0, 104, 117, 0.18)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, bandY + bandH);
+      ctx.lineTo(W, bandY + bandH);
+      ctx.stroke();
+
+      // Pin Icon Badge
+      ctx.fillStyle = 'rgba(0, 104, 117, 0.1)';
+      roundRectPath(64, bandY + 32, 76, 76, 20);
+      ctx.fill();
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 36px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('📍', 102, bandY + 83);
+
+      // Street & Suburb/State/Postcode
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#0F172A';
+      ctx.font = '800 42px "Outfit", "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(street, 162, bandY + 66, 760);
+
+      ctx.fillStyle = '#006875';
+      ctx.font = '700 24px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(suburb.toUpperCase(), 162, bandY + 106, 760);
+
+      // Specs Pill (Right)
+      const specsText = `${beds} Bed • ${baths} Bath`;
+      ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+      const pillW = ctx.measureText(specsText).width + 48;
+      const pillX = W - 64 - pillW;
+      ctx.fillStyle = '#F2F9FA';
+      ctx.strokeStyle = 'rgba(0, 104, 117, 0.25)';
+      ctx.lineWidth = 2.5;
+      roundRectPath(pillX, bandY + 42, pillW, 56, 16);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#006875';
+      ctx.textAlign = 'center';
+      ctx.fillText(specsText, pillX + pillW / 2, bandY + 78);
+
+      // 4. Two-Line "Scan in 30 seconds..." Copy
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#334155';
+      ctx.font = '700 34px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Scan in 30 seconds to check your borrowing power', W / 2, 485);
+      ctx.fillText('& see how well this home fits your wish list.', W / 2, 533);
+
+      // 5. Snug-Fitting QR Code Box (Tight 20px border padding around QR)
+      const qrSize = 710;
+      const boxPad = 20;
+      const captionH = 115;
+      const boxW = qrSize + boxPad * 2;
+      const boxH = qrSize + boxPad * 2 + captionH;
+      const boxX = (W - boxW) / 2;
+      const boxY = 580;
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.12)';
+      ctx.shadowBlur = 28;
+      ctx.shadowOffsetY = 12;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = '#006875';
+      ctx.lineWidth = 5;
+      roundRectPath(boxX, boxY, boxW, boxH, 36);
+      ctx.fill();
+      ctx.restore();
+      roundRectPath(boxX, boxY, boxW, boxH, 36);
+      ctx.stroke();
+
+      // Copy Live QR Canvas into A4 Flyer
+      const liveQrCanvas = document.querySelector('#qrcode canvas');
+      if (liveQrCanvas) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(liveQrCanvas, boxX + boxPad, boxY + boxPad, qrSize, qrSize);
+        ctx.imageSmoothingEnabled = true;
+      }
+
+      // Divider & Address + Suburb/State/Postcode Under QR Code
+      const capTopY = boxY + boxPad + qrSize + 18;
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(boxX + boxPad, capTopY);
+      ctx.lineTo(boxX + boxW - boxPad, capTopY);
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#0F172A';
+      ctx.font = '800 34px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(street, W / 2, capTopY + 44, qrSize);
+
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(suburb.toUpperCase(), W / 2, capTopY + 80, qrSize);
+
+      // 6. Hardcoded Bottom Broker Footer (Always Present on Every PDF)
+      const footerLineY = H - 145;
+      ctx.strokeStyle = 'rgba(0, 104, 117, 0.22)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(80, footerLineY);
+      ctx.lineTo(W - 80, footerLineY);
+      ctx.stroke();
+
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🔒  Independent Mortgage Choice tool by Alex Fyfe — your financial', W / 2, footerLineY + 48);
+      ctx.fillText('figures stay private and are never shown to the selling agent.', W / 2, footerLineY + 84);
+
+      // 7. Inject Full-Page Print Image & Open Print Dialog
+      const dataUrl = canvas.toDataURL('image/png');
+      const existingOverlay = document.getElementById('a4-print-image-overlay');
+      if (existingOverlay) existingOverlay.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'a4-print-image-overlay';
+      overlay.innerHTML = `<img src="${dataUrl}" alt="Property Match A4 Flyer" />`;
+      document.body.appendChild(overlay);
+
+      const cleanup = () => {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        document.title = originalTitle;
+        window.removeEventListener('afterprint', cleanup);
+      };
+      window.addEventListener('afterprint', cleanup);
+
+      setTimeout(() => {
+        window.print();
+        setTimeout(cleanup, 2500);
+      }, 150);
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -1422,6 +1590,7 @@
           is_modern: isModern,
           has_garage: hasGarage,
           has_outdoor: hasOutdoor,
+          has_office
           has_office: hasOffice
         };
         cachePropertyLocally(activeProperty);
@@ -3110,5 +3279,3 @@
   </script>
 </body>
 </html>
-
-  </main>
