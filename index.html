@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Playpen+Sans:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,38 +17,6 @@
     input[type="range"] { accent-color: #006875; }
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
-
-    #a4-print-image-overlay { display: none; }
-
-    @media print {
-      @page { size: A4 portrait; margin: 0 !important; }
-      html, body {
-        width: 210mm !important;
-        height: 297mm !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-        background: #ffffff !important;
-      }
-      body > *:not(#a4-print-image-overlay) {
-        display: none !important;
-      }
-      #a4-print-image-overlay {
-        display: block !important;
-        position: fixed !important;
-        inset: 0 !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      #a4-print-image-overlay img {
-        display: block !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        object-fit: fill !important;
-      }
-    }
   </style>
 </head>
 <body class="bg-slate-100/80 text-slate-900 min-h-screen antialiased">
@@ -227,7 +194,7 @@
         <!-- Right Column: Centered Property Match QR Card & A4 PDF Export -->
         <div class="lg:col-span-5 space-y-4">
 
-          <!-- Live Screen Preview QR Card (Snapshotted 1:1 for A4 Print) -->
+          <!-- Live Screen Preview QR Card -->
           <div id="printable-strut-card" class="bg-white rounded-[2rem] shadow-lg border-2 border-[#006875]/30 overflow-hidden text-center">
 
             <div class="print-header bg-[#006875] px-6 py-5 text-white text-center">
@@ -324,6 +291,7 @@
 
       </div>
     </section>
+
     <!-- ==================== VIEW 2: MOBILE BUYER QR QUIZ ==================== -->
     <section id="view-scan" class="hidden max-w-md mx-auto">
       <div class="bg-white rounded-[2rem] shadow-xl border border-slate-200/90 overflow-hidden">
@@ -1069,96 +1037,201 @@
       if (addrInput) addrInput.focus();
     }
 
-async function printQrFlyer() {
-      const card = document.getElementById('printable-strut-card');
-      if (!card || typeof html2canvas === 'undefined') {
-        return window.print();
+    function printQrFlyer() {
+      const street = (document.getElementById('prop-address')?.value.trim()) || activeProperty.address || '42 Kensington Road';
+      const suburb = (document.getElementById('prop-suburb')?.value.trim()) || activeProperty.suburb || 'Norwood SA 5067';
+      const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms || 3;
+      const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
+      const liveQrCanvas = document.querySelector('#qrcode canvas');
+
+      const W = 1240;
+      const H = 1754;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      const roundRect = (x, y, w, h, r) => {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      };
+
+      const bgGrad = ctx.createLinearGradient(0, 400, 0, H);
+      bgGrad.addColorStop(0, '#FFFFFF');
+      bgGrad.addColorStop(0.5, '#F5FAFB');
+      bgGrad.addColorStop(1, '#E6F4F6');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      const headerH = 260;
+      ctx.fillStyle = '#006875';
+      ctx.fillRect(0, 0, W, headerH);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 82px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Property Match', W / 2, 125);
+
+      const subText = 'Find Your Perfect Match';
+      ctx.font = '800 40px system-ui, -apple-system, sans-serif';
+      const subWidth = ctx.measureText(subText).width;
+      const heartSize = 38;
+      const groupStartX = (W - (subWidth + 16 + heartSize)) / 2;
+
+      ctx.fillStyle = '#CCFBF1';
+      ctx.textAlign = 'left';
+      ctx.fillText(subText, groupStartX, 200);
+
+      ctx.save();
+      ctx.translate(groupStartX + subWidth + 16, 168);
+      ctx.scale(heartSize / 24, heartSize / 24);
+      ctx.fillStyle = '#EC4899';
+      ctx.fill(new Path2D('M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'));
+      ctx.restore();
+
+      const bandY = headerH;
+      const bandH = 145;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, bandY, W, bandH);
+      ctx.strokeStyle = 'rgba(0, 104, 117, 0.2)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, bandY + bandH);
+      ctx.lineTo(W, bandY + bandH);
+      ctx.stroke();
+
+      const specsText = `${beds} Bed • ${baths} Bath`;
+      ctx.font = '800 24px system-ui, -apple-system, sans-serif';
+      const pillW = ctx.measureText(specsText).width + 44;
+      const pillX = W - 56 - pillW;
+      ctx.fillStyle = '#F2F9FA';
+      ctx.strokeStyle = 'rgba(0, 104, 117, 0.28)';
+      ctx.lineWidth = 2.5;
+      roundRect(pillX, bandY + 44, pillW, 56, 14);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#006875';
+      ctx.textAlign = 'center';
+      ctx.fillText(specsText, pillX + pillW / 2, bandY + 80);
+
+      ctx.fillStyle = 'rgba(0, 104, 117, 0.1)';
+      roundRect(56, bandY + 34, 76, 76, 18);
+      ctx.fill();
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 34px sans-serif';
+      ctx.fillText('📍', 94, bandY + 84);
+
+      const maxTextW = pillX - 154 - 24;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#0F172A';
+      ctx.font = '800 38px system-ui, -apple-system, sans-serif';
+      ctx.fillText(street, 154, bandY + 66, maxTextW);
+
+      ctx.fillStyle = '#006875';
+      ctx.font = '700 23px system-ui, -apple-system, sans-serif';
+      ctx.fillText(suburb.toUpperCase(), 154, bandY + 106, maxTextW);
+
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#334155';
+      ctx.font = '700 33px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Scan in 30 seconds to check your borrowing power', W / 2, 490);
+      ctx.fillText('& see how well this home fits your wish list.', W / 2, 536);
+
+      const qrSize = 700;
+      const boxPad = 22;
+      const captionH = 115;
+      const boxW = qrSize + boxPad * 2;
+      const boxH = qrSize + boxPad * 2 + captionH;
+      const boxX = (W - boxW) / 2;
+      const boxY = 585;
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.12)';
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 10;
+      ctx.fillStyle = '#FFFFFF';
+      roundRect(boxX, boxY, boxW, boxH, 36);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.strokeStyle = '#006875';
+      ctx.lineWidth = 5;
+      roundRect(boxX, boxY, boxW, boxH, 36);
+      ctx.stroke();
+
+      if (liveQrCanvas) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(liveQrCanvas, boxX + boxPad, boxY + boxPad, qrSize, qrSize);
+        ctx.imageSmoothingEnabled = true;
       }
 
-      const originalTitle = document.title;
-      const slug = (activeProperty.address || 'Flyer').trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
-      document.title = `Property-Match-${slug}`;
+      const capTopY = boxY + boxPad + qrSize + 18;
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(boxX + boxPad, capTopY);
+      ctx.lineTo(boxX + boxW - boxPad, capTopY);
+      ctx.stroke();
 
-      // Grab the live QR code as a flat PNG data URL before cloning
-      const liveQrCanvas = card.querySelector('#qrcode canvas');
-      const qrDataUrl = liveQrCanvas ? liveQrCanvas.toDataURL('image/png') : '';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#0F172A';
+      ctx.font = '800 33px system-ui, -apple-system, sans-serif';
+      ctx.fillText(street, W / 2, capTopY + 44, qrSize);
 
-      try {
-        const snapshotCanvas = await html2canvas(card, {
-          scale: 3,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          onclone: (clonedDoc) => {
-            const clonedCard = clonedDoc.getElementById('printable-strut-card');
-            if (!clonedCard) return;
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 23px system-ui, -apple-system, sans-serif';
+      ctx.fillText(suburb.toUpperCase(), W / 2, capTopY + 80, qrSize);
 
-            // Remove rounded corners/borders so snapshot fills A4 edge-to-edge
-            clonedCard.style.borderRadius = '0px';
-            clonedCard.style.border = 'none';
-            clonedCard.style.boxShadow = 'none';
-            clonedCard.style.width = '460px';
+      const footerLineY = H - 140;
+      ctx.strokeStyle = 'rgba(0, 104, 117, 0.22)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(80, footerLineY);
+      ctx.lineTo(W - 80, footerLineY);
+      ctx.stroke();
 
-            // 1. Replace QR canvas with a locked <img> so it never renders blank
-            const clonedQrContainer = clonedCard.querySelector('#qrcode');
-            if (clonedQrContainer && qrDataUrl) {
-              clonedQrContainer.innerHTML = `<img src="${qrDataUrl}" style="display:block !important; width:240px !important; height:240px !important; margin:0 auto;" />`;
-            }
+      ctx.fillStyle = '#006875';
+      ctx.font = '800 24px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🔒  Independent Mortgage Choice tool by Alex Fyfe — your financial', W / 2, footerLineY + 46);
+      ctx.fillText('figures stay private and are never shown to the selling agent.', W / 2, footerLineY + 82);
 
-            // 2. Prevent html2canvas from clipping address/suburb text
-            const addrEl = clonedCard.querySelector('#card-address');
-            const subEl = clonedCard.querySelector('#card-suburb');
-            const capAddrEl = clonedCard.querySelector('#qr-caption-address');
-            const capSubEl = clonedCard.querySelector('#qr-caption-suburb');
-            [addrEl, subEl, capAddrEl, capSubEl].forEach(el => {
-              if (el) {
-                el.classList.remove('truncate');
-                el.style.overflow = 'visible';
-                el.style.textOverflow = 'clip';
-                el.style.whiteSpace = 'normal';
-                el.style.wordBreak = 'break-word';
-              }
-            });
+      const dataUrl = canvas.toDataURL('image/png');
+      const slug = street.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'Flyer';
+      const printWin = window.open('', '_blank', 'width=850,height=1100');
 
-            // 3. Keep the Beds & Baths pill cleanly inside the right edge
-            const bandEl = clonedCard.querySelector('.print-address-band');
-            const pillEl = clonedCard.querySelector('#card-specs-pill');
-            if (bandEl) {
-              bandEl.style.display = 'flex';
-              bandEl.style.alignItems = 'center';
-              bandEl.style.justifyContent = 'space-between';
-              bandEl.style.gap = '10px';
-            }
-            if (pillEl) {
-              pillEl.style.whiteSpace = 'nowrap';
-              pillEl.style.flexShrink = '0';
-              pillEl.style.marginLeft = 'auto';
-            }
-          }
-        });
-
-        const dataUrl = snapshotCanvas.toDataURL('image/png');
-        const existingOverlay = document.getElementById('a4-print-image-overlay');
-        if (existingOverlay) existingOverlay.remove();
-
-        const overlay = document.createElement('div');
-        overlay.id = 'a4-print-image-overlay';
-        overlay.innerHTML = `<img src="${dataUrl}" alt="Property Match A4 Flyer" />`;
-        document.body.appendChild(overlay);
-
-        const cleanup = () => {
-          if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-          document.title = originalTitle;
-          window.removeEventListener('afterprint', cleanup);
-        };
-        window.addEventListener('afterprint', cleanup);
-
-        setTimeout(() => {
-          window.print();
-          setTimeout(cleanup, 2500);
-        }, 150);
-      } catch (err) {
-        window.print();
+      if (!printWin) {
+        const link = document.createElement('a');
+        link.download = `Property-Match-${slug}.png`;
+        link.href = dataUrl;
+        link.click();
+        return;
       }
+
+      printWin.document.write(`<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Property-Match-${slug}</title>
+          <style>
+            @page { size: A4 portrait; margin: 0; }
+            html, body { margin: 0; padding: 0; width: 210mm; height: 297mm; overflow: hidden; background: #fff; }
+            img { display: block; width: 210mm; height: 297mm; object-fit: fill; }
+          </style>
+        </head>
+        <body>
+          <img id="flyer-img" src="${dataUrl}" />
+          <script>
+            const img = document.getElementById('flyer-img');
+            img.onload = () => { setTimeout(() => { window.print(); window.close(); }, 150); };
+          <\/script>
+        </body>
+        </html>`);
+      printWin.document.close();
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -1426,6 +1499,7 @@ async function printQrFlyer() {
       localStorage.setItem('openmatch_properties', JSON.stringify(localProperties));
       renderSavedPropertyDropdowns();
     }
+
     async function saveProperty(silent = false) {
       const isModern = document.getElementById('tag-modern').checked;
       const hasGarage = document.getElementById('tag-garage').checked;
