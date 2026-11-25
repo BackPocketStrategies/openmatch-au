@@ -1069,7 +1069,7 @@
       if (addrInput) addrInput.focus();
     }
 
-    async function printQrFlyer() {
+async function printQrFlyer() {
       const card = document.getElementById('printable-strut-card');
       if (!card || typeof html2canvas === 'undefined') {
         return window.print();
@@ -1079,23 +1079,62 @@
       const slug = (activeProperty.address || 'Flyer').trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
       document.title = `Property-Match-${slug}`;
 
-      const origRadius = card.style.borderRadius;
-      const origBorder = card.style.border;
-      const origShadow = card.style.boxShadow;
-      card.style.borderRadius = '0px';
-      card.style.border = 'none';
-      card.style.boxShadow = 'none';
+      // Grab the live QR code as a flat PNG data URL before cloning
+      const liveQrCanvas = card.querySelector('#qrcode canvas');
+      const qrDataUrl = liveQrCanvas ? liveQrCanvas.toDataURL('image/png') : '';
 
       try {
         const snapshotCanvas = await html2canvas(card, {
           scale: 3,
           useCORS: true,
-          backgroundColor: '#ffffff'
-        });
+          backgroundColor: '#ffffff',
+          onclone: (clonedDoc) => {
+            const clonedCard = clonedDoc.getElementById('printable-strut-card');
+            if (!clonedCard) return;
 
-        card.style.borderRadius = origRadius;
-        card.style.border = origBorder;
-        card.style.boxShadow = origShadow;
+            // Remove rounded corners/borders so snapshot fills A4 edge-to-edge
+            clonedCard.style.borderRadius = '0px';
+            clonedCard.style.border = 'none';
+            clonedCard.style.boxShadow = 'none';
+            clonedCard.style.width = '460px';
+
+            // 1. Replace QR canvas with a locked <img> so it never renders blank
+            const clonedQrContainer = clonedCard.querySelector('#qrcode');
+            if (clonedQrContainer && qrDataUrl) {
+              clonedQrContainer.innerHTML = `<img src="${qrDataUrl}" style="display:block !important; width:240px !important; height:240px !important; margin:0 auto;" />`;
+            }
+
+            // 2. Prevent html2canvas from clipping address/suburb text
+            const addrEl = clonedCard.querySelector('#card-address');
+            const subEl = clonedCard.querySelector('#card-suburb');
+            const capAddrEl = clonedCard.querySelector('#qr-caption-address');
+            const capSubEl = clonedCard.querySelector('#qr-caption-suburb');
+            [addrEl, subEl, capAddrEl, capSubEl].forEach(el => {
+              if (el) {
+                el.classList.remove('truncate');
+                el.style.overflow = 'visible';
+                el.style.textOverflow = 'clip';
+                el.style.whiteSpace = 'normal';
+                el.style.wordBreak = 'break-word';
+              }
+            });
+
+            // 3. Keep the Beds & Baths pill cleanly inside the right edge
+            const bandEl = clonedCard.querySelector('.print-address-band');
+            const pillEl = clonedCard.querySelector('#card-specs-pill');
+            if (bandEl) {
+              bandEl.style.display = 'flex';
+              bandEl.style.alignItems = 'center';
+              bandEl.style.justifyContent = 'space-between';
+              bandEl.style.gap = '10px';
+            }
+            if (pillEl) {
+              pillEl.style.whiteSpace = 'nowrap';
+              pillEl.style.flexShrink = '0';
+              pillEl.style.marginLeft = 'auto';
+            }
+          }
+        });
 
         const dataUrl = snapshotCanvas.toDataURL('image/png');
         const existingOverlay = document.getElementById('a4-print-image-overlay');
@@ -1118,9 +1157,6 @@
           setTimeout(cleanup, 2500);
         }, 150);
       } catch (err) {
-        card.style.borderRadius = origRadius;
-        card.style.border = origBorder;
-        card.style.boxShadow = origShadow;
         window.print();
       }
     }
