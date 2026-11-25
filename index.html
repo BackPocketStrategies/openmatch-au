@@ -1037,12 +1037,33 @@
       if (addrInput) addrInput.focus();
     }
 
-    function printQrFlyer() {
+function printQrFlyer() {
       const street = (document.getElementById('prop-address')?.value.trim()) || activeProperty.address || '42 Kensington Road';
       const suburb = (document.getElementById('prop-suburb')?.value.trim()) || activeProperty.suburb || 'Norwood SA 5067';
       const beds = Number(document.getElementById('prop-beds')?.value) || activeProperty.bedrooms || 3;
       const baths = Number(document.getElementById('prop-baths')?.value) || activeProperty.bathrooms || 2;
-      const liveQrCanvas = document.querySelector('#qrcode canvas');
+      const fullTitle = `${street}${suburb ? ', ' + suburb : ''}`;
+
+      const baseUrl = window.location.origin + window.location.pathname;
+      const buyerUrl = document.getElementById('share-buyer-url')?.value.trim() ||
+        `${baseUrl}?view=scan&prop=${activeProperty.id}&addr=${encodeURIComponent(fullTitle)}`;
+
+      // Generate a fresh, crisp 700x700 QR canvas off-screen so it is never blank
+      const tempQrHost = document.createElement('div');
+      tempQrHost.style.position = 'fixed';
+      tempQrHost.style.left = '-9999px';
+      document.body.appendChild(tempQrHost);
+
+      new QRCode(tempQrHost, {
+        text: buyerUrl,
+        width: 700,
+        height: 700,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      const freshQrCanvas = tempQrHost.querySelector('canvas');
 
       const W = 1240;
       const H = 1754;
@@ -1061,6 +1082,7 @@
         ctx.closePath();
       };
 
+      // 1. Background gradient
       const bgGrad = ctx.createLinearGradient(0, 400, 0, H);
       bgGrad.addColorStop(0, '#FFFFFF');
       bgGrad.addColorStop(0.5, '#F5FAFB');
@@ -1068,14 +1090,15 @@
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
 
-      const headerH = 260;
+      // 2. Top Teal Banner
+      const headerH = 250;
       ctx.fillStyle = '#006875';
       ctx.fillRect(0, 0, W, headerH);
 
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '800 82px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Property Match', W / 2, 125);
+      ctx.fillText('Property Match', W / 2, 120);
 
       const subText = 'Find Your Perfect Match';
       ctx.font = '800 40px system-ui, -apple-system, sans-serif';
@@ -1085,17 +1108,19 @@
 
       ctx.fillStyle = '#CCFBF1';
       ctx.textAlign = 'left';
-      ctx.fillText(subText, groupStartX, 200);
+      ctx.fillText(subText, groupStartX, 194);
 
+      // Pink Heart
       ctx.save();
-      ctx.translate(groupStartX + subWidth + 16, 168);
+      ctx.translate(groupStartX + subWidth + 16, 162);
       ctx.scale(heartSize / 24, heartSize / 24);
       ctx.fillStyle = '#EC4899';
       ctx.fill(new Path2D('M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'));
       ctx.restore();
 
+      // 3. Property Address Band
       const bandY = headerH;
-      const bandH = 145;
+      const bandH = 140;
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, bandY, W, bandH);
       ctx.strokeStyle = 'rgba(0, 104, 117, 0.2)';
@@ -1105,50 +1130,64 @@
       ctx.lineTo(W, bandY + bandH);
       ctx.stroke();
 
+      // Specs Pill (Right side — vertically centered inside box)
       const specsText = `${beds} Bed • ${baths} Bath`;
       ctx.font = '800 24px system-ui, -apple-system, sans-serif';
-      const pillW = ctx.measureText(specsText).width + 44;
+      const pillW = ctx.measureText(specsText).width + 48;
+      const pillH = 56;
       const pillX = W - 56 - pillW;
+      const pillY = bandY + (bandH - pillH) / 2;
+
       ctx.fillStyle = '#F2F9FA';
       ctx.strokeStyle = 'rgba(0, 104, 117, 0.28)';
       ctx.lineWidth = 2.5;
-      roundRect(pillX, bandY + 44, pillW, 56, 14);
+      roundRect(pillX, pillY, pillW, pillH, 14);
       ctx.fill();
       ctx.stroke();
+
       ctx.fillStyle = '#006875';
       ctx.textAlign = 'center';
-      ctx.fillText(specsText, pillX + pillW / 2, bandY + 80);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(specsText, pillX + pillW / 2, pillY + pillH / 2 + 1);
+      ctx.textBaseline = 'alphabetic';
 
+      // Pin Badge (Left side)
       ctx.fillStyle = 'rgba(0, 104, 117, 0.1)';
-      roundRect(56, bandY + 34, 76, 76, 18);
+      roundRect(56, bandY + 32, 76, 76, 18);
       ctx.fill();
       ctx.fillStyle = '#006875';
       ctx.font = '800 34px sans-serif';
-      ctx.fillText('📍', 94, bandY + 84);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('📍', 94, bandY + 70);
+      ctx.textBaseline = 'alphabetic';
 
+      // Street & Suburb (Constrained between pin badge and specs pill)
       const maxTextW = pillX - 154 - 24;
       ctx.textAlign = 'left';
       ctx.fillStyle = '#0F172A';
       ctx.font = '800 38px system-ui, -apple-system, sans-serif';
-      ctx.fillText(street, 154, bandY + 66, maxTextW);
+      ctx.fillText(street, 154, bandY + 64, maxTextW);
 
       ctx.fillStyle = '#006875';
       ctx.font = '700 23px system-ui, -apple-system, sans-serif';
-      ctx.fillText(suburb.toUpperCase(), 154, bandY + 106, maxTextW);
+      ctx.fillText(suburb.toUpperCase(), 154, bandY + 104, maxTextW);
 
+      // 4. Two-Line Scan Prompt (Lifted slightly higher)
       ctx.textAlign = 'center';
       ctx.fillStyle = '#334155';
       ctx.font = '700 33px system-ui, -apple-system, sans-serif';
-      ctx.fillText('Scan in 30 seconds to check your borrowing power', W / 2, 490);
-      ctx.fillText('& see how well this home fits your wish list.', W / 2, 536);
+      ctx.fillText('Scan in 30 seconds to check your borrowing power', W / 2, 462);
+      ctx.fillText('& see how well this home fits your wish list.', W / 2, 508);
 
-      const qrSize = 700;
+      // 5. Snug-Fitting QR Box (Lifted slightly higher)
+      const qrSize = 690;
       const boxPad = 22;
       const captionH = 115;
       const boxW = qrSize + boxPad * 2;
       const boxH = qrSize + boxPad * 2 + captionH;
       const boxX = (W - boxW) / 2;
-      const boxY = 585;
+      const boxY = 552;
 
       ctx.save();
       ctx.shadowColor = 'rgba(15, 23, 42, 0.12)';
@@ -1164,12 +1203,16 @@
       roundRect(boxX, boxY, boxW, boxH, 36);
       ctx.stroke();
 
-      if (liveQrCanvas) {
+      if (freshQrCanvas) {
         ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(liveQrCanvas, boxX + boxPad, boxY + boxPad, qrSize, qrSize);
+        ctx.drawImage(freshQrCanvas, boxX + boxPad, boxY + boxPad, qrSize, qrSize);
         ctx.imageSmoothingEnabled = true;
       }
 
+      // Clean up temporary off-screen QR container
+      if (tempQrHost.parentNode) tempQrHost.parentNode.removeChild(tempQrHost);
+
+      // Caption Divider + Address & Suburb under QR
       const capTopY = boxY + boxPad + qrSize + 18;
       ctx.strokeStyle = '#E2E8F0';
       ctx.lineWidth = 2.5;
@@ -1187,7 +1230,8 @@
       ctx.font = '800 23px system-ui, -apple-system, sans-serif';
       ctx.fillText(suburb.toUpperCase(), W / 2, capTopY + 80, qrSize);
 
-      const footerLineY = H - 140;
+      // 6. Hardcoded Bottom Broker Footer (Lifted slightly higher for clean bottom margin)
+      const footerLineY = H - 170;
       ctx.strokeStyle = 'rgba(0, 104, 117, 0.22)';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
@@ -1201,6 +1245,7 @@
       ctx.fillText('🔒  Independent Mortgage Choice tool by Alex Fyfe — your financial', W / 2, footerLineY + 46);
       ctx.fillText('figures stay private and are never shown to the selling agent.', W / 2, footerLineY + 82);
 
+      // 7. Open Clean Dedicated Print Window with Only the Rendered Flyer Image
       const dataUrl = canvas.toDataURL('image/png');
       const slug = street.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'Flyer';
       const printWin = window.open('', '_blank', 'width=850,height=1100');
