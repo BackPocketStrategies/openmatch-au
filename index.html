@@ -20,71 +20,107 @@
 
     /* Full-Bleed A4 PDF Print Styling (Zero White Border) */
 @media print {
-      @page { size: A4 portrait; margin: 0 !important; }
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
       html, body {
-        width: 210mm !important;
-        height: auto !important;
-        min-height: 0 !important;
+        width: 210mm;
+        height: 297mm;
         margin: 0 !important;
         padding: 0 !important;
         background: #ffffff !important;
-        overflow: visible !important;
+        overflow: hidden !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-      body * { visibility: hidden; }
-      #printable-strut-card, #printable-strut-card * {
+      body * {
+        visibility: hidden !important;
+      }
+      #printable-strut-card,
+      #printable-strut-card * {
         visibility: visible !important;
         opacity: 1 !important;
       }
       #printable-strut-card {
-        position: static !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
         width: 210mm !important;
-        height: auto !important;
-        max-height: none !important;
-        margin: 0 auto !important;
+        height: 297mm !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        overflow: visible !important;
-        zoom: 0.78;
+        overflow: hidden !important;
         box-sizing: border-box !important;
       }
-      #printable-strut-card .print-header { padding: 16px 24px !important; }
-      #printable-strut-card .print-title { font-size: 40px !important; line-height: 1.05 !important; }
-      #printable-strut-card .print-subtitle { font-size: 19px !important; margin-top: 6px !important; }
-      #printable-strut-card .print-heart { width: 22px !important; height: 22px !important; }
-      #printable-strut-card .print-address-band { padding: 12px 24px !important; }
-      #printable-strut-card #card-address { font-size: 21px !important; }
-      #printable-strut-card #card-suburb { font-size: 12px !important; }
-      #printable-strut-card #card-specs-pill { font-size: 12px !important; padding: 5px 10px !important; }
+      #printable-strut-card .print-header {
+        padding: 22px 28px !important;
+        flex-shrink: 0 !important;
+      }
+      #printable-strut-card .print-title {
+        font-size: 46px !important;
+        line-height: 1.05 !important;
+      }
+      #printable-strut-card .print-subtitle {
+        font-size: 22px !important;
+        margin-top: 8px !important;
+      }
+      #printable-strut-card .print-heart {
+        width: 26px !important;
+        height: 26px !important;
+      }
+      #printable-strut-card .print-address-band {
+        padding: 14px 28px !important;
+        flex-shrink: 0 !important;
+      }
+      #printable-strut-card #card-address {
+        font-size: 24px !important;
+      }
+      #printable-strut-card #card-suburb {
+        font-size: 13px !important;
+      }
+      #printable-strut-card #card-specs-pill {
+        font-size: 13px !important;
+        padding: 6px 12px !important;
+      }
       #printable-strut-card .print-body {
-        flex: none !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
         display: flex !important;
         flex-direction: column !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        padding: 14px 24px 16px !important;
+        padding: 16px 28px 20px !important;
       }
       #printable-strut-card .print-scan-copy {
-        font-size: 14px !important;
-        max-width: 500px !important;
-        margin-bottom: 10px !important;
+        font-size: 15px !important;
+        max-width: 540px !important;
+        margin: 0 auto 10px !important;
+        flex-shrink: 0 !important;
       }
       #printable-strut-card .print-qr-box {
         padding: 14px !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
+        flex-shrink: 0 !important;
       }
-      #printable-strut-card #qrcode { width: 240px !important; height: 240px !important; }
+      #printable-strut-card #qrcode {
+        width: 230px !important;
+        height: 230px !important;
+      }
       #printable-strut-card #qr-caption-address {
         display: block !important;
         font-size: 15px !important;
         line-height: 1.25 !important;
-        max-width: 240px !important;
+        max-width: 230px !important;
         margin-top: 6px !important;
         color: #0f172a !important;
       }
@@ -92,7 +128,7 @@
         display: block !important;
         font-size: 11px !important;
         line-height: 1.25 !important;
-        max-width: 240px !important;
+        max-width: 230px !important;
         margin-top: 2px !important;
         color: #006875 !important;
       }
