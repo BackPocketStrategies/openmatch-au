@@ -18,61 +18,72 @@
     #qrcode canvas { display: block !important; width: 100% !important; height: auto !important; margin: 0 auto; }
     #qrcode img { display: none !important; }
 
-    /* Full-Bleed A4 PDF Print Styling (Substantial Typography + 440px QR + Full Broker Footer) */
+    /* Full-Bleed A4 PDF Print Styling — Matches Screen Card & Fills A4 Snugly */
     @media print {
-      @page { size: A4 portrait; margin: 0 !important; }
-      html, body {
-        width: 210mm !important; height: 297mm !important;
-        margin: 0 !important; padding: 0 !important;
-        background: #ffffff !important; overflow: hidden !important;
-        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+      @page {
+        size: A4 portrait;
+        margin: 0 !important;
       }
-      body * { visibility: hidden; }
-      #printable-strut-card, #printable-strut-card * { visibility: visible; }
+      html, body {
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body * {
+        visibility: hidden !important;
+      }
+      #printable-strut-card,
+      #printable-strut-card * {
+        visibility: visible !important;
+      }
       #printable-strut-card {
-        position: fixed !important; left: 0 !important; top: 0 !important; transform: none !important;
-        width: 210mm !important; height: 297mm !important; margin: 0 !important;
-        display: flex !important; flex-direction: column !important; justify-content: space-between !important;
-        border-radius: 0 !important; box-shadow: none !important; border: none !important; overflow: hidden !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 460px !important;
+        height: 650px !important;
+        zoom: 1.725 !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: hidden !important;
         box-sizing: border-box !important;
       }
-      #printable-strut-card .print-header { padding: 22px 28px !important; flex-shrink: 0 !important; }
-      #printable-strut-card .print-title { font-size: 62px !important; line-height: 1.02 !important; }
-      #printable-strut-card .print-subtitle { font-size: 30px !important; margin-top: 8px !important; }
-      #printable-strut-card .print-heart { width: 34px !important; height: 34px !important; }
-      #printable-strut-card .print-address-band { padding: 14px 28px !important; flex-shrink: 0 !important; }
-      #printable-strut-card #card-address { font-size: 28px !important; }
-      #printable-strut-card #card-suburb { font-size: 16px !important; }
-      #printable-strut-card #card-specs-pill { font-size: 16px !important; padding: 7px 14px !important; }
       #printable-strut-card .print-body {
-        flex: 1 1 auto !important; min-height: 0 !important;
-        display: flex !important; flex-direction: column !important;
-        justify-content: space-between !important; align-items: center !important;
-        padding: 18px 28px 20px !important;
+        flex: 1 1 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 18px 22px 16px !important;
       }
-      #printable-strut-card .print-scan-copy {
-        font-size: 28px !important; line-height: 1.25 !important; font-weight: 700 !important;
-        max-width: 650px !important; margin: 0 auto 8px !important; flex-shrink: 0 !important;
-        color: #1e293b !important;
+      #printable-strut-card #qrcode {
+        width: 235px !important;
+        height: 235px !important;
       }
-      #printable-strut-card .print-qr-box {
-        padding: 14px 16px !important; flex-shrink: 0 !important;
-        display: flex !important; flex-direction: column !important; align-items: center !important;
-      }
-      #printable-strut-card #qrcode { width: 440px !important; height: 440px !important; }
       #printable-strut-card #qr-caption-wrap {
-        margin-top: 8px !important; padding-top: 6px !important;
-        width: 100% !important; max-width: 440px !important;
+        display: block !important;
+        max-width: 235px !important;
       }
-      #printable-strut-card #qr-caption-address { font-size: 20px !important; max-width: 440px !important; }
-      #printable-strut-card #qr-caption-suburb { font-size: 14px !important; max-width: 440px !important; }
+      #printable-strut-card #qr-caption-address,
+      #printable-strut-card #qr-caption-suburb {
+        display: block !important;
+      }
       #printable-strut-card .print-footer-strip {
-        margin-top: 10px !important; padding-top: 10px !important;
-        width: 100% !important; max-width: 680px !important; flex-shrink: 0 !important;
+        display: flex !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+        padding-top: 10px !important;
       }
-      #printable-strut-card .print-footer-icon { width: 26px !important; height: 26px !important; }
-      #printable-strut-card .print-footer-icon svg { width: 15px !important; height: 15px !important; }
-      #printable-strut-card .print-privacy-text { font-size: 15.5px !important; line-height: 1.32 !important; }
     }
   </style>
 </head>
@@ -292,13 +303,13 @@
               <div class="print-qr-box inline-block mx-auto bg-white p-3.5 rounded-3xl border-2 border-[#006875] shadow-md">
                 <div id="qrcode" class="bg-white w-[235px] sm:w-[250px] h-[235px] sm:h-[250px] mx-auto"></div>
                 <div id="qr-caption-wrap" class="mt-2.5 pt-2 border-t border-slate-100 text-center max-w-[235px] sm:max-w-[250px] mx-auto">
-                  <p id="qr-caption-address" class="text-xs font-extrabold text-slate-900 leading-tight truncate">42 Kensington Road</p>
-                  <p id="qr-caption-suburb" class="text-[10px] font-bold uppercase tracking-wider text-[#006875] truncate mt-0.5">Norwood SA 5067</p>
+                  <p id="qr-caption-address" class="text-xs font-extrabold text-slate-900 leading-tight">42 Kensington Road</p>
+                  <p id="qr-caption-suburb" class="text-[10.5px] font-bold uppercase tracking-wider text-[#006875] mt-0.5">Norwood SA 5067</p>
                 </div>
               </div>
 
               <!-- A4 QR Flyer Bottom Strip -->
-              <div class="print-footer-strip mt-3 pt-2.5 border-t border-[#006875]/15 flex items-center justify-center gap-2.5 text-left">
+              <div class="print-footer-strip mt-4 pt-3 border-t border-[#006875]/15 flex items-center justify-center gap-2 text-left">
                 <span class="print-footer-icon shrink-0 w-5 h-5 rounded-full bg-[#006875]/10 text-[#006875] flex items-center justify-center">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -2769,346 +2780,4 @@
             .eq('id', targetRow.id)
             .select();
 
-          if (error || !deletedRows || deletedRows.length === 0) return showSupabaseDeleteHelp();
-        }
-      }
-
-      if (!targetRow) {
-        targetRow = localScans.find(s =>
-          (scanId && s.id === scanId) ||
-          (s.property_id === brokerSelectedPropertyId && s.buyer_name === buyerName && s.buyer_mobile === buyerMobile)
-        );
-      }
-
-      localScans = localScans.filter(s =>
-        !((scanId && s.id === scanId) ||
-          (s.property_id === brokerSelectedPropertyId && s.buyer_name === buyerName && s.buyer_mobile === buyerMobile))
-      );
-      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
-
-      if (targetRow) setBrokerUndoBackup([targetRow]);
-      renderBrokerLeads();
-    }
-
-    async function undoBrokerClear() {
-      if (!brokerUndoBackup || !Array.isArray(brokerUndoBackup.rows) || brokerUndoBackup.rows.length === 0) return;
-
-      const btn = document.getElementById('btn-broker-undo');
-      if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
-
-      const rowsToRestore = brokerUndoBackup.rows.map(({ id, created_at, ...cleanRow }) => cleanRow);
-
-      if (hasSupabase) {
-        const { error } = await sb.from('buyer_scans').insert(rowsToRestore);
-        if (error) {
-          if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
-          return alert('Could not restore leads to Supabase: ' + error.message);
-        }
-      } else {
-        brokerUndoBackup.rows.forEach((r, idx) => {
-          localScans.unshift({ id: r.id || ('restored-' + Date.now() + '-' + idx), ...r });
-        });
-        localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
-      }
-
-      if (btn) { btn.disabled = false; btn.textContent = 'Undo Restore'; }
-      dismissBrokerUndoBar();
-      renderBrokerLeads();
-    }
-
-    function selectBrokerProperty(propId) {
-      brokerSelectedPropertyId = propId;
-      renderBrokerLeads();
-    }
-
-    function setLeadFilter(optInOnly) {
-      brokerOptInOnly = optInOnly;
-      document.getElementById('btn-filter-optin').className = optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
-      document.getElementById('btn-filter-all').className = !optInOnly ? 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-white' : 'text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700';
-      renderBrokerLeads();
-    }
-
-    function sendBrokerLeadSms(buyerName, buyerMobile, propAddress) {
-      const firstName = (buyerName || 'there').trim().split(/\s+/)[0];
-      const cleanPhone = (buyerMobile || '').replace(/[^\d+]/g, '');
-      const cleanProp = propAddress || 'the property';
-      const bodyText = `Hi ${firstName}, Alex Fyfe from Mortgage Choice here — saw you checked out ${cleanProp} at the open today and sent your details through to assess your borrowing power, government grants, guarantors, and bridging finance options. Free for a quick 5-min chat?`;
-
-      const ua = navigator.userAgent.toLowerCase();
-      const isIOS = /iphone|ipad|ipod/.test(ua);
-      const separator = isIOS ? '&' : '?';
-      window.location.href = `sms:${cleanPhone}${separator}body=${encodeURIComponent(bodyText)}`;
-    }
-
-    async function updateBrokerLeadStatus(scanId, buyerName, buyerMobile, newStatus) {
-      const updatePetsStatus = (petsStr) => {
-        const cleanBase = String(petsStr || '').replace(/^status:[A-Za-z]+\|/, '');
-        return `status:${newStatus}|${cleanBase}`;
-      };
-
-      localScans = localScans.map(s => {
-        if ((scanId && s.id === scanId) || (s.buyer_name === buyerName && s.buyer_mobile === buyerMobile && s.property_id === brokerSelectedPropertyId)) {
-          return { ...s, lead_status: newStatus, pets: updatePetsStatus(s.pets) };
-        }
-        return s;
-      });
-      localStorage.setItem('openmatch_scans', JSON.stringify(localScans));
-
-      if (hasSupabase && scanId && isValidUuid(scanId)) {
-        const { data: existingRow } = await sb.from('buyer_scans').select('id, pets').eq('id', scanId).maybeSingle();
-        if (existingRow) {
-          const newPets = updatePetsStatus(existingRow.pets);
-          const { data: updatedRows, error } = await sb
-            .from('buyer_scans')
-            .update({ pets: newPets })
-            .eq('id', scanId)
-            .select();
-
-          if (error || !updatedRows || updatedRows.length === 0) {
-            alert(
-              'Status updated locally, but Supabase blocked saving it because Row Level Security (RLS) has no UPDATE policy yet.\n\n' +
-              'Run once in Supabase SQL Editor:\n' +
-              'CREATE POLICY "Allow anon update" ON buyer_scans FOR UPDATE USING (true);'
-            );
-          }
-        }
-      }
-
-      renderBrokerLeads();
-    }
-
-    async function renderBrokerLeads() {
-      updateBrokerUndoBannerUI();
-
-      let allRows = [];
-      if (hasSupabase) {
-        const { data, error } = await sb.from('buyer_scans').select('*').order('created_at', { ascending: false });
-        if (error) return document.getElementById('broker-leads-list').innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-2xl text-xs">Supabase Error: ${escapeHtml(error.message)}</div>`;
-        allRows = data || [];
-      } else {
-        allRows = [...localScans];
-      }
-
-      const propMap = new Map();
-      savedPropertiesList.forEach(p => propMap.set(p.id, normalizePropertyRow(p)));
-      if (activeProperty && activeProperty.id && !String(activeProperty.id).startsWith('new-') && !propMap.has(activeProperty.id)) {
-        propMap.set(activeProperty.id, normalizePropertyRow(activeProperty));
-      }
-      allRows.forEach(r => {
-        if (r.property_id && !propMap.has(r.property_id)) {
-          propMap.set(r.property_id, { id: r.property_id, address: 'Property Listing', suburb: '', agent_name: '' });
-        }
-      });
-
-      const propertiesForCards = Array.from(propMap.values());
-
-      if (!brokerSelectedPropertyId || !propMap.has(brokerSelectedPropertyId)) {
-        const propWithOptIn = propertiesForCards.find(p => allRows.some(r => r.property_id === p.id && r.broker_opt_in));
-        brokerSelectedPropertyId = propWithOptIn
-          ? propWithOptIn.id
-          : (propMap.has(activeProperty.id) ? activeProperty.id : (propertiesForCards[0]?.id || null));
-      }
-
-      const cardsContainer = document.getElementById('broker-property-cards');
-      if (propertiesForCards.length === 0) {
-        cardsContainer.innerHTML = `<div class="col-span-full text-xs text-slate-500 p-4 bg-slate-50 rounded-2xl">No saved properties yet. Create a property in Tab 1 first.</div>`;
-      } else {
-        cardsContainer.innerHTML = propertiesForCards.map(p => {
-          const propScans = allRows.filter(r => r.property_id === p.id);
-          const optInCount = propScans.filter(r => r.broker_opt_in).length;
-          const isSelected = p.id === brokerSelectedPropertyId;
-
-          const cardClass = isSelected
-            ? 'bg-[#F2F9FA] border-2 border-[#006875] shadow-sm'
-            : 'bg-slate-50/70 hover:bg-slate-100/80 border border-slate-200/90';
-
-          const badgeClass = optInCount > 0
-            ? 'bg-amber-100 text-amber-900 border border-amber-300'
-            : 'bg-slate-200/70 text-slate-600';
-
-          return `
-            <button type="button" onclick="selectBrokerProperty('${escapeHtml(p.id)}')"
-              class="text-left p-3.5 rounded-2xl transition flex items-center justify-between gap-2.5 ${cardClass}">
-              <div class="min-w-0">
-                <p class="font-extrabold text-xs sm:text-sm text-slate-900 truncate">${escapeHtml(p.address)}</p>
-                <p class="text-[11px] text-slate-500 truncate mt-0.5">
-                  ${escapeHtml(p.suburb || 'Open Home')}${p.agent_name ? ' • ' + escapeHtml(p.agent_name) : ''}
-                </p>
-              </div>
-              <span class="shrink-0 text-[11px] font-extrabold px-2.5 py-1 rounded-full ${badgeClass}">
-                ${optInCount} Opt-In${optInCount === 1 ? '' : 's'}
-              </span>
-            </button>`;
-        }).join('');
-      }
-
-      const selectedProp = propMap.get(brokerSelectedPropertyId) || activeProperty;
-      const propTitleEl = document.getElementById('broker-selected-prop-title');
-      const propMetaEl = document.getElementById('broker-selected-prop-meta');
-      if (propTitleEl) {
-        propTitleEl.textContent = `${selectedProp.address}${selectedProp.suburb ? ', ' + selectedProp.suburb : ''}`;
-      }
-      if (propMetaEl) {
-        const guidePart = selectedProp.price_min
-          ? `Guide: $${Number(selectedProp.price_min).toLocaleString()} – $${Number(selectedProp.price_max).toLocaleString()}`
-          : '';
-        const agentPart = selectedProp.agent_name ? `Selling Agent: ${selectedProp.agent_name}` : '';
-        propMetaEl.textContent = [agentPart, guidePart].filter(Boolean).join(' • ') || 'Open Home Lead Breakdown';
-      }
-
-      const propertyScans = allRows.filter(r => r.property_id === brokerSelectedPropertyId);
-      const optedInRows = propertyScans.filter(r => r.broker_opt_in);
-      const displayedRows = brokerOptInOnly ? optedInRows : propertyScans;
-
-      document.getElementById('broker-kpi-optins').textContent = optedInRows.length;
-      document.getElementById('broker-kpi-total-scans').textContent = `${propertyScans.length} total scan${propertyScans.length === 1 ? '' : 's'} at this open`;
-
-      const kpiSourceRows = optedInRows.filter(r => Number(r.est_max_loan) > 0);
-      if (kpiSourceRows.length > 0) {
-        const avgBorrow = Math.round(
-          kpiSourceRows.reduce((sum, r) => sum + (Number(r.est_max_loan) || 0), 0) / kpiSourceRows.length
-        );
-        document.getElementById('broker-kpi-avg-borrow').textContent = `$${avgBorrow.toLocaleString()}`;
-      } else {
-        document.getElementById('broker-kpi-avg-borrow').textContent = '—';
-      }
-
-      const oppCount = optedInRows.filter(r => {
-        const lvrStr = cleanLvrLabel(r).toUpperCase();
-        return lvrStr.startsWith('ORANGE') || lvrStr.startsWith('RED') || r.budget_badge === 'Subject to Sale' || r.budget_badge === 'Within Reach';
-      }).length;
-      document.getElementById('broker-kpi-opps').textContent = oppCount;
-
-      const container = document.getElementById('broker-leads-list');
-      if (displayedRows.length === 0) {
-        const withheldCount = propertyScans.length - optedInRows.length;
-        return container.innerHTML = `
-          <div class="bg-white p-10 rounded-3xl border border-slate-200/90 text-center space-y-2">
-            <p class="text-sm font-bold text-slate-700">
-              ${brokerOptInOnly ? 'No opted-in broker leads for this property yet.' : 'No buyer scans recorded for this property yet.'}
-            </p>
-            <p class="text-xs text-slate-500">
-              ${brokerOptInOnly && withheldCount > 0
-                ? `${withheldCount} open-home visitor${withheldCount === 1 ? '' : 's'} opted out of sending details to Alex Fyfe.`
-                : 'Select another property card above or check back after the open home.'}
-            </p>
-          </div>`;
-      }
-
-      container.innerHTML = displayedRows.map(r => {
-        const safeId = escapeHtml(r.id || '').replace(/'/g, "\\'");
-        const safeName = escapeHtml(r.buyer_name || '').replace(/'/g, "\\'");
-        const safeMobile = escapeHtml(r.buyer_mobile || '').replace(/'/g, "\\'");
-        const safePropAddr = escapeHtml(selectedProp.address || '').replace(/'/g, "\\'");
-
-        if (!r.broker_opt_in) {
-          return `
-            <div class="bg-slate-50/90 p-5 rounded-3xl border border-slate-200/90 flex flex-wrap items-center justify-between gap-3">
-              <div class="space-y-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-xs font-extrabold text-slate-600">🔒 Open-Home Visitor (Details Withheld)</span>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-200/80 text-slate-600">Opted Out of Broker Sharing</span>
-                </div>
-                <p class="text-xs text-slate-500">
-                  ${escapeHtml(r.buying_stage)} • Timeline: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)} • Match Score: <strong>${r.fit_percentage}%</strong>
-                </p>
-              </div>
-              <button type="button" onclick="removeSingleBrokerLead('${safeId}', '${safeName}', '${safeMobile}')"
-                class="text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-1.5 rounded-xl border border-transparent hover:border-rose-200 transition">
-                Delete
-              </button>
-            </div>`;
-        }
-
-        const lvrTag = cleanLvrLabel(r);
-        const isRed = lvrTag.startsWith('RED');
-        const isOrange = lvrTag.startsWith('ORANGE');
-        const lvrPillClass = isRed ? 'bg-rose-100 text-rose-800' : isOrange ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
-        const estPrice = extractBuyerEstPrice(r);
-        const status = extractLeadStatus(r);
-
-        const statusBtn = (label) => {
-          const isCurrent = status === label;
-          let activeClass = 'bg-slate-900 text-white border-slate-900';
-          if (isCurrent && label === 'New') activeClass = 'bg-amber-500 text-white border-amber-500';
-          if (isCurrent && label === 'Called') activeClass = 'bg-[#006875] text-white border-[#006875]';
-          if (isCurrent && label === 'Booked') activeClass = 'bg-emerald-600 text-white border-emerald-600';
-          const idleClass = 'bg-white hover:bg-slate-100 text-slate-600 border-slate-200';
-          return `<button type="button" onclick="updateBrokerLeadStatus('${safeId}', '${safeName}', '${safeMobile}', '${label}')"
-            class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border transition ${isCurrent ? activeClass : idleClass}">
-            ${label === 'Booked' && isCurrent ? '✓ Booked' : label}
-          </button>`;
-        };
-
-        const firstName = escapeHtml((r.buyer_name || 'Buyer').trim().split(/\s+/)[0]);
-
-        return `
-          <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-200/90 space-y-4">
-            <div class="flex flex-wrap justify-between items-start gap-3">
-              <div class="space-y-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-extrabold text-base text-slate-900">${escapeHtml(r.buyer_name)} — <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-[#006875] hover:underline">${escapeHtml(r.buyer_mobile)}</a></h3>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
-                    ★ Opted In
-                  </span>
-                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${lvrPillClass}">
-                    ${escapeHtml(lvrTag)}
-                  </span>
-                </div>
-                <p class="text-xs text-slate-500 font-medium">
-                  ${escapeHtml(r.buying_stage)} • Timeline: <strong>${escapeHtml(r.timeline)}</strong> • ${escapeHtml(r.household)} • ${r.dependants} Dependants${estPrice ? ' • Est. Price: $' + estPrice.toLocaleString() : ''}
-                </p>
-              </div>
-
-              <div class="flex items-center gap-2 shrink-0">
-                <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200/80">
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1.5">Status:</span>
-                  ${statusBtn('New')}
-                  ${statusBtn('Called')}
-                  ${statusBtn('Booked')}
-                </div>
-                <button type="button" onclick="removeSingleBrokerLead('${safeId}', '${safeName}', '${safeMobile}')"
-                  class="text-[11px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 px-2.5 py-2 rounded-xl border border-transparent hover:border-rose-200 transition"
-                  title="Delete this lead">
-                  Delete
-                </button>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
-              <div><span class="text-slate-400 font-medium block mb-0.5">Gross Income</span><strong class="text-sm text-slate-900">$${Number(r.income).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Cash + Equity</span><strong class="text-sm text-slate-900">$${Number(r.deposit).toLocaleString()}</strong></div>
-              <div><span class="text-slate-400 font-medium block mb-0.5">Est. Max Borrow</span><strong class="text-sm text-[#006875]">$${Number(r.est_max_loan).toLocaleString()}</strong></div>
-            </div>
-
-            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-              <span class="text-[11px] text-slate-500 font-medium">
-                Match Score: <strong>${r.fit_percentage}%</strong> (${escapeHtml(r.budget_badge)})
-              </span>
-              <div class="flex items-center gap-2">
-                <a href="tel:${escapeHtml(r.buyer_mobile)}" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 px-3.5 py-2 rounded-xl transition">
-                  📞 Call ${firstName}
-                </a>
-                <button type="button" onclick="sendBrokerLeadSms('${safeName}', '${safeMobile}', '${safePropAddr}')"
-                  class="text-xs font-extrabold bg-[#006875] hover:bg-[#005560] text-white px-4 py-2 rounded-xl shadow-sm transition">
-                  💬 Text ${firstName}
-                </button>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    function copyInput(id) {
-      const el = document.getElementById(id);
-      el.select();
-      navigator.clipboard.writeText(el.value);
-      alert('Link copied!');
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
-  </script>
-</body>
-</html>
+          if (error || !deletedRows
