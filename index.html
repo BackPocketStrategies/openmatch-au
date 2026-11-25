@@ -33,7 +33,10 @@
         print-color-adjust: exact !important;
       }
       body * { visibility: hidden; }
-      #printable-strut-card, #printable-strut-card * { visibility: visible; }
+      #printable-strut-card, #printable-strut-card * {
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
       #printable-strut-card {
         position: static !important;
         width: 210mm !important;
@@ -47,16 +50,15 @@
         box-shadow: none !important;
         border: none !important;
         overflow: visible !important;
-        transform: scale(0.93) !important;
-        transform-origin: top center !important;
+        zoom: 0.78;
         box-sizing: border-box !important;
       }
-      #printable-strut-card .print-header { padding: 18px 24px !important; }
-      #printable-strut-card .print-title { font-size: 42px !important; line-height: 1.05 !important; }
-      #printable-strut-card .print-subtitle { font-size: 20px !important; margin-top: 6px !important; }
-      #printable-strut-card .print-heart { width: 24px !important; height: 24px !important; }
+      #printable-strut-card .print-header { padding: 16px 24px !important; }
+      #printable-strut-card .print-title { font-size: 40px !important; line-height: 1.05 !important; }
+      #printable-strut-card .print-subtitle { font-size: 19px !important; margin-top: 6px !important; }
+      #printable-strut-card .print-heart { width: 22px !important; height: 22px !important; }
       #printable-strut-card .print-address-band { padding: 12px 24px !important; }
-      #printable-strut-card #card-address { font-size: 22px !important; }
+      #printable-strut-card #card-address { font-size: 21px !important; }
       #printable-strut-card #card-suburb { font-size: 12px !important; }
       #printable-strut-card #card-specs-pill { font-size: 12px !important; padding: 5px 10px !important; }
       #printable-strut-card .print-body {
@@ -67,15 +69,39 @@
         padding: 14px 24px 16px !important;
       }
       #printable-strut-card .print-scan-copy {
-        font-size: 15px !important;
+        font-size: 14px !important;
         max-width: 500px !important;
         margin-bottom: 10px !important;
       }
-      #printable-strut-card .print-qr-box { padding: 14px !important; }
-      #printable-strut-card #qrcode { width: 250px !important; height: 250px !important; }
-      #printable-strut-card #qr-caption-address { font-size: 16px !important; max-width: 250px !important; }
-      #printable-strut-card #qr-caption-suburb { font-size: 12px !important; max-width: 250px !important; }
-      #printable-strut-card .print-privacy-text { font-size: 12px !important; }
+      #printable-strut-card .print-qr-box {
+        padding: 14px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+      #printable-strut-card #qrcode { width: 240px !important; height: 240px !important; }
+      #printable-strut-card #qr-caption-address {
+        display: block !important;
+        font-size: 15px !important;
+        line-height: 1.25 !important;
+        max-width: 240px !important;
+        margin-top: 6px !important;
+        color: #0f172a !important;
+      }
+      #printable-strut-card #qr-caption-suburb {
+        display: block !important;
+        font-size: 11px !important;
+        line-height: 1.25 !important;
+        max-width: 240px !important;
+        margin-top: 2px !important;
+        color: #006875 !important;
+      }
+      #printable-strut-card .print-privacy-text {
+        display: block !important;
+        font-size: 12px !important;
+        line-height: 1.35 !important;
+        color: #006875 !important;
+      }
     }
   </style>
 </head>
@@ -1618,7 +1644,7 @@
       document.getElementById('card-suburb').textContent = suburb || 'Open Home Inspection';
       document.getElementById('card-specs-pill').textContent = `${beds} Bed • ${baths} Bath`;
       document.getElementById('qr-caption-address').textContent = street;
-      document.getElementById('qr-caption-suburb').textContent = suburb || '';
+      document.getElementById('qr-caption-suburb').textContent = suburb || 'Open Home Inspection';
       document.getElementById('quiz-prop-title').textContent = fullTitle;
       document.getElementById('agent-prop-title').textContent = fullTitle;
       document.getElementById('agent-prop-subtitle').textContent = guideString;
